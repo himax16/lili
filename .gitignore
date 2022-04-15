@@ -1,3 +1,9 @@
+# Temporary files
+*~
+
+# Build directories
+build/
+
 # Prerequisites
 *.d
 
@@ -30,3 +36,6 @@
 *.exe
 *.out
 *.app
+
+# Python files
+*.pyc
