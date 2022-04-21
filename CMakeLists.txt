@@ -1,23 +1,39 @@
-cmake_minimum_requirement(VERSION 3.12)
+cmake_minimum_required(VERSION 3.12...3.18)
+
+# Keep the source clean
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # Project name and version
-project(M VERSION 0.0 LANGUAGES CXX)
+project(
+  M
+  VERSION 0.0
+  DESCRIPTION "Multiscale plasma simulator"
+  LANGUAGES CXX
+)
+
+# Set CMake helper location
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+
+# Version configuration
+include(GetGitRevisionDescription)
+get_git_head_revision(GIT_REFSPEC GIT_SHA1)
+git_local_changes(GIT_STATUS)
+configure_file(cmake/config.h.in "${PROJECT_BINARY_DIR}/config.h")
 
 # C++ standard
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Defines sources
+# Define sources
 add_subdirectory(src)
-add_subdirectory(external)
-
-# Enable Testing
-enable_testing()
-
-# Version configuration
-configure_file(cmake/config.h.in src/config.h)
-
-add_executable(main src/main.cpp)
+# add_subdirectory(external)
 
 # Options
-option(M_EnableTesting   "Build the unit tests")
+option(UNIT_TEST "Build the unit tests" OFF)
+
+# Enable Testing
+# if(UNIT_TEST)
+#   add_subdirectory(tests)
+#   enable_testing()
+# endif()
