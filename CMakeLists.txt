@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 3.12...3.18)
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
+# C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Project name and version
 project(
   M
@@ -21,9 +25,11 @@ get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 git_local_changes(GIT_STATUS)
 configure_file(cmake/config.h.in "${PROJECT_BINARY_DIR}/config.h")
 
-# C++ standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost 1.75.0)
+message(STATUS "Boost version: ${Boost_VERSION}")
 
 # Define sources
 add_subdirectory(src)
