@@ -10,11 +10,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Project name and version
 project(
-  M
+  LILI
   VERSION 0.0
   DESCRIPTION "Multiscale plasma simulator"
   LANGUAGES CXX
 )
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release")
+    message(STATUS "No build type selected, default to ${CMAKE_BUILD_TYPE}")
+endif()
+
 
 # Set CMake helper location
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
