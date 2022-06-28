@@ -20,7 +20,6 @@ if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, default to ${CMAKE_BUILD_TYPE}")
 endif()
 
-
 # Set CMake helper location
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
@@ -30,11 +29,11 @@ get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 git_local_changes(GIT_STATUS)
 configure_file(cmake/config.h.in "${PROJECT_BINARY_DIR}/config.h")
 
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.75.0)
-message(STATUS "Boost version: ${Boost_VERSION}")
+# set(Boost_USE_STATIC_LIBS ON)
+# set(Boost_USE_MULTITHREADED ON)
+# set(Boost_USE_STATIC_RUNTIME OFF)
+# find_package(Boost 1.75.0)
+# message(STATUS "Boost version: ${Boost_VERSION}")
 
 # Define sources
 add_subdirectory(src)
