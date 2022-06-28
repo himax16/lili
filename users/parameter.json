@@ -11,6 +11,6 @@
     "nmy": {
       "value": 2,
       "description": "Dimension of the simulation mesh"
-    },
+    }
   }
 }
