@@ -1,0 +1,19 @@
+{
+  "problem": "test",
+  "mesh": {
+    "dimension": 2,
+    "x": {
+      "l": 2.0,
+      "n": 100
+    },
+    "y": {
+      "l": 1.0,
+      "n": 200
+    }
+  },
+  "particles": {
+    "ions": {
+
+    }
+  }
+}
