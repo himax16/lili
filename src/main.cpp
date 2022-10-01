@@ -18,7 +18,7 @@
 // #include <boost/math/constants/constants.hpp>
 
 // Project headers
-#include "config.h"
+// #include "config.h"
 // #include "parameter.h"
 
 // Temporary
@@ -91,5 +91,6 @@ int main(int argc, char *argv[]) {
 
   // }
 
+  printf("LILI main program test.\n");
   return(0);
 }

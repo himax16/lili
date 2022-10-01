@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.18)
+cmake_minimum_required(VERSION 3.15...3.18)
 
 # Keep the source clean
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
@@ -9,11 +9,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Project name and version
-project(
-  LILI
-  VERSION 0.0
-  DESCRIPTION "Multiscale plasma simulator"
-  LANGUAGES CXX
+project(LILI
+  VERSION
+    0.0
+  DESCRIPTION
+    "Multiscale plasma simulator"
+  LANGUAGES
+    CXX
 )
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")

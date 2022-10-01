@@ -15,7 +15,6 @@ F**L**uid-K**I**netic P**L**asma S**I**mulator
 * `11`: Unrecognized simulation system
 * `12`: Multiple MHD system
 
-
 ## Idea notes
 1. Use array of function pointer for k-stage evolutions for all system variable
   * Make sure at the end of every stage there is MPI wait or something similar.
