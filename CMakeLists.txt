@@ -17,13 +17,13 @@ project(LILI
   LANGUAGES
     CXX
 )
-if (NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
     message(STATUS "No build type selected, default to ${CMAKE_BUILD_TYPE}")
 endif()
 
 # Set CMake helper location
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 # Version configuration
 include(GetGitRevisionDescription)
@@ -39,6 +39,7 @@ configure_file(cmake/config.h.in "${PROJECT_BINARY_DIR}/config.h")
 
 # Define sources
 add_subdirectory(src)
+add_subdirectory(docs)
 # add_subdirectory(external)
 
 # Options

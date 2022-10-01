@@ -1,12 +1,13 @@
-#ifndef INPUT_HPP_
-#define INPUT_HPP_
-//==============================================================================
-// HIMA
-//==============================================================================
-// input.hpp
-//
-// Header file for reading the input files
-//==============================================================================
+#pragma once
+//!=============================================================================
+//! LILI Input Module
+//!=============================================================================
+//! input.hpp
+//!
+//! \brief Header file for reading the input files
+//!
+//! This will create the input namespace 
+//!=============================================================================
 
 // C headers
 
@@ -25,5 +26,3 @@
 // void parse_arguments(int argc, char *argv[], boost::json::object parameters);
 // void parse_inputfile();
 // }
-
-#endif // INPUT_HPP_
