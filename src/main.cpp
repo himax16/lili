@@ -8,14 +8,11 @@
 #include <fstream>
 #include <iostream>
 
-// #include <boost/json/src.hpp>
-// #include <boost/math/constants/constants.hpp>
-
 #include "config.h"
+#include "json.hpp"  // Header-only nlohmann/json library
 // #include "parameter.h"
 
-// Temporary
-// -----------------------------------------------------------------------------
+using json = nlohmann::json;
 
 /**
  * @brief Print current `LILI` version with the current git SHA1 and status.
@@ -46,12 +43,11 @@ int main(int argc, char *argv[]) {
   // int i_loop = 0;
   // int n_loop = 10;
 
-  // // parse_arguments(argc, argv);
   // Parse argument
   if (argc < 2) {
     print_version();
     std::cout << "Usage: " << argv[0] << " [input_file]" << std::endl;
-    return 0;
+    // return 0;
   }
 
   // // parse_input(input_file);
@@ -101,7 +97,14 @@ int main(int argc, char *argv[]) {
 
   // }
 
-  printf("LILI main program test.\n");
-  printf("\n");
+  json j = "{ \"happy\": true, \"pi\": 3.141 }"_json;
+  // explicit conversion to string
+  std::string s = j.dump();  // {"happy":true,"pi":3.141}
+
+  // serialization with pretty printing
+  // pass in the amount of spaces to indent
+  std::cout << j.dump(4) << std::endl;
+
+  std::cout << "LILI main program test" << std::endl;
   return (0);
 }

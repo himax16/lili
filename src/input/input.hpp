@@ -1,7 +1,7 @@
 #pragma once
 /**
  * @file input.hpp
- * @brief Header file for reading the input files
+ * @brief Header file for reading the input files also implements SimParam class
  */
 
 #include <fstream>
