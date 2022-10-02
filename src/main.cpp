@@ -1,21 +1,16 @@
 /**
  * @file main.cpp
  * @brief Main LILI program
- * 
+ *
  */
 
-// C headers
-
-// C++ headers
 // #include <numbers>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
-// External libraries headers
 // #include <boost/json/src.hpp>
 // #include <boost/math/constants/constants.hpp>
 
-// Project headers
 #include "config.h"
 // #include "parameter.h"
 
@@ -24,18 +19,18 @@
 
 /**
  * @brief Print current `LILI` version with the current git SHA1 and status.
- * 
+ *
  */
 void print_version() {
   // Report version
   std::cout << PROJECT_NAME << " v" << PROJECT_VER << std::endl;
-  std::cout << "git SHA1: " << PROJECT_GITHASH
-            << " (" << PROJECT_GITSTATUS << ")" << std::endl;
+  std::cout << "git SHA1: " << PROJECT_GITHASH << " (" << PROJECT_GITSTATUS
+            << ")" << std::endl;
 }
 
 /**
  * @brief Main `LILI` program
- * 
+ *
  * @param argc
  *  Number of arguments to the program
  * @param argv
@@ -70,8 +65,8 @@ int main(int argc, char *argv[]) {
   //   switch (simsys[i_simsys].type) {
   //     case 'm':
   //       if (has_mhd) {
-  //         std::cerr << "There are multiple MHD simulation system" << std::endl;
-  //         exit(12);
+  //         std::cerr << "There are multiple MHD simulation system" <<
+  //         std::endl; exit(12);
   //       }
   //       initialize_mhdsys(simsys[i_simsys].property);
   //       has_mhd = true;
@@ -94,7 +89,6 @@ int main(int argc, char *argv[]) {
   // if (use_emf) {
   //   initialize_emfsys();
   // }
-
 
   // // boost::json::object obj;
   // // obj["pi"] = boost::math::constants::pi<double>();

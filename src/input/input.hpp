@@ -1,19 +1,11 @@
 #pragma once
-//!=============================================================================
-//! LILI Input Module
-//!=============================================================================
-//! input.hpp
-//!
-//! \brief Header file for reading the input files
-//!
-//! This will create the input namespace 
-//!=============================================================================
+/**
+ * @file input.hpp
+ * @brief Header file for reading the input files
+ */
 
-// C headers
-
-// C++ headers
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 // External libraries headers
 // #include <boost/json/src.hpp>
@@ -22,7 +14,8 @@
 // #include "parameter.h"
 
 // Declarations
-// namespace m::input{
-// void parse_arguments(int argc, char *argv[], boost::json::object parameters);
-// void parse_inputfile();
-// }
+namespace input {
+class Input;
+void parse_arguments(int argc, char *argv[]);
+void parse_inputfile();
+}  // namespace input
