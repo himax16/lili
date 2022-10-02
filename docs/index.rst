@@ -3,6 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. Copyright (c) 2022, Himawan Winarto
+
+   Distributed under the terms of GNU AGPLv3 License.
+
+   The full license is in the file LICENSE, distributed with this software.
+
 Welcome to LILI's documentation!
 ================================
 
