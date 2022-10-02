@@ -1,10 +1,8 @@
-//==============================================================================
-// HIMA
-//==============================================================================
-// main.cpp
-//
-// Main loop program
-//==============================================================================
+/**
+ * @file main.cpp
+ * @brief Main LILI program
+ * 
+ */
 
 // C headers
 
@@ -18,12 +16,33 @@
 // #include <boost/math/constants/constants.hpp>
 
 // Project headers
-// #include "config.h"
+#include "config.h"
 // #include "parameter.h"
 
 // Temporary
 // -----------------------------------------------------------------------------
 
+/**
+ * @brief Print current `LILI` version with the current git SHA1 and status.
+ * 
+ */
+void print_version() {
+  // Report version
+  std::cout << PROJECT_NAME << " v" << PROJECT_VER << std::endl;
+  std::cout << "git SHA1: " << PROJECT_GITHASH
+            << " (" << PROJECT_GITSTATUS << ")" << std::endl;
+}
+
+/**
+ * @brief Main `LILI` program
+ * 
+ * @param argc
+ *  Number of arguments to the program
+ * @param argv
+ *  Program run arguments
+ * @return int
+ *  Program return code
+ */
 int main(int argc, char *argv[]) {
   // int n_simsys = 0;
   // bool has_mhd = false;
@@ -33,15 +52,12 @@ int main(int argc, char *argv[]) {
   // int n_loop = 10;
 
   // // parse_arguments(argc, argv);
-  // if (argc < 2) {
-  //   // Report version
-  //   std::cout << "Project " << PROJECT_NAME
-  //             << " Version " << PROJECT_VER << std::endl;
-  //   std::cout << "Git hash: " << PROJECT_GITHASH
-  //             << " (" << PROJECT_GITSTATUS << ")" << std::endl;
-  //   std::cout << "Usage: " << argv[0] << " [input_file]" << std::endl;
-  //   return 1;
-  // }
+  // Parse argument
+  if (argc < 2) {
+    print_version();
+    std::cout << "Usage: " << argv[0] << " [input_file]" << std::endl;
+    return 0;
+  }
 
   // // parse_input(input_file);
 
@@ -92,5 +108,6 @@ int main(int argc, char *argv[]) {
   // }
 
   printf("LILI main program test.\n");
-  return(0);
+  printf("\n");
+  return (0);
 }

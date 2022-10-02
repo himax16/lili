@@ -29,7 +29,8 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 git_local_changes(GIT_STATUS)
-configure_file(cmake/config.h.in "${PROJECT_BINARY_DIR}/config.h")
+configure_file("${CMAKE_MODULE_PATH}/config.h.in"
+               "${PROJECT_BINARY_DIR}/config.h")
 
 # set(Boost_USE_STATIC_LIBS ON)
 # set(Boost_USE_MULTITHREADED ON)
