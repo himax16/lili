@@ -21,8 +21,8 @@ using json = nlohmann::json;
 void print_version() {
   // Report version
   std::cout << PROJECT_NAME << " v" << PROJECT_VER << std::endl;
-  std::cout << "git SHA1: " << PROJECT_GITHASH << " (" << PROJECT_GITSTATUS
-            << ")" << std::endl;
+  std::cout << "git SHA1: " << PROJECT_GITHASH;
+  std::cout << " (" << PROJECT_GITSTATUS << ")" << std::endl;
 }
 
 /**
