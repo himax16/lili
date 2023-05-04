@@ -1,13 +1,5 @@
 cmake_minimum_required(VERSION 3.15...3.18)
 
-# Keep the source clean
-set(CMAKE_DISABLE_SOURCE_CHANGES ON)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
-
-# C++ standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 # Project name and version
 project(LILI
   VERSION
@@ -25,8 +17,18 @@ endif()
 # Set CMake helper location
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
-# Version configuration
+# Load helper files
+include(LILITools)
 include(GetGitRevisionDescription)
+
+# Keep the source clean
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+
+# C++ standard
+set_lili_cxx()
+
+# Version configuration
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 git_local_changes(GIT_STATUS)
 configure_file("${CMAKE_MODULE_PATH}/config.h.in"
