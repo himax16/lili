@@ -1,41 +1,23 @@
 /**
- * @file main.cpp
+ * @file lili.cpp
  * @brief Main LILI program
  *
  */
 
 // #include <numbers>
-#include <fstream>
-#include <iostream>
 
-#include "config.h"
-#include "json.hpp"  // Header-only nlohmann/json library
-// #include "parameter.h"
-
-using json = nlohmann::json;
-
-/**
- * @brief Print current `LILI` version with the current git SHA1 and status.
- *
- */
-void print_version() {
-  // Report version
-  std::cout << PROJECT_NAME << " v" << PROJECT_VER << std::endl;
-  std::cout << "git SHA1: " << PROJECT_GITHASH;
-  std::cout << " (" << PROJECT_GITSTATUS << ")" << std::endl;
-}
+#include "input.hpp"
 
 /**
  * @brief Main `LILI` program
  *
- * @param argc
- *  Number of arguments to the program
- * @param argv
- *  Program run arguments
- * @return int
- *  Program return code
+ * @param[in] argc
+ *  Number of command line arguments
+ * @param[in] argv
+ *  Command line arguments
  */
 int main(int argc, char *argv[]) {
+  // Variable declaration
   // int n_simsys = 0;
   // bool has_mhd = false;
   // bool use_emf = true;
@@ -44,13 +26,10 @@ int main(int argc, char *argv[]) {
   // int n_loop = 10;
 
   // Parse argument
-  if (argc < 2) {
-    print_version();
-    std::cout << "Usage: " << argv[0] << " [input_file]" << std::endl;
-    // return 0;
-  }
+  input::parse_arguments(argc, argv);
 
-  // // parse_input(input_file);
+  // Test print
+  std::cout << input::input_file << std::endl;
 
   // // Initialize simulation system based on the input file
   // if (n_simsys <= 0) {
@@ -97,14 +76,5 @@ int main(int argc, char *argv[]) {
 
   // }
 
-  json j = "{ \"happy\": true, \"pi\": 3.141 }"_json;
-  // explicit conversion to string
-  std::string s = j.dump();  // {"happy":true,"pi":3.141}
-
-  // serialization with pretty printing
-  // pass in the amount of spaces to indent
-  std::cout << j.dump(4) << std::endl;
-
-  std::cout << "LILI main program test" << std::endl;
-  return (0);
+  return 0;
 }

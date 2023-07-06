@@ -1,5 +1,9 @@
+/* LILI Test Input File
+ * Hima, 2022
+ */
 {
-  "problem": "test",
+  "input_type": "initial",
+  "problem_name": "test",
   "mesh": {
     "dimension": 2,
     "x": {
@@ -12,8 +16,6 @@
     }
   },
   "particles": {
-    "ions": {
-
-    }
+    "ions": {}
   }
 }

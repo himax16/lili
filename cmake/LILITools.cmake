@@ -14,7 +14,7 @@ macro(set_lili_cxx)
   if(NOT DEFINED CMAKE_CXX_STANDARD_REQUIRED)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
   endif()
-  # C++ file exntension should be ignored
+  # C++ file extension should be ignored
   if(NOT DEFINED CMAKE_CXX_EXTENSIONS)
     set(CMAKE_CXX_EXTENSIONS OFF)
   endif()

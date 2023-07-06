@@ -1,21 +1,27 @@
 #pragma once
 /**
  * @file input.hpp
- * @brief Header file for reading the input files also implements SimParam class
+ * @brief Header file for processing CLI and user inputs
  */
 
 #include <fstream>
 #include <iostream>
 
-// External libraries headers
-// #include <boost/json/src.hpp>
+#include "json.hpp"
 
-// Project headers
-// #include "parameter.h"
+// Simplify namespace
+using json = nlohmann::json;
 
-// Declarations
+// Forward declaration
 namespace input {
-class Input;
+// Variable declaration
+extern std::string input_file;
+extern std::string problem_name;
+extern int input_type;
+
+// Function declaration
+void print_version();
+void print_help();
+void parse_input(char *input_file);
 void parse_arguments(int argc, char *argv[]);
-void parse_inputfile();
 }  // namespace input

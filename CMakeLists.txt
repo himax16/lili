@@ -35,9 +35,9 @@ configure_file("${CMAKE_MODULE_PATH}/config.h.in"
                "${PROJECT_BINARY_DIR}/config.h")
                
 # Define sources
+add_subdirectory(lib)
 add_subdirectory(src)
 add_subdirectory(docs)
-add_subdirectory(lib)
 # add_subdirectory(external)
 
 # Options
