@@ -39,3 +39,7 @@ build/
 
 # Python files
 *.pyc
+
+# Data files except in example
+*.h5
+!example/*.h5

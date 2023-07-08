@@ -7,7 +7,7 @@ project(LILI
   DESCRIPTION
     "Multiscale plasma simulator"
   LANGUAGES
-    CXX
+    C CXX
 )
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
@@ -27,6 +27,9 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # C++ standard
 set_lili_cxx()
+
+# HDF5
+set_lili_hdf5()
 
 # Version configuration
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)

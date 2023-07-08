@@ -10,12 +10,30 @@ macro(set_lili_cxx)
   if(NOT DEFINED CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 17)
   endif()
+
   # C++ standard should be required
   if(NOT DEFINED CMAKE_CXX_STANDARD_REQUIRED)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
   endif()
+
   # C++ file extension should be ignored
   if(NOT DEFINED CMAKE_CXX_EXTENSIONS)
     set(CMAKE_CXX_EXTENSIONS OFF)
   endif()
+endmacro()
+
+# Set the HDF5 library
+# Careful that FindHDF5.cmake API is not consistent across versions
+macro(set_lili_hdf5)
+  # Set HDF5 library type
+  set(HDF5_USE_STATIC_LIBRARIES ON)
+
+  # Skip looking for hdf5-config.cmake as most clusters don't have it
+  set(HDF5_NO_FIND_PACKAGE_CONFIG_FILE TRUE)
+
+  # Print more information for loading HDF5
+  set(HDF5_FIND_DEBUG TRUE)
+
+  # Find HDF5
+  find_package(HDF5 REQUIRED COMPONENTS C)
 endmacro()
