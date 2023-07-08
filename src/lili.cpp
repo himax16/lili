@@ -23,6 +23,7 @@ int main(int argc, char *argv[]) {
 
   // Test print
   std::cout << lili::input::input_file << std::endl;
+  std::cout << lili::input::problem_name << std::endl;
 
   /****************************************************************************/
   // // Test HDF5

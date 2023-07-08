@@ -4,33 +4,15 @@
  */
 #include "input.hpp"
 
-#include "config.h"
+#include "json.hpp"
+#include "output.hpp"
+
+// Simplify namespace
+using json = nlohmann::json;
 
 std::string lili::input::input_file;
 std::string lili::input::problem_name;
 int lili::input::input_type;
-
-/**
- * @brief Print current `LILI` version with the current git SHA1 and status.
- */
-void lili::input::print_version() {
-  // Report version
-  std::cout << PROJECT_NAME << " v" << PROJECT_VER << std::endl;
-  std::cout << "git SHA1: " << PROJECT_GITHASH;
-  std::cout << " (" << PROJECT_GITSTATUS << ")" << std::endl;
-}
-
-/**
- * @brief Print help message
- */
-void lili::input::print_help() {
-  // Print help message
-  std::cout << "Usage: lili [OPTIONS]" << std::endl;
-  std::cout << "Options:" << std::endl;
-  std::cout << "  -h, --help     Show this help message" << std::endl;
-  std::cout << "  -i, --input    Input file" << std::endl;
-  std::cout << "  -v, --version  Output version information" << std::endl;
-}
 
 /**
  * @brief Parse input file
@@ -38,11 +20,11 @@ void lili::input::print_help() {
  * @param[in] input_file
  * Input file
  */
-void lili::input::parse_input(char *input_file) {
+void lili::input::parse_input(char *in_file) {
   // Open input file
-  std::ifstream ifs(input_file);
+  std::ifstream ifs(in_file);
   if (!ifs.is_open()) {
-    std::cerr << "Cannot open input file: " << input_file << std::endl;
+    std::cerr << "Cannot open input file: " << in_file << std::endl;
     exit(2);
   }
 
@@ -57,14 +39,14 @@ void lili::input::parse_input(char *input_file) {
     std::cerr << "Parse error: " << e.what() << std::endl;
     exit(2);
   }
-  input::input_file = input_file;
+  input_file = in_file;
 
   // Close input file
   ifs.close();
 
   // Check the type of input file
   if (!j.contains("input_type")) {
-    std::cerr << "No input type in input: " << input_file << std::endl;
+    std::cerr << "No input type in " << in_file << std::endl;
     exit(2);
   } else {
     std::string input_type_str = j.at("input_type").get<std::string>();
@@ -73,16 +55,15 @@ void lili::input::parse_input(char *input_file) {
     } else if (strcmp(input_type_str.c_str(), "restart") == 0) {
       input_type = 1;
     } else {
-      std::cerr << "Unrecognized input type in input: " << input_type_str
-                << std::endl;
-      std::cerr << "Input type must be: [initial | restart]" << std::endl;
+      std::cerr << "Unrecognized input type in " << input_type_str << std::endl;
+      std::cerr << "Available input type: [initial | restart]" << std::endl;
       exit(2);
     }
   }
 
   // Parse problem name
   if (!j.contains("problem_name")) {
-    std::cerr << "No problem name in input: " << input_file << std::endl;
+    std::cerr << "No problem name in " << in_file << std::endl;
     std::cerr << "Using default problem name: LILI" << std::endl;
   } else {
     problem_name = j.at("problem_name").get<std::string>();
@@ -114,11 +95,11 @@ void lili::input::parse_arguments(int argc, char *argv[]) {
           // Long option
           if (strcmp(argv[i_arg], "--help") == 0) {
             // Print help
-            print_help();
+            lili::output::print_help();
             exit(0);
           } else if (strcmp(argv[i_arg], "--version") == 0) {
             // Print version
-            print_version();
+            lili::output::print_version();
             exit(0);
           } else if (strcmp(argv[i_arg], "--input") == 0) {
             if (has_input) {
@@ -149,11 +130,11 @@ void lili::input::parse_arguments(int argc, char *argv[]) {
           has_input = true;
         case 'h':
           // Print help
-          print_help();
+          lili::output::print_help();
           exit(0);
         case 'v':
           // Print version
-          print_version();
+          lili::output::print_version();
           exit(0);
         default:
           // Throw error for unrecognized option
