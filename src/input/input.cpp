@@ -6,15 +6,14 @@
 
 #include "config.h"
 
-std::string input::input_file;
-std::string input::problem_name;
-int input::input_type;
+std::string lili::input::input_file;
+std::string lili::input::problem_name;
+int lili::input::input_type;
 
 /**
  * @brief Print current `LILI` version with the current git SHA1 and status.
- *
  */
-void input::print_version() {
+void lili::input::print_version() {
   // Report version
   std::cout << PROJECT_NAME << " v" << PROJECT_VER << std::endl;
   std::cout << "git SHA1: " << PROJECT_GITHASH;
@@ -23,9 +22,8 @@ void input::print_version() {
 
 /**
  * @brief Print help message
- *
  */
-void input::print_help() {
+void lili::input::print_help() {
   // Print help message
   std::cout << "Usage: lili [OPTIONS]" << std::endl;
   std::cout << "Options:" << std::endl;
@@ -39,9 +37,8 @@ void input::print_help() {
  *
  * @param[in] input_file
  * Input file
- *
  */
-void input::parse_input(char *input_file) {
+void lili::input::parse_input(char *input_file) {
   // Open input file
   std::ifstream ifs(input_file);
   if (!ifs.is_open()) {
@@ -104,7 +101,7 @@ void input::parse_input(char *input_file) {
  * @param[in] argv
  * Command line arguments
  */
-void input::parse_arguments(int argc, char *argv[]) {
+void lili::input::parse_arguments(int argc, char *argv[]) {
   // Variable declaration
   int i_arg = 0;
   bool has_input = false;
