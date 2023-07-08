@@ -4,12 +4,19 @@
  * @brief Header file for the Mesh class
  */
 
+namespace lili::mesh {
 template <typename T>
 class Mesh {
  private:
-  T* data_;              // Pointer to the data block
+  T* data_;  // Pointer to the data block
+
+  bool is_data_init_;    // Whether the Mesh object has been initialized
+  bool is_data_owner_;   // Whether the Mesh object owns the data block
+  bool is_data_shared_;  // Whether the Mesh object shares the data block
+
   int n0_, n1_, n2_;     // Mesh size
-  int n0g_, n1g_, n2g_;  // ???
+  int n0g_, n1g_, n2g_;  // Number of ghost cells (assumed to be the same for
+                         // all directions)
 
  public:
   // Empty constructor
@@ -43,7 +50,9 @@ class Mesh {
         n1g_(0),
         n2g_(0){init_data()};
 
-  // Copy Mesh
+  // Copy constructor
   // Compare Mesh sizes
   // Initialize data with empty array
+  // Get subset of data
 };
+}  // namespace lili::mesh

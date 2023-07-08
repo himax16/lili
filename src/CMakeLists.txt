@@ -12,9 +12,10 @@ add_subdirectory(output)
 # Add the main program
 add_executable(lili lili.cpp)
 
-# Add the libraries
+# Add the libraries to the main program
 target_link_libraries(lili PUBLIC input)
 target_link_libraries(lili PUBLIC output)
+target_link_libraries(lili PUBLIC mesh)
 target_link_libraries(lili PUBLIC hdf5::hdf5)
 
 # HIMA: Kalau pakai Boost
