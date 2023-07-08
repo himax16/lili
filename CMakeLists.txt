@@ -28,6 +28,9 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 # C++ standard
 set_lili_cxx()
 
+# MPI
+set_lili_mpi()
+
 # HDF5
 set_lili_hdf5()
 

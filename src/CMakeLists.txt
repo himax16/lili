@@ -4,6 +4,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 # Add library directories
 add_subdirectory(input)
 add_subdirectory(output)
+add_subdirectory(mesh)
 
 # # Add parameter.hpp to an interface library
 # add_library(parameter INTERFACE)
