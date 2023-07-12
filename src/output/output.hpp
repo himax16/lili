@@ -10,6 +10,6 @@
 
 namespace lili::output {
 // Function declaration
-void print_version();
-void print_help();
+void PrintVersion();
+void PrintHelp();
 }  // namespace lili::output

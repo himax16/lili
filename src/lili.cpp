@@ -8,6 +8,7 @@
 
 #include "hdf5.h"
 #include "input.hpp"
+#include "mesh.hpp"
 
 /**
  * @brief Main `LILI` program
@@ -19,11 +20,17 @@
  */
 int main(int argc, char *argv[]) {
   // Parse inputs
-  lili::input::parse_arguments(argc, argv);
+  lili::input::ParseArguments(argc, argv);
 
   // Test print
-  std::cout << lili::input::input_file << std::endl;
-  std::cout << lili::input::problem_name << std::endl;
+  std::cout << lili::input::gInputFile << std::endl;
+  std::cout << lili::input::gProblemName << std::endl;
+
+  // Test mesh
+  lili::mesh::Mesh<double> mesh(9, 10, 4);
+  std::cout << mesh.n0() << std::endl;
+  std::cout << mesh.n1() << std::endl;
+  std::cout << mesh.n2() << std::endl;
 
   /****************************************************************************/
   // // Test HDF5

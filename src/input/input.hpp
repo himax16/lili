@@ -9,13 +9,11 @@
 
 namespace lili::input {
 // Variable declaration
-extern std::string input_file;
-extern std::string problem_name;
-extern int input_type;
+extern std::string gInputFile;
+extern std::string gProblemName;
+extern int gInputType;
 
 // Function declaration
-void print_version();
-void print_help();
-void parse_input(char *input_file);
-void parse_arguments(int argc, char *argv[]);
+void ParseInput(char *in_file);
+void ParseArguments(int argc, char *argv[]);
 }  // namespace lili::input

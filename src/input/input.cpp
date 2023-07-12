@@ -10,17 +10,18 @@
 // Simplify namespace
 using json = nlohmann::json;
 
-std::string lili::input::input_file;
-std::string lili::input::problem_name;
-int lili::input::input_type;
+std::string lili::input::gInputFile;
+std::string lili::input::gProblemName;
+int lili::input::gInputType;
 
+namespace lili::input {
 /**
  * @brief Parse input file
  *
- * @param[in] input_file
+ * @param[in] in_file
  * Input file
  */
-void lili::input::parse_input(char *in_file) {
+void ParseInput(char *in_file) {
   // Open input file
   std::ifstream ifs(in_file);
   if (!ifs.is_open()) {
@@ -39,7 +40,7 @@ void lili::input::parse_input(char *in_file) {
     std::cerr << "Parse error: " << e.what() << std::endl;
     exit(2);
   }
-  input_file = in_file;
+  gInputFile = in_file;
 
   // Close input file
   ifs.close();
@@ -51,9 +52,9 @@ void lili::input::parse_input(char *in_file) {
   } else {
     std::string input_type_str = j.at("input_type").get<std::string>();
     if (strcmp(input_type_str.c_str(), "initial") == 0) {
-      input_type = 0;
+      gInputType = 0;
     } else if (strcmp(input_type_str.c_str(), "restart") == 0) {
-      input_type = 1;
+      gInputType = 1;
     } else {
       std::cerr << "Unrecognized input type in " << input_type_str << std::endl;
       std::cerr << "Available input type: [initial | restart]" << std::endl;
@@ -66,7 +67,7 @@ void lili::input::parse_input(char *in_file) {
     std::cerr << "No problem name in " << in_file << std::endl;
     std::cerr << "Using default problem name: LILI" << std::endl;
   } else {
-    problem_name = j.at("problem_name").get<std::string>();
+    gProblemName = j.at("problem_name").get<std::string>();
   }
 
   // // serialization with pretty printing
@@ -82,7 +83,7 @@ void lili::input::parse_input(char *in_file) {
  * @param[in] argv
  * Command line arguments
  */
-void lili::input::parse_arguments(int argc, char *argv[]) {
+void ParseArguments(int argc, char *argv[]) {
   // Variable declaration
   int i_arg = 0;
   bool has_input = false;
@@ -95,11 +96,11 @@ void lili::input::parse_arguments(int argc, char *argv[]) {
           // Long option
           if (strcmp(argv[i_arg], "--help") == 0) {
             // Print help
-            lili::output::print_help();
+            lili::output::PrintHelp();
             exit(0);
           } else if (strcmp(argv[i_arg], "--version") == 0) {
             // Print version
-            lili::output::print_version();
+            lili::output::PrintVersion();
             exit(0);
           } else if (strcmp(argv[i_arg], "--input") == 0) {
             if (has_input) {
@@ -108,7 +109,7 @@ void lili::input::parse_arguments(int argc, char *argv[]) {
               exit(1);
             }
             // Parse input file
-            parse_input(argv[++i_arg]);
+            ParseInput(argv[++i_arg]);
             has_input = true;
           } else if (strcmp(argv[i_arg], "--") == 0) {
             // End of options
@@ -126,15 +127,15 @@ void lili::input::parse_arguments(int argc, char *argv[]) {
             exit(1);
           }
           // Parse input file
-          parse_input(argv[++i_arg]);
+          ParseInput(argv[++i_arg]);
           has_input = true;
         case 'h':
           // Print help
-          lili::output::print_help();
+          lili::output::PrintHelp();
           exit(0);
         case 'v':
           // Print version
-          lili::output::print_version();
+          lili::output::PrintVersion();
           exit(0);
         default:
           // Throw error for unrecognized option
@@ -143,7 +144,7 @@ void lili::input::parse_arguments(int argc, char *argv[]) {
       }
     } else if (!has_input) {
       // Parse input file
-      parse_input(argv[i_arg]);
+      ParseInput(argv[i_arg]);
       has_input = true;
     } else {
       // Throw error for multiple input file
@@ -159,3 +160,4 @@ void lili::input::parse_arguments(int argc, char *argv[]) {
     exit(1);
   }
 }
+}  // namespace lili::input

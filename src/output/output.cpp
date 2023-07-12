@@ -4,10 +4,11 @@
  */
 #include "output.hpp"
 
+namespace lili::output {
 /**
  * @brief Print current `LILI` version with the current git SHA1 and status.
  */
-void lili::output::print_version() {
+void PrintVersion() {
   // Report version
   std::cout << PROJECT_NAME << " v" << PROJECT_VER << std::endl;
   std::cout << "git SHA1: " << PROJECT_GITHASH;
@@ -17,7 +18,7 @@ void lili::output::print_version() {
 /**
  * @brief Print help message
  */
-void lili::output::print_help() {
+void PrintHelp() {
   // Print help message
   std::cout << "Usage: lili [OPTION]... [INPUT FILE]" << std::endl;
   std::cout << "Options:" << std::endl;
@@ -25,3 +26,4 @@ void lili::output::print_help() {
   std::cout << "  -i, --input    Input file" << std::endl;
   std::cout << "  -v, --version  Output version information" << std::endl;
 }
+}  // namespace lili::output
