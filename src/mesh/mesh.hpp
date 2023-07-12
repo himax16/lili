@@ -1,4 +1,6 @@
 #pragma once
+
+#include "stdint.h"
 /**
  * @file mesh.hpp
  * @brief Header only library for the Mesh related classes
@@ -84,18 +86,18 @@ class Mesh {
   ~Mesh();
 
   // Getters
-  T* data() const { return data_; };
-  uint32_t n0() const { return n0_; };
-  uint32_t n1() const { return n1_; };
-  uint32_t n2() const { return n2_; };
-  uint32_t n0g() const { return n0g_; };
-  uint32_t n1g() const { return n1g_; };
-  uint32_t n2g() const { return n2g_; };
-  uint32_t n0t() const { return n0_ + 2 * n0g_; };
-  uint32_t n1t() const { return n1_ + 2 * n1g_; };
-  uint32_t n2t() const { return n2_ + 2 * n2g_; };
-  uint32_t nt() const { return n0t() * n1t() * n2t(); };
-  int dim() const { return (n2_ > 1) ? 3 : ((n1_ > 1) ? 2 : 1); };
+  constexpr T* data() const { return data_; };
+  constexpr uint32_t n0() const { return n0_; };
+  constexpr uint32_t n1() const { return n1_; };
+  constexpr uint32_t n2() const { return n2_; };
+  constexpr uint32_t n0g() const { return n0g_; };
+  constexpr uint32_t n1g() const { return n1g_; };
+  constexpr uint32_t n2g() const { return n2g_; };
+  constexpr uint32_t n0t() const { return n0_ + 2 * n0g_; };
+  constexpr uint32_t n1t() const { return n1_ + 2 * n1g_; };
+  constexpr uint32_t n2t() const { return n2_ + 2 * n2g_; };
+  constexpr uint32_t nt() const { return n0t() * n1t() * n2t(); };
+  constexpr int dim() const { return (n2_ > 1) ? 3 : ((n1_ > 1) ? 2 : 1); };
 
   // Compare Mesh sizes
   bool SameSizeAs(const Mesh& other);

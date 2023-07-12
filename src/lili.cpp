@@ -31,7 +31,19 @@ int main(int argc, char *argv[]) {
   std::cout << mesh.n0() << std::endl;
   std::cout << mesh.n1() << std::endl;
   std::cout << mesh.n2() << std::endl;
+  std::cout << mesh.data() << std::endl;
 
+  // Buildin instruction
+  __builtin_cpu_init();
+  std::cout << "Test builtin instruction" << std::endl;
+  std::cout << "sse " << __builtin_cpu_supports("sse") << std::endl;
+  std::cout << "sse2 " << __builtin_cpu_supports("sse2") << std::endl;
+  std::cout << "ssse3 " << __builtin_cpu_supports("ssse3") << std::endl;
+  std::cout << "avx " << __builtin_cpu_supports("avx") << std::endl;
+  std::cout << "avx2 " << __builtin_cpu_supports("avx2") << std::endl;
+  std::cout << "avx512f " << __builtin_cpu_supports("avx512f") << std::endl;
+  std::cout << "avx512vpopcntdq " << __builtin_cpu_supports("avx512vpopcntdq")
+            << std::endl;
   /****************************************************************************/
   // // Test HDF5
   // hid_t file_id, dataset_id, dataspace_id; /* identifiers */
