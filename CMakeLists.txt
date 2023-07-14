@@ -18,6 +18,7 @@ endif()
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 # Load helper files
+include(FetchContent)
 include(LILITools)
 include(GetGitRevisionDescription)
 
@@ -47,10 +48,10 @@ add_subdirectory(docs)
 # add_subdirectory(external)
 
 # Options
-option(UNIT_TEST "Build the unit tests" OFF)
+option(BUILD_TESTING "Build tests" ON)
 
-# Enable Testing
-# if(UNIT_TEST)
-#   add_subdirectory(tests)
-#   enable_testing()
-# endif()
+# Testing
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+  enable_testing()
+  add_subdirectory(tests)
+endif()

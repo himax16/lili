@@ -19,7 +19,7 @@ if(DOXYGEN_FOUND)
 
   # Replace the Doxygen.in variables
   configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
-  message("Doxygen build started")
+  message(STATUS "Configuring Doxygen input")
 
   # Make the Doxygen output diretory
   file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR})
@@ -34,7 +34,7 @@ if(DOXYGEN_FOUND)
 
   add_custom_target(Doxygen_LILI ALL DEPENDS ${DOXYGEN_INDEX_FILE})
 else(DOXYGEN_FOUND)
-  message("Missing Doxygen")
+  message(FATAL_ERROR "Missing Doxygen")
 endif(DOXYGEN_FOUND)
 
 # Sphinx
@@ -70,5 +70,5 @@ if(SPHINX_FOUND)
   install(DIRECTORY ${SPHINX_BUILD}
           DESTINATION ${CMAKE_INSTALL_DOCDIR})
 else(SPHINX_FOUND)
-  message("Missing Sphinx")
+  message(FATAL_ERROR "Missing Sphinx")
 endif(SPHINX_FOUND)

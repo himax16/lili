@@ -30,7 +30,6 @@ macro(set_lili_mpi)
   find_package(MPI REQUIRED)
 endmacro()
 
-
 # Set the HDF5 library
 # Careful that FindHDF5.cmake API is not consistent across versions
 macro(set_lili_hdf5)
@@ -48,4 +47,3 @@ macro(set_lili_hdf5)
   # Find HDF5
   find_package(HDF5 REQUIRED COMPONENTS C)
 endmacro()
-
