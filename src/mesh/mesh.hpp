@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stdint.h"
 /**
  * @file mesh.hpp
  * @brief Header only library for the Mesh related classes
