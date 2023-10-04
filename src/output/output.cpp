@@ -1,4 +1,4 @@
-/*
+/**
  * @file    output.cpp
  * @brief   Source file for processing CLI outputs
  */

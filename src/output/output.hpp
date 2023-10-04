@@ -1,8 +1,8 @@
-#pragma once
 /**
  * @file output.hpp
  * @brief Header file for processing CLI outputs
  */
+#pragma once
 
 #include <iostream>
 

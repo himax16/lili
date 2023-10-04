@@ -1,4 +1,4 @@
-/*
+/**
  * @file    input.cpp
  * @brief   Source file for processing CLI and user inputs
  */
