@@ -6,9 +6,12 @@
 
 // #include <numbers>
 
+#include <iomanip>
+
 #include "hdf5.h"
 #include "input.hpp"
 #include "mesh.hpp"
+#include "save_mesh.hpp"
 
 /**
  * @brief Main `LILI` program
@@ -22,76 +25,43 @@ int main(int argc, char *argv[]) {
   // Parse inputs
   lili::input::ParseArguments(argc, argv);
 
-  // Test print
-  std::cout << lili::input::gInputFile << std::endl;
-  std::cout << lili::input::gProblemName << std::endl;
-
   // Test mesh
-  lili::mesh::Mesh<double> mesh(9, 10, 4);
-  std::cout << mesh.n0() << std::endl;
-  std::cout << mesh.n1() << std::endl;
-  std::cout << mesh.n2() << std::endl;
-  std::cout << mesh.data() << std::endl;
+  u_int32_t n0 = 5;
+  u_int32_t n1 = 3;
+  u_int32_t n2 = 4;
+  lili::mesh::MeshSize msize = {n0, n1, n2};
 
-  // Buildin instruction
-  __builtin_cpu_init();
-  std::cout << "Test builtin instruction" << std::endl;
-  std::cout << "sse " << __builtin_cpu_supports("sse") << std::endl;
-  std::cout << "sse2 " << __builtin_cpu_supports("sse2") << std::endl;
-  std::cout << "ssse3 " << __builtin_cpu_supports("ssse3") << std::endl;
-  std::cout << "avx " << __builtin_cpu_supports("avx") << std::endl;
-  std::cout << "avx2 " << __builtin_cpu_supports("avx2") << std::endl;
-  std::cout << "avx512f " << __builtin_cpu_supports("avx512f") << std::endl;
-  std::cout << "avx512vpopcntdq " << __builtin_cpu_supports("avx512vpopcntdq")
-            << std::endl;
-  /****************************************************************************/
-  // // Test HDF5
-  // hid_t file_id, dataset_id, dataspace_id; /* identifiers */
-  // herr_t status;
-  // int i, j, dset_data[4][6], read_data[4][6];
-  // hsize_t dims[2];
+  lili::mesh::Mesh<double> mesh(msize);
 
-  // /* Initialize the dataset. */
-  // for (i = 0; i < 4; i++)
-  //   for (j = 0; j < 6; j++) dset_data[i][j] = i * 6 + j + 1;
+  std::cout << "Data loc: " << mesh.data() << std::endl;
 
-  // /* Create a new file using default properties. */
-  // file_id = H5Fcreate("dset.h5", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  // Assign data
+  for (int k = 0; k < n2; ++k) {
+    for (int j = 0; j < n1; ++j) {
+      for (int i = 0; i < n0; ++i) {
+        mesh(i, j, k) = i + n0 * j + n0 * n1 * k;
+      }
+    }
+  }
 
-  // /* Create the data space for the dataset. */
-  // dims[0] = 4;
-  // dims[1] = 6;
-  // dataspace_id = H5Screate_simple(2, dims, NULL);
+  // Print data
+  for (int k = 0; k < n2; ++k) {
+    for (int j = 0; j < n1; ++j) {
+      for (int i = 0; i < n0; ++i) {
+        std::cout << std::setw(3) << mesh(i, j, k) << " ";
+      }
+      std::cout << std::endl;
+    }
+    std::cout << std::endl;
+  }
+  std::cout << "----" << std::endl;
 
-  // /* Create the dataset. */
-  // dataset_id = H5Dcreate2(file_id, "/dset", H5T_STD_I32BE, dataspace_id,
-  //                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  // Save mesh
+  // lili::mesh::SaveMesh(mesh, "test.h5", "test");
+  // lili::mesh::SaveMesh(mesh, "test.h5", "test2");
+  // lili::mesh::SaveMeshHyperslab(mesh, {1, 2, 3}, {2, 2, 2}, "test.h5",
+  // "test");
 
-  // /* Write the dataset. */
-  // status = H5Dwrite(dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL,
-  // H5P_DEFAULT,
-  //                   dset_data);
-
-  // /* End access to the dataset and release resources used by it. */
-  // status = H5Dclose(dataset_id);
-
-  // //------------------------------------------------------
-
-  // /* Open an existing dataset. */
-  // dataset_id = H5Dopen2(file_id, "/dset", H5P_DEFAULT);
-
-  // status = H5Dread(dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT,
-  //                  read_data);
-
-  // for (i = 0; i < 4; i++)
-  //   for (j = 0; j < 6; j++) printf("%d ", read_data[i][j]);  // 1-24
-  // printf("\n");
-
-  // /* Close the dataset. */
-  // status = H5Dclose(dataset_id);
-
-  // /* Close the file. */
-  // status = H5Fclose(file_id);
   /****************************************************************************/
   // Variable declaration
   // int n_simsys = 0;

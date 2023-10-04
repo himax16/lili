@@ -1,11 +1,11 @@
-#pragma once
-
-#include <cstdint>
-
 /**
  * @file mesh.hpp
  * @brief Header only library for the Mesh related classes
  */
+#pragma once
+
+#include <algorithm>
+#include <cstdint>
 
 namespace lili::mesh {
 /**
@@ -38,33 +38,6 @@ typedef struct {
 } MeshSize;
 
 /**
- * @brief Mesh axis index struct
- */
-typedef struct {
-  MeshAxis ax0;
-  uint32_t i0;
-  MeshAxis ax1;
-  uint32_t i1;
-  MeshAxis ax2;
-  uint32_t i2;
-} MeshAxisIndex;
-
-/**
- * @brief Mesh axis index struct
- */
-typedef struct {
-  MeshAxis ax0;
-  uint32_t i00;
-  uint32_t i01;
-  MeshAxis ax1;
-  uint32_t i10;
-  uint32_t i11;
-  MeshAxis ax2;
-  uint32_t i20;
-  uint32_t i21;
-} MeshAxisRange;
-
-/**
  * @brief Mesh class
  */
 template <typename T>
@@ -83,6 +56,9 @@ class Mesh {
   // Copy constructor
   Mesh(const Mesh& other);
 
+  // Move constructor
+  Mesh(Mesh&& other) noexcept : Mesh() { swap(*this, other); };
+
   // Destructor
   ~Mesh();
 
@@ -100,20 +76,42 @@ class Mesh {
   constexpr uint32_t nt() const { return n0t() * n1t() * n2t(); };
   constexpr int dim() const { return (n2_ > 1) ? 3 : ((n1_ > 1) ? 2 : 1); };
 
+  // Operators
+  Mesh<T>& operator=(Mesh<T> other) {
+    swap(*this, other);
+    return *this;
+  };
+
+  T operator()(uint32_t i0) const { return data_[i0]; };
+  T& operator()(uint32_t i0) { return data_[i0]; };
+
+  T operator()(uint32_t i0, uint32_t i1) const { return data_[i0 + n0_ * i1]; };
+  T& operator()(uint32_t i0, uint32_t i1) { return data_[i0 + n0_ * i1]; };
+
+  T operator()(uint32_t i0, uint32_t i1, uint32_t i2) const {
+    return data_[i0 + n0_ * (i1 + n1_ * i2)];
+  };
+  T& operator()(uint32_t i0, uint32_t i1, uint32_t i2) {
+    return data_[i0 + n0_ * (i1 + n1_ * i2)];
+  };
+
   // Compare Mesh sizes
   bool SameSizeAs(const Mesh& other);
 
   // Initialize data
   void InitializeData();
 
-  // Get subset of data
-  void GetSubset(Mesh& target, MeshAxisIndex ai, bool include_ghost = false);
-  void GetSubset(Mesh& target, MeshAxisRange ar, bool include_ghost = false);
-
-  // Copy data
-  void CopyFrom(const Mesh& source);
-  void CopyFrom(const Mesh& source, MeshAxisIndex ai_source,
-                MeshAxisIndex ai_target);
+  // Swap data
+  friend void swap(Mesh<T>& first, Mesh<T>& second) noexcept {
+    using std::swap;
+    swap(first.data_, second.data_);
+    swap(first.n0_, second.n0_);
+    swap(first.n1_, second.n1_);
+    swap(first.n2_, second.n2_);
+    swap(first.n0g_, second.n0g_);
+    swap(first.n1g_, second.n1g_);
+    swap(first.n2g_, second.n2g_);
+  }
 
  private:
   T* data_;  // Pointer to the data block
@@ -195,7 +193,7 @@ inline Mesh<T>::Mesh(const Mesh& other)
       n1g_(other.n1g_),
       n2g_(other.n2g_) {
   InitializeData();
-  CopyFrom(other);
+  std::copy(other.data_, other.data_ + other.nt(), data_);
 };
 
 // Destructor
@@ -218,49 +216,5 @@ template <typename T>
 inline void Mesh<T>::InitializeData() {
   // Allocate memory
   data_ = new T[(n0_ + 2 * n0g_) * (n1_ + 2 * n1g_) * (n2_ + 2 * n2g_)]();
-};
-
-// Get subset of data
-template <typename T>
-inline void Mesh<T>::GetSubset(Mesh& target, MeshAxisIndex ai,
-                               bool include_ghost) {
-  // Calculate the expected output size
-  uint32_t nout = 1;
-  switch (ai.ax0) {
-    case None:
-      break;
-    case X:
-      nout *= ai.i0;
-      break;
-    case Y:
-      nout *= ai.i1;
-      break;
-    case Z:
-      nout *= ai.i2;
-      break;
-  }
-
-  // Get subset
-  for (uint32_t i2 = 0; i2 < ai.i2; i2++) {
-    for (uint32_t i1 = 0; i1 < ai.i1; i1++) {
-      for (uint32_t i0 = 0; i0 < ai.i0; i0++) {
-        target.data[i0 + ai.i0 * (i1 + ai.i1 * i2)] =
-            data_[i0 + ai.i0 * (i1 + ai.i1 * i2)];
-      }
-    }
-  }
-};
-
-// Copy data
-template <typename T>
-inline void Mesh<T>::CopyFrom(const Mesh& source) {
-  // Check if the sizes are the same
-  SameSizeAs(source);
-
-  // Copy data
-  std::copy(
-      source.data_,
-      source.data_ + (n0_ + 2 * n0g_) * (n1_ + 2 * n1g_) * (n2_ + 2 * n2g_),
-      data_);
 };
 }  // namespace lili::mesh

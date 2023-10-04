@@ -17,6 +17,7 @@ add_executable(lili lili.cpp)
 target_link_libraries(lili PUBLIC input)
 target_link_libraries(lili PUBLIC output)
 target_link_libraries(lili PUBLIC mesh)
+target_link_libraries(lili PUBLIC save_mesh)
 target_link_libraries(lili PUBLIC hdf5::hdf5)
 
 # HIMA: Kalau pakai Boost

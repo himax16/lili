@@ -23,6 +23,7 @@ F**L**uid-K**I**netic P**L**asma S**I**mulator
 | :- | :- |
 | `1` | Parsing error |
 | `2` | Input file error |
+| `21` | Load Mesh error |
 
 ### Initialization
 
