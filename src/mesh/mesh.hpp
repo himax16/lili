@@ -43,6 +43,9 @@ typedef struct {
 template <typename T>
 class Mesh {
  public:
+  // Default constructor
+  Mesh() : data_(nullptr), n0_(0), n1_(0), n2_(0), n0g_(0), n1g_(0), n2g_(0){};
+
   // Size-based initialization
   Mesh(uint32_t n0);
   Mesh(uint32_t n0, uint32_t n1);
@@ -76,6 +79,18 @@ class Mesh {
   constexpr uint32_t nt() const { return n0t() * n1t() * n2t(); };
   constexpr int dim() const { return (n2_ > 1) ? 3 : ((n1_ > 1) ? 2 : 1); };
 
+  // Swap data
+  friend void swap(Mesh<T>& first, Mesh<T>& second) noexcept {
+    using std::swap;
+    swap(first.data_, second.data_);
+    swap(first.n0_, second.n0_);
+    swap(first.n1_, second.n1_);
+    swap(first.n2_, second.n2_);
+    swap(first.n0g_, second.n0g_);
+    swap(first.n1g_, second.n1g_);
+    swap(first.n2g_, second.n2g_);
+  }
+
   // Operators
   Mesh<T>& operator=(Mesh<T> other) {
     swap(*this, other);
@@ -100,18 +115,6 @@ class Mesh {
 
   // Initialize data
   void InitializeData();
-
-  // Swap data
-  friend void swap(Mesh<T>& first, Mesh<T>& second) noexcept {
-    using std::swap;
-    swap(first.data_, second.data_);
-    swap(first.n0_, second.n0_);
-    swap(first.n1_, second.n1_);
-    swap(first.n2_, second.n2_);
-    swap(first.n0g_, second.n0g_);
-    swap(first.n1g_, second.n1g_);
-    swap(first.n2g_, second.n2g_);
-  }
 
  private:
   T* data_;  // Pointer to the data block
