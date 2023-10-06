@@ -12,8 +12,10 @@
 #include "input.hpp"
 #include "mesh.hpp"
 #include "particle.hpp"
+#include "particle_initialization.hpp"
 #include "save_mesh.hpp"
 
+using namespace lili;
 /**
  * @brief Main `LILI` program
  *
@@ -24,7 +26,54 @@
  */
 int main(int argc, char *argv[]) {
   // Parse inputs
-  lili::input::ParseArguments(argc, argv);
+  input::Input input = input::ParseArguments(argc, argv);
+
+  // Print input
+  std::cout << "Input file   : " << input.input_file() << std::endl;
+  std::cout << "Problem name : " << input.problem_name() << std::endl;
+  std::cout << "Input type   : " << input.input_type() << std::endl;
+
+  // Print input mesh information
+  std::cout << "====== Mesh information ======" << std::endl;
+  std::cout << "dim = " << input.mesh().dim << std::endl;
+  std::cout << "lx  = " << input.mesh().lx << std::endl;
+  std::cout << "nx  = " << input.mesh().nx << std::endl;
+  std::cout << "ngx = " << input.mesh().ngx << std::endl;
+  std::cout << std::endl;
+
+  std::cout << "ly  = " << input.mesh().ly << std::endl;
+  std::cout << "ny  = " << input.mesh().ny << std::endl;
+  std::cout << "ngy = " << input.mesh().ngy << std::endl;
+  std::cout << std::endl;
+
+  std::cout << "lz  = " << input.mesh().lz << std::endl;
+  std::cout << "nz  = " << input.mesh().nz << std::endl;
+  std::cout << "ngz = " << input.mesh().ngz << std::endl;
+  std::cout << "==============================" << std::endl;
+
+  // Print input particle information
+  std::cout << "==== Particle information ====" << std::endl;
+  for (input::InputParticle particle : input.particles()) {
+    std::cout << "== " << particle.name << std::endl;
+    std::cout << "  n   = " << particle.n << std::endl;
+    std::cout << "  m   = " << particle.m << std::endl;
+    std::cout << "  q   = " << particle.q << std::endl;
+    std::cout << "  tau = " << particle.tau << std::endl;
+  }
+  std::cout << "==============================" << std::endl;
+
+  // Test particles
+  int npar = input.particles()[0].n;
+  particle::Particles particles(npar);
+  // lili::particle::GammaTable table = particle::GTMonoenergetic(1.25);
+  // lili::particle::GammaTable table = particle::GTUniform(1., 1.25);
+  particle::GammaTable table = particle::GTMaxwellian3D(0.36);
+
+  particle::DistributeLocationUniform(particles, 0, 0.0, 1.0, 0.0, 1.0, 0.0,
+                                      1.0);
+  particle::DistributeVelocityUniform(particles, 0, table);
+
+  particle::SaveParticles(particles, "test.h5");
 
   /****************************************************************************/
   // Variable declaration

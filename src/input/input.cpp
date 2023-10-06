@@ -10,22 +10,72 @@
 // Simplify namespace
 using json = nlohmann::json;
 
-std::string lili::input::gInputFile;
-std::string lili::input::gProblemName;
-int lili::input::gInputType;
-
 namespace lili::input {
+/**
+ * @brief Default constructor for Input class
+ */
+Input::Input() {
+  input_file_ = "";
+  problem_name_ = "LILI";
+  input_type_ = InputType::None;
+}
+
+/**
+ * @brief Constructor for Input class
+ *
+ * @param[in] in_file
+ * Input file
+ */
+Input::Input(const char *in_file) {
+  input_file_ = in_file;
+  problem_name_ = "LILI";
+  input_type_ = InputType::None;
+}
+
+/**
+ * @brief Copy constructor for Input class
+ * @param[in] input
+ * Input object
+ */
+Input::Input(const Input &input) {
+  input_file_ = input.input_file_;
+  problem_name_ = input.problem_name_;
+  input_type_ = input.input_type_;
+
+  mesh_ = input.mesh_;
+  particles_ = input.particles_;
+}
+
+/**
+ * @brief Swap data from Input class
+ *
+ * @param[in] first
+ * First Input object
+ * @param[in] second
+ * Second Input object
+ */
+void swap(Input &first, Input &second) {
+  using std::swap;
+
+  swap(first.input_file_, second.input_file_);
+  swap(first.problem_name_, second.problem_name_);
+  swap(first.input_type_, second.input_type_);
+
+  swap(first.mesh_, second.mesh_);
+  swap(first.particles_, second.particles_);
+}
+
 /**
  * @brief Parse input file
  *
  * @param[in] in_file
  * Input file
  */
-void ParseInput(char *in_file) {
+void Input::Parse() {
   // Open input file
-  std::ifstream ifs(in_file);
+  std::ifstream ifs(input_file_.c_str());
   if (!ifs.is_open()) {
-    std::cerr << "Cannot open input file: " << in_file << std::endl;
+    std::cerr << "Cannot open input file: " << input_file_ << std::endl;
     exit(2);
   }
 
@@ -40,21 +90,20 @@ void ParseInput(char *in_file) {
     std::cerr << "Parse error: " << e.what() << std::endl;
     exit(2);
   }
-  gInputFile = in_file;
 
   // Close input file
   ifs.close();
 
   // Check the type of input file
   if (!j.contains("input_type")) {
-    std::cerr << "No input type in " << in_file << std::endl;
+    std::cerr << "No input type in " << input_file_ << std::endl;
     exit(2);
   } else {
     std::string input_type_str = j.at("input_type").get<std::string>();
     if (strcmp(input_type_str.c_str(), "initial") == 0) {
-      gInputType = 0;
+      input_type_ = InputType::Initial;
     } else if (strcmp(input_type_str.c_str(), "restart") == 0) {
-      gInputType = 1;
+      input_type_ = InputType::Restart;
     } else {
       std::cerr << "Unrecognized input type in " << input_type_str << std::endl;
       std::cerr << "Available input type: [initial | restart]" << std::endl;
@@ -64,10 +113,76 @@ void ParseInput(char *in_file) {
 
   // Parse problem name
   if (!j.contains("problem_name")) {
-    std::cerr << "No problem name in " << in_file << std::endl;
+    std::cerr << "No problem name in " << input_file_ << std::endl;
     std::cerr << "Using default problem name: LILI" << std::endl;
   } else {
-    gProblemName = j.at("problem_name").get<std::string>();
+    problem_name_ = j.at("problem_name").get<std::string>();
+  }
+
+  // Parse mesh
+  if (j.contains("mesh")) {
+    auto j_mesh = j.at("mesh");
+    // Parse mesh dimension
+    mesh_.dim = j_mesh.at("dimension").get<int>();
+    if (mesh_.dim < 1 || mesh_.dim > 3) {
+      std::cerr << "Invalid mesh dimension in " << input_file_ << std::endl;
+      exit(2);
+    }
+
+    // Parse mesh size
+    mesh_.nx = j_mesh.at("x").at("n").get<int>();
+    mesh_.lx = j_mesh.at("x").at("l").get<double>();
+    if (j_mesh.at("x").contains("ng")) {
+      mesh_.ngx = j_mesh.at("x").at("ng").get<int>();
+    } else {
+      mesh_.ngx = 2;  // TODO: Change this to some default value
+    }
+
+    if (mesh_.dim > 1) {
+      mesh_.ny = j_mesh.at("y").at("n").get<int>();
+      mesh_.ly = j_mesh.at("y").at("l").get<double>();
+      if (j_mesh.at("y").contains("ng")) {
+        mesh_.ngy = j_mesh.at("y").at("ng").get<int>();
+      } else {
+        mesh_.ngy = 2;  // TODO: Change this to some default value
+      }
+    } else {
+      mesh_.ny = 1;
+      mesh_.ly = 1.0;
+      mesh_.ngy = 2;  // TODO: Change this to some default value
+    }
+
+    if (mesh_.dim > 2) {
+      mesh_.nz = j_mesh.at("z").at("n").get<int>();
+      mesh_.lz = j_mesh.at("z").at("l").get<double>();
+      if (j_mesh.at("z").contains("ng")) {
+        mesh_.ngz = j_mesh.at("z").at("ng").get<int>();
+      } else {
+        mesh_.ngz = 2;  // TODO: Change this to some default value
+      }
+    } else {
+      mesh_.nz = 1;
+      mesh_.lz = 1.0;
+      mesh_.ngz = 2;  // TODO: Change this to some default value
+    }
+  }
+
+  // Parse particles
+  if (j.contains("particles")) {
+    // Iterate over all particles
+    for (auto &[key, val] : j.at("particles").items()) {
+      InputParticle particle;
+      particle.name = key;
+
+      // Parse particle variables
+      particle.n = val.at("n").get<uint32_t>();
+      particle.m = val.at("m").get<double>();
+      particle.q = val.at("q").get<double>();
+      particle.tau = val.value("tau", 0.0);
+
+      // Add particle to the list
+      particles_.push_back(particle);
+    }
   }
 
   // // serialization with pretty printing
@@ -83,10 +198,11 @@ void ParseInput(char *in_file) {
  * @param[in] argv
  * Command line arguments
  */
-void ParseArguments(int argc, char *argv[]) {
+Input ParseArguments(int argc, char *argv[]) {
   // Variable declaration
   int i_arg = 0;
   bool has_input = false;
+  Input input;
 
   // Parse command line arguments
   for (i_arg = 1; i_arg < argc; ++i_arg) {
@@ -109,7 +225,8 @@ void ParseArguments(int argc, char *argv[]) {
               exit(1);
             }
             // Parse input file
-            ParseInput(argv[++i_arg]);
+            input.input_file() = argv[++i_arg];
+            input.Parse();
             has_input = true;
           } else if (strcmp(argv[i_arg], "--") == 0) {
             // End of options
@@ -127,7 +244,8 @@ void ParseArguments(int argc, char *argv[]) {
             exit(1);
           }
           // Parse input file
-          ParseInput(argv[++i_arg]);
+          input.input_file() = argv[++i_arg];
+          input.Parse();
           has_input = true;
         case 'h':
           // Print help
@@ -144,7 +262,8 @@ void ParseArguments(int argc, char *argv[]) {
       }
     } else if (!has_input) {
       // Parse input file
-      ParseInput(argv[i_arg]);
+      input.input_file() = argv[i_arg];
+      input.Parse();
       has_input = true;
     } else {
       // Throw error for multiple input file
@@ -157,7 +276,11 @@ void ParseArguments(int argc, char *argv[]) {
   if (!has_input) {
     // Throw error for no input file
     std::cerr << "No input file" << std::endl;
+    // Print help
+    lili::output::PrintHelp();
     exit(1);
   }
+
+  return input;
 }
 }  // namespace lili::input

@@ -11,6 +11,10 @@ F**L**uid-K**I**netic P**L**asma S**I**mulator
 * Non-blocking calculations
 * Data layout that can be easily transformed into a GPU code
 
+## Assumptions
+
+1. Speed of light `c = 1`.
+
 ## Class note
 
 ### Mesh
