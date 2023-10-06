@@ -135,7 +135,7 @@ void Input::Parse() {
     if (j_mesh.at("x").contains("ng")) {
       mesh_.ngx = j_mesh.at("x").at("ng").get<int>();
     } else {
-      mesh_.ngx = 2;  // TODO: Change this to some default value
+      mesh_.ngx = __LILIM_DEFAULT_NGHOST;
     }
 
     if (mesh_.dim > 1) {
@@ -144,12 +144,12 @@ void Input::Parse() {
       if (j_mesh.at("y").contains("ng")) {
         mesh_.ngy = j_mesh.at("y").at("ng").get<int>();
       } else {
-        mesh_.ngy = 2;  // TODO: Change this to some default value
+        mesh_.ngy = __LILIM_DEFAULT_NGHOST;
       }
     } else {
       mesh_.ny = 1;
       mesh_.ly = 1.0;
-      mesh_.ngy = 2;  // TODO: Change this to some default value
+      mesh_.ngy = 0;
     }
 
     if (mesh_.dim > 2) {
@@ -158,12 +158,12 @@ void Input::Parse() {
       if (j_mesh.at("z").contains("ng")) {
         mesh_.ngz = j_mesh.at("z").at("ng").get<int>();
       } else {
-        mesh_.ngz = 2;  // TODO: Change this to some default value
+        mesh_.ngz = __LILIM_DEFAULT_NGHOST;
       }
     } else {
       mesh_.nz = 1;
       mesh_.lz = 1.0;
-      mesh_.ngz = 2;  // TODO: Change this to some default value
+      mesh_.ngz = 0;
     }
   }
 
@@ -175,7 +175,7 @@ void Input::Parse() {
       particle.name = key;
 
       // Parse particle variables
-      particle.n = val.at("n").get<uint32_t>();
+      particle.n = val.at("n").get<int>();
       particle.m = val.at("m").get<double>();
       particle.q = val.at("q").get<double>();
       particle.tau = val.value("tau", 0.0);

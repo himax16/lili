@@ -8,6 +8,10 @@
 #include <cstdint>
 #include <iostream>
 
+#ifndef __LILIM_DEFAULT_NGHOST
+#define __LILIM_DEFAULT_NGHOST 2
+#endif
+
 namespace lili::mesh {
 /**
  * @brief Enumeration class for the ghost cell locations
@@ -26,13 +30,17 @@ typedef enum {
  */
 typedef struct {
   int dim;
-  uint32_t nx, ny, nz;
-  uint32_t ngx, ngy, ngz;
+  int nx, ny, nz;
+  int ngx, ngy, ngz;
   double lx, ly, lz;
 } MeshSize;
 
 /**
  * @brief Mesh class
+ * @tparam T Data type
+ * @details
+ * Mesh class with ghost cells and smart access operator. Data is stored in a
+ * 1D array with column-major ordering.
  */
 template <typename T>
 class Mesh {
@@ -49,7 +57,7 @@ class Mesh {
         data_(nullptr){};
 
   // Size-based initialization
-  Mesh(uint32_t nx)
+  Mesh(int nx)
       : dim_(1),
         nx_(nx),
         ny_(1),
@@ -60,7 +68,7 @@ class Mesh {
         data_(nullptr) {
     InitializeData();
   };
-  Mesh(uint32_t nx, uint32_t ny)
+  Mesh(int nx, int ny)
       : dim_(2),
         nx_(nx),
         ny_(ny),
@@ -71,7 +79,7 @@ class Mesh {
         data_(nullptr) {
     InitializeData();
   };
-  Mesh(uint32_t nx, uint32_t ny, uint32_t nz)
+  Mesh(int nx, int ny, int nz)
       : dim_(3),
         nx_(nx),
         ny_(ny),
@@ -82,7 +90,7 @@ class Mesh {
         data_(nullptr) {
     InitializeData();
   };
-  Mesh(uint32_t nx, uint32_t ny, uint32_t nz, uint32_t ng)
+  Mesh(int nx, int ny, int nz, int ng)
       : dim_(3),
         nx_(nx),
         ny_(ny),
@@ -93,8 +101,7 @@ class Mesh {
         data_(nullptr) {
     InitializeData();
   };
-  Mesh(uint32_t nx, uint32_t ny, uint32_t nz, uint32_t ngx, uint32_t ngy,
-       uint32_t ngz)
+  Mesh(int nx, int ny, int nz, int ngx, int ngy, int ngz)
       : dim_(3),
         nx_(nx),
         ny_(ny),
@@ -105,7 +112,7 @@ class Mesh {
         data_(nullptr) {
     InitializeData();
   };
-  Mesh(MeshSize domain_size)
+  Mesh(const MeshSize& domain_size)
       : dim_(domain_size.dim),
         nx_(domain_size.nx),
         ny_(domain_size.ny),
@@ -143,16 +150,16 @@ class Mesh {
 
   // Getters
   constexpr int dim() const { return dim_; };
-  constexpr uint32_t nx() const { return nx_; };
-  constexpr uint32_t ny() const { return ny_; };
-  constexpr uint32_t nz() const { return nz_; };
-  constexpr uint32_t ngx() const { return ngx_; };
-  constexpr uint32_t ngy() const { return ngy_; };
-  constexpr uint32_t ngz() const { return ngz_; };
-  constexpr uint32_t ntx() const { return ntx_; };
-  constexpr uint32_t nty() const { return nty_; };
-  constexpr uint32_t ntz() const { return ntz_; };
-  constexpr uint32_t nt() const { return nt_; };
+  constexpr int nx() const { return nx_; };
+  constexpr int ny() const { return ny_; };
+  constexpr int nz() const { return nz_; };
+  constexpr int ngx() const { return ngx_; };
+  constexpr int ngy() const { return ngy_; };
+  constexpr int ngz() const { return ngz_; };
+  constexpr int ntx() const { return ntx_; };
+  constexpr int nty() const { return nty_; };
+  constexpr int ntz() const { return ntz_; };
+  constexpr int nt() const { return nt_; };
   constexpr T* data() const { return data_; };
 
   // Swap data
@@ -179,14 +186,14 @@ class Mesh {
   };
 
   // Raw access operator
-  T operator()(uint32_t i) const { return data_[i]; };
-  T& operator()(uint32_t i) { return data_[i]; };
+  T operator()(int i) const { return data_[i]; };
+  T& operator()(int i) { return data_[i]; };
 
   // Smart access operator
-  T operator()(uint32_t i, uint32_t j, uint32_t k) const {
+  T operator()(int i, int j, int k) const {
     return data_[ngx_ + i + ntx_ * (ngy_ + j + nty_ * (ngz_ + k))];
   };
-  T& operator()(uint32_t i, uint32_t j, uint32_t k) {
+  T& operator()(int i, int j, int k) {
     return data_[ngx_ + i + ntx_ * (ngy_ + j + nty_ * (ngz_ + k))];
   };
 
@@ -219,6 +226,92 @@ class Mesh {
     data_ = new T[nt_]();
   };
 
+  /**
+   * @brief Resize the mesh and clean up the data
+   * @param nx New X-axis size
+   * @param ny New Y-axis size
+   * @param nz New Z-axis size
+   * @param ngx New X-axis ghost size
+   * @param ngy New Y-axis ghost size
+   * @param ngz New Z-axis ghost size
+   * @details
+   * This function will resize the mesh and clean up the data. If the size is
+   * changed, the data will be reallocated.
+   */
+  void Resize(int nx, int ny, int nz, int ngx, int ngy, int ngz) {
+    // Update mesh sizes
+    bool size_changed = false;
+
+    if (nx != nx_) {
+      nx_ = nx;
+      size_changed = true;
+    }
+    if (ny != ny_) {
+      ny_ = ny;
+      size_changed = true;
+    }
+    if (nz != nz_) {
+      nz_ = nz;
+      size_changed = true;
+    }
+    if (ngx != ngx_) {
+      ngx_ = ngx;
+      size_changed = true;
+    }
+    if (ngy != ngy_) {
+      ngy_ = ngy;
+      size_changed = true;
+    }
+    if (ngz != ngz_) {
+      ngz_ = ngz;
+      size_changed = true;
+    }
+
+    // Update total mesh sizes
+    UpdateTotalSizes();
+
+    // Reallocate memory if needed
+    if (size_changed) {
+      if (data_ != nullptr) {
+        delete[] data_;
+      }
+      data_ = new T[nt_]();
+    }
+  };
+
+  /**
+   * @brief Shrink the mesh inplace
+   * @param nx New X-axis size
+   * @param ny New Y-axis size
+   * @param nz New Z-axis size
+   * @param ngx New X-axis ghost size
+   * @param ngy New Y-axis ghost size
+   * @param ngz New Z-axis ghost size
+   * @details
+   * This function will shrink the mesh inplace. Crash if the new mesh size is
+   * different from the current mesh size.
+   */
+  void Shrink(int nx, int ny, int nz, int ngx, int ngy, int ngz) {
+    // Store the old size
+    int old_nt = nt_;
+
+    // Update mesh sizes
+    nx_ = nx;
+    ny_ = ny;
+    nz_ = nz;
+    ngx_ = ngx;
+    ngy_ = ngy;
+    ngz_ = ngz;
+
+    // Update total mesh sizes
+    UpdateTotalSizes();
+
+    // Check if the new mesh size is different from the old one
+    if (nt_ != old_nt) {
+      std::cerr << "Cannot shrink the mesh inplace..." << std::endl;
+      exit(2);
+    }
+  };
   // Ghost size utilities
   void CopyToGhost(const Mesh& other, MeshGhostLocation gl) {
     switch (gl) {
@@ -229,11 +322,11 @@ class Mesh {
           exit(2);
         } else {
           // Cache variable
-          uint32_t noff = other.nx();
+          int noff = other.nx();
           // Copy data
-          for (uint32_t i = -ngx_; i < 0; ++i) {
-            for (uint32_t j = 0; j < ny_; ++j) {
-              for (uint32_t k = 0; k < nz_; ++k) {
+          for (int i = -ngx_; i < 0; ++i) {
+            for (int j = 0; j < ny_; ++j) {
+              for (int k = 0; k < nz_; ++k) {
                 (*this)(i, j, k) = other(noff + i, j, k);
               }
             }
@@ -247,11 +340,11 @@ class Mesh {
           exit(2);
         } else {
           // Cache variable
-          uint32_t noff = -nx_;
+          int noff = -nx_;
           // Copy data
-          for (uint32_t i = nx_; i < (nx_ + ngx_); ++i) {
-            for (uint32_t j = 0; j < ny_; ++j) {
-              for (uint32_t k = 0; k < nz_; ++k) {
+          for (int i = nx_; i < (nx_ + ngx_); ++i) {
+            for (int j = 0; j < ny_; ++j) {
+              for (int k = 0; k < nz_; ++k) {
                 (*this)(i, j, k) = other(noff + i, j, k);
               }
             }
@@ -262,14 +355,19 @@ class Mesh {
         std::cerr << "Invalid ghost location..." << std::endl;
         break;
     }
-  }
+  };
 
  private:
   int dim_;                   // Mesh dimension
-  uint32_t nx_, ny_, nz_;     // Mesh sizes
-  uint32_t ngx_, ngy_, ngz_;  // Ghost cells sizes (same for before and after)
-  uint32_t ntx_, nty_, ntz_, nt_;  // Total mesh sizes (including ghost cells)
+  int nx_, ny_, nz_;          // Mesh sizes
+  int ngx_, ngy_, ngz_;       // Ghost cells sizes (same for before and after)
+  int ntx_, nty_, ntz_, nt_;  // Total mesh sizes (including ghost cells)
 
   T* data_;  // Pointer to the data block
 };
+
+void SaveMesh(Mesh<double>& mesh, const char* file_name, const char* data_name,
+              bool include_ghost = false);
+void LoadMeshTo(Mesh<double>& mesh, const char* file_name,
+                const char* data_name, bool include_ghost = false);
 }  // namespace lili::mesh

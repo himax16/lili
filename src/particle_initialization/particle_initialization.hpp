@@ -30,9 +30,9 @@ class GammaTable {
 
   // Getters
   bool interpolate() const { return interpolate_; }
-  uint32_t capacity() const { return capacity_; }
-  double cdf(const uint32_t i) const { return cdf_[i]; }
-  double gamma(const uint32_t i) const { return gamma_[i]; }
+  int capacity() const { return capacity_; }
+  double cdf(const int i) const { return cdf_[i]; }
+  double gamma(const int i) const { return gamma_[i]; }
 
   // Setters
   bool& interpolate() { return interpolate_; }
@@ -42,7 +42,7 @@ class GammaTable {
 
  private:
   bool interpolate_;
-  uint32_t capacity_;
+  int capacity_;
   std::vector<double> cdf_;
   std::vector<double> gamma_;
 };

@@ -8,6 +8,8 @@
 #include <iostream>
 #include <vector>
 
+#include "mesh.hpp"
+
 namespace lili::input {
 // Input type
 typedef enum {
@@ -18,26 +20,12 @@ typedef enum {
 
 // InputParticle struct
 typedef struct {
-  uint32_t n;
+  int n;
   double m;
   double q;
   double tau;
   std::string name;
 } InputParticle;
-
-// InputMesh struct
-typedef struct {
-  int dim;
-  int nx;
-  int ny;
-  int nz;
-  int ngx;
-  int ngy;
-  int ngz;
-  double lx;
-  double ly;
-  double lz;
-} InputMesh;
 
 // Input class
 class Input {
@@ -68,14 +56,14 @@ class Input {
   std::string input_file() const { return input_file_; }
   std::string problem_name() const { return problem_name_; }
   InputType input_type() const { return input_type_; }
-  InputMesh mesh() const { return mesh_; }
+  lili::mesh::MeshSize mesh() const { return mesh_; }
   std::vector<InputParticle> particles() const { return particles_; }
 
   // Setters
   std::string& input_file() { return input_file_; }
   std::string& problem_name() { return problem_name_; }
   InputType& input_type() { return input_type_; }
-  InputMesh& mesh() { return mesh_; }
+  lili::mesh::MeshSize& mesh() { return mesh_; }
   std::vector<InputParticle>& particles() { return particles_; }
 
   // Function to parse input file
@@ -86,7 +74,7 @@ class Input {
   std::string problem_name_;
   InputType input_type_;
 
-  InputMesh mesh_;
+  lili::mesh::MeshSize mesh_;
   std::vector<InputParticle> particles_;
 };
 

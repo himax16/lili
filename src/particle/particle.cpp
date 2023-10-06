@@ -16,7 +16,7 @@ const char* __LILIP_DNAME_DOUBLE[] = {"x", "y", "z", "u", "v", "w"};
 Particles::Particles()
     : npar_(0),
       npar_max_(__LILIP_DEFAULT_BSIZE),
-      id_(new uint32_t[__LILIP_DEFAULT_BSIZE]()),
+      id_(new ulong[__LILIP_DEFAULT_BSIZE]()),
       status_(new ParticleStatus[__LILIP_DEFAULT_BSIZE]()),
       x_(new double[__LILIP_DEFAULT_BSIZE]()),
       y_(new double[__LILIP_DEFAULT_BSIZE]()),
@@ -25,7 +25,7 @@ Particles::Particles()
       v_(new double[__LILIP_DEFAULT_BSIZE]()),
       w_(new double[__LILIP_DEFAULT_BSIZE]()) {}
 
-Particles::Particles(uint32_t npar)
+Particles::Particles(int npar)
     : npar_(npar),
       npar_max_(npar < __LILIP_DEFAULT_BSIZE ? __LILIP_DEFAULT_BSIZE : npar),
       id_(nullptr),
@@ -36,7 +36,7 @@ Particles::Particles(uint32_t npar)
       u_(nullptr),
       v_(nullptr),
       w_(nullptr) {
-  id_ = new uint32_t[npar_max_]();
+  id_ = new ulong[npar_max_]();
   status_ = new ParticleStatus[npar_max_]();
   x_ = new double[npar_max_]();
   y_ = new double[npar_max_]();
@@ -46,15 +46,15 @@ Particles::Particles(uint32_t npar)
   w_ = new double[npar_max_]();
 
   // Initialize status
-  for (uint32_t i = 0; i < npar_; ++i) {
+  for (int i = 0; i < npar_; ++i) {
     status_[i] = ParticleStatus::In;
   }
 }
 
-Particles::Particles(uint32_t npar, uint32_t npar_max)
+Particles::Particles(int npar, int npar_max)
     : npar_(npar),
       npar_max_(npar_max),
-      id_(new uint32_t[npar_max]()),
+      id_(new ulong[npar_max]()),
       status_(new ParticleStatus[npar_max]()),
       x_(new double[npar_max]()),
       y_(new double[npar_max]()),
@@ -63,7 +63,7 @@ Particles::Particles(uint32_t npar, uint32_t npar_max)
       v_(new double[npar_max]()),
       w_(new double[npar_max]()) {
   // Initialize status
-  for (uint32_t i = 0; i < npar_; ++i) {
+  for (int i = 0; i < npar_; ++i) {
     status_[i] = ParticleStatus::In;
   }
 }
@@ -72,7 +72,7 @@ Particles::Particles(uint32_t npar, uint32_t npar_max)
 Particles::Particles(const Particles& other)
     : npar_(other.npar_),
       npar_max_(other.npar_max_),
-      id_(new uint32_t[other.npar_max_]()),
+      id_(new ulong[other.npar_max_]()),
       status_(new ParticleStatus[other.npar_max_]()),
       x_(new double[other.npar_max_]()),
       y_(new double[other.npar_max_]()),
@@ -106,8 +106,8 @@ Particles::~Particles() {
  * @brief Function to resize the particle data
  * @param new_npar_max New maximum number of particles
  */
-void Particles::resize(uint32_t new_npar_max) {
-  uint32_t* new_id = new uint32_t[new_npar_max]();
+void Particles::resize(int new_npar_max) {
+  ulong* new_id = new ulong[new_npar_max]();
   ParticleStatus* new_status = new ParticleStatus[new_npar_max]();
   double* new_x = new double[new_npar_max]();
   double* new_y = new double[new_npar_max]();
@@ -150,8 +150,8 @@ void Particles::resize(uint32_t new_npar_max) {
  * @brief Function to add offset to particle IDs
  * @param offset Offset to add
  */
-void Particles::AddID(uint32_t offset) {
-  for (uint32_t i = 0; i < npar_; ++i) {
+void Particles::AddID(int offset) {
+  for (int i = 0; i < npar_; ++i) {
     id_[i] += offset;
   }
 }
@@ -161,8 +161,8 @@ void Particles::AddID(uint32_t offset) {
  * @param i Index of the first particle
  * @param j Index of the second particle
  */
-void Particles::pswap(uint32_t i, uint32_t j) {
-  uint32_t tmp_uint32 = id_[i];
+void Particles::pswap(int i, int j) {
+  int tmp_uint32 = id_[i];
   id_[i] = id_[j];
   id_[j] = tmp_uint32;
 
@@ -200,8 +200,8 @@ void Particles::pswap(uint32_t i, uint32_t j) {
  */
 void Particles::CleanOut() {
   // Keep two indices
-  uint32_t i = 0;
-  uint32_t j = npar_ - 1;
+  int i = 0;
+  int j = npar_ - 1;
 
   // Loop until i and j meet, swap particles if necessary
   while (i < j) {
@@ -240,11 +240,11 @@ void SaveParticles(Particles& particles, const char* file_name) {
   hid_t file_id = H5Fcreate(file_name, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
   // Create dataspace to store particles
-  hsize_t dims[1] = {particles.npar()};
+  hsize_t dims[1] = {static_cast<hsize_t>(particles.npar())};
   hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
 
   // Create dataset for each integer field
-  for (int i = 0; i < __LILIP_DCOUNT_UINT32; ++i) {
+  for (int i = 0; i < __LILIP_DCOUNT_ULONG; ++i) {
     hid_t dataset_id =
         H5Dcreate(file_id, __LILIP_DNAME_UINT32[i], H5T_NATIVE_UINT32,
                   dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -292,15 +292,15 @@ Particles LoadParticles(const char* file_name) {
   hid_t dataset_id = H5Dopen(file_id, __LILIP_DNAME_UINT32[0], H5P_DEFAULT);
   hid_t dataspace_id = H5Dget_space(dataset_id);
   H5Sget_simple_extent_dims(dataspace_id, dims, NULL);
-  uint32_t npar = dims[0];
+  int npar = dims[0];
 
   // Create particles object
   Particles particles(npar);
 
   // Read data
-  for (int i = 0; i < __LILIP_DCOUNT_UINT32; ++i) {
+  for (int i = 0; i < __LILIP_DCOUNT_ULONG; ++i) {
     dataset_id = H5Dopen(file_id, __LILIP_DNAME_UINT32[i], H5P_DEFAULT);
-    H5Dread(dataset_id, H5T_NATIVE_UINT32, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+    H5Dread(dataset_id, H5T_NATIVE_ULONG, H5S_ALL, H5S_ALL, H5P_DEFAULT,
             particles.data_uint32(i));
     H5Dclose(dataset_id);
   }
@@ -328,13 +328,13 @@ Particles LoadParticles(const char* file_name) {
  * @param remove Whether to remove the selected particles from the input
  * particles
  */
-void SelectParticles(Particles& input, Particles& output,
-                      ParticleStatus status, bool remove) {
-  uint32_t npar = input.npar();
+void SelectParticles(Particles& input, Particles& output, ParticleStatus status,
+                     bool remove) {
+  int npar = input.npar();
 
   // Loop over input particles
-  uint32_t npar_out = 0;
-  for (uint32_t i = 0; i < npar; ++i) {
+  int npar_out = 0;
+  for (int i = 0; i < npar; ++i) {
     if (input.status(i) == status) {
       // Grow the output particles if necessary
       if (npar_out >= output.npar_max()) {

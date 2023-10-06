@@ -44,7 +44,7 @@ void DistributeLocationUniform(Particles& particles, const int seed,
   std::uniform_real_distribution<double> dis_z(z0, z1);
 
   // Distribute particles
-  for (uint32_t i = 0; i < particles.npar(); ++i) {
+  for (int i = 0; i < particles.npar(); ++i) {
     particles.x(i) = dis_x(gen);
     particles.y(i) = dis_y(gen);
     particles.z(i) = dis_z(gen);
@@ -64,7 +64,7 @@ void DistributeLocationUniform(Particles& particles, const int seed,
  */
 void AddBulkVelocity(Particles& particles, const double u, const double v,
                      const double w) {
-  for (uint32_t i = 0; i < particles.npar(); ++i) {
+  for (int i = 0; i < particles.npar(); ++i) {
     particles.u(i) += u;
     particles.v(i) += v;
     particles.w(i) += w;
@@ -87,7 +87,7 @@ void DistributeVelocityUniform(Particles& particles, const int seed,
   std::uniform_real_distribution<double> dis(0.0, 1.0);
 
   // Distribute velocities
-  for (uint32_t i = 0; i < particles.npar(); ++i) {
+  for (int i = 0; i < particles.npar(); ++i) {
     double r = dis(gen);
     double gamma = energy_table.GetGamma(r);
     double gammabeta = std::sqrt(gamma * gamma - 1.0);
@@ -127,7 +127,7 @@ GammaTable::GammaTable(std::vector<double> cdf, std::vector<double> gamma) {
   cdf_.resize(capacity_);
   gamma_.resize(capacity_);
 
-  for (uint32_t i = 0; i < capacity_; ++i) {
+  for (int i = 0; i < capacity_; ++i) {
     cdf_[i] = cdf[i];
     gamma_[i] = gamma[i];
   }
@@ -142,9 +142,9 @@ GammaTable::GammaTable(std::vector<double> cdf, std::vector<double> gamma) {
  */
 double GammaTable::GetGamma(const double cdf) const {
   // Binary search
-  uint32_t i_min = 0;
-  uint32_t i_max = capacity_ - 1;
-  uint32_t i_mid = 0;
+  int i_min = 0;
+  int i_max = capacity_ - 1;
+  int i_mid = 0;
 
   while (i_max - i_min > 1) {
     i_mid = (i_min + i_max) / 2;
@@ -220,33 +220,33 @@ GammaTable GTMaxwellian3D(const double theta) {
   double dgamma_max = theta * __LILIP_DEFAULT_GTMULT;
 
   // Initialize vectors
-  uint32_t capacity = __LILIP_DEFAULT_GTSIZE;
+  int capacity = __LILIP_DEFAULT_GTSIZE;
   std::vector<double> pdf(capacity);
   std::vector<double> cdf(capacity);
   std::vector<double> gamma(capacity);
 
   // Construct the gamma table as linearly spaced delta gamma
-  for (uint32_t i = 0; i < capacity; ++i) {
+  for (int i = 0; i < capacity; ++i) {
     gamma[i] = dgamma_max * i / (capacity - 1);
   }
 
   // Construct the PDF table
-  for (uint32_t i = 1; i < capacity; ++i) {
+  for (int i = 1; i < capacity; ++i) {
     pdf[i] = (gamma[i] + 1.0) * std::sqrt(gamma[i] * (gamma[i] + 2.0)) *
              std::exp(-gamma[i] / theta);
   }
 
   // Construct the CDF table
   cdf[0] = 0.0;
-  for (uint32_t i = 1; i < capacity; ++i) {
+  for (int i = 1; i < capacity; ++i) {
     cdf[i] = cdf[i - 1] + pdf[i];
   }
-  for (uint32_t i = 0; i < capacity; ++i) {
+  for (int i = 0; i < capacity; ++i) {
     cdf[i] /= cdf[capacity - 1];
   }
 
   // Change back gamma array from delta gamma
-  for (uint32_t i = 0; i < capacity; ++i) {
+  for (int i = 0; i < capacity; ++i) {
     gamma[i] += 1.0;
   }
 

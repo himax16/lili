@@ -15,7 +15,7 @@
 #define __LILIP_DEFAULT_GSIZE 2
 #endif
 
-#define __LILIP_DCOUNT_UINT32 2
+#define __LILIP_DCOUNT_ULONG 2
 #define __LILIP_DCOUNT_DOUBLE 6
 
 namespace lili::particle {
@@ -25,7 +25,7 @@ extern const char* __LILIP_DNAME_DOUBLE[];
 /**
  * @brief Enumeration class for the particle status
  */
-typedef enum : uint32_t {
+typedef enum : int {
   Out,     /**< Irrelevant status */
   In,      /**< Particle is in the simulation domain */
   Tracked, /**< Particle is tracked */
@@ -47,8 +47,8 @@ class Particles {
  public:
   // Constructor
   Particles();
-  Particles(uint32_t npar);
-  Particles(uint32_t npar, uint32_t npar_max);
+  Particles(int npar);
+  Particles(int npar, int npar_max);
 
   // Copy constructor
   Particles(const Particles& other);
@@ -83,10 +83,10 @@ class Particles {
   }
 
   // Getters
-  constexpr uint32_t npar() const { return npar_; };
-  constexpr uint32_t npar_max() const { return npar_max_; };
+  constexpr int npar() const { return npar_; };
+  constexpr int npar_max() const { return npar_max_; };
 
-  constexpr uint32_t* id() const { return id_; };
+  constexpr ulong* id() const { return id_; };
   constexpr ParticleStatus* status() const { return status_; };
   constexpr double* x() const { return x_; };
   constexpr double* y() const { return y_; };
@@ -95,34 +95,34 @@ class Particles {
   constexpr double* v() const { return v_; };
   constexpr double* w() const { return w_; };
 
-  constexpr uint32_t id(uint32_t i) const { return id_[i]; };
-  constexpr ParticleStatus status(uint32_t i) const { return status_[i]; };
-  constexpr double x(uint32_t i) const { return x_[i]; };
-  constexpr double y(uint32_t i) const { return y_[i]; };
-  constexpr double z(uint32_t i) const { return z_[i]; };
-  constexpr double u(uint32_t i) const { return u_[i]; };
-  constexpr double v(uint32_t i) const { return v_[i]; };
-  constexpr double w(uint32_t i) const { return w_[i]; };
+  constexpr ulong id(int i) const { return id_[i]; };
+  constexpr ParticleStatus status(int i) const { return status_[i]; };
+  constexpr double x(int i) const { return x_[i]; };
+  constexpr double y(int i) const { return y_[i]; };
+  constexpr double z(int i) const { return z_[i]; };
+  constexpr double u(int i) const { return u_[i]; };
+  constexpr double v(int i) const { return v_[i]; };
+  constexpr double w(int i) const { return w_[i]; };
 
   // Setters
-  constexpr uint32_t& npar() { return npar_; };
+  constexpr int& npar() { return npar_; };
 
-  constexpr uint32_t& id(uint32_t i) { return id_[i]; };
-  constexpr ParticleStatus& status(uint32_t i) { return status_[i]; };
-  constexpr double& x(uint32_t i) { return x_[i]; };
-  constexpr double& y(uint32_t i) { return y_[i]; };
-  constexpr double& z(uint32_t i) { return z_[i]; };
-  constexpr double& u(uint32_t i) { return u_[i]; };
-  constexpr double& v(uint32_t i) { return v_[i]; };
-  constexpr double& w(uint32_t i) { return w_[i]; };
+  constexpr ulong& id(int i) { return id_[i]; };
+  constexpr ParticleStatus& status(int i) { return status_[i]; };
+  constexpr double& x(int i) { return x_[i]; };
+  constexpr double& y(int i) { return y_[i]; };
+  constexpr double& z(int i) { return z_[i]; };
+  constexpr double& u(int i) { return u_[i]; };
+  constexpr double& v(int i) { return v_[i]; };
+  constexpr double& w(int i) { return w_[i]; };
 
   // Data pointers for HDF5
-  constexpr uint32_t* data_uint32(int i) {
+  constexpr ulong* data_uint32(int i) {
     switch (i) {
       case 0:
         return id_;
       case 1:
-        return reinterpret_cast<uint32_t*>(status_);
+        return reinterpret_cast<ulong*>(status_);
       default:
         return nullptr;
     }
@@ -148,21 +148,21 @@ class Particles {
   };
 
   // Resize particles
-  void resize(uint32_t new_npar_max);
+  void resize(int new_npar_max);
 
   // Add offset to particle IDs
-  void AddID(uint32_t offset);
+  void AddID(int offset);
 
   // Swap two swap two particles
-  void pswap(uint32_t i, uint32_t j);
+  void pswap(int i, int j);
 
   // Clean up out particles
   void CleanOut();
 
  private:
-  uint32_t npar_, npar_max_;
+  int npar_, npar_max_;
 
-  uint32_t* id_;
+  ulong* id_;
   ParticleStatus* status_;
 
   double *x_, *y_, *z_;
