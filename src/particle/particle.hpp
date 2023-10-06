@@ -1,5 +1,5 @@
 /**
- * @file mesh.hpp
+ * @file particle.hpp
  * @brief Header file for the Particles class
  */
 #pragma once
@@ -151,13 +151,13 @@ class Particles {
   void resize(uint32_t new_npar_max);
 
   // Add offset to particle IDs
-  void add_id_offset(uint32_t offset);
+  void AddID(uint32_t offset);
 
   // Swap two swap two particles
   void pswap(uint32_t i, uint32_t j);
 
   // Clean up out particles
-  void clean_out();
+  void CleanOut();
 
  private:
   uint32_t npar_, npar_max_;
@@ -169,10 +169,10 @@ class Particles {
   double *u_, *v_, *w_;
 };
 
-void save_particles(Particles& particles, const char* file_name);
-Particles load_particles(const char* file_name);
+void SaveParticles(Particles& particles, const char* file_name);
+Particles LoadParticles(const char* file_name);
 
-void select_particles(Particles& input, Particles& output,
-                      ParticleStatus status, bool remove = false);
+void SelectParticles(Particles& input, Particles& output, ParticleStatus status,
+                     bool remove = false);
 
 }  // namespace lili::particle

@@ -150,7 +150,7 @@ void Particles::resize(uint32_t new_npar_max) {
  * @brief Function to add offset to particle IDs
  * @param offset Offset to add
  */
-void Particles::add_id_offset(uint32_t offset) {
+void Particles::AddID(uint32_t offset) {
   for (uint32_t i = 0; i < npar_; ++i) {
     id_[i] += offset;
   }
@@ -198,7 +198,7 @@ void Particles::pswap(uint32_t i, uint32_t j) {
 /**
  * @brief Function to clean up out particles
  */
-void Particles::clean_out() {
+void Particles::CleanOut() {
   // Keep two indices
   uint32_t i = 0;
   uint32_t j = npar_ - 1;
@@ -235,7 +235,7 @@ void Particles::clean_out() {
  * @param particles Particles object
  * @param file_name Name of the file to save to
  */
-void save_particles(Particles& particles, const char* file_name) {
+void SaveParticles(Particles& particles, const char* file_name) {
   // Create file
   hid_t file_id = H5Fcreate(file_name, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
@@ -283,7 +283,7 @@ void save_particles(Particles& particles, const char* file_name) {
  * @param particles Particles object
  * @param file_name Name of the file to load from
  */
-Particles load_particles(const char* file_name) {
+Particles LoadParticles(const char* file_name) {
   // Open file
   hid_t file_id = H5Fopen(file_name, H5F_ACC_RDONLY, H5P_DEFAULT);
 
@@ -328,7 +328,7 @@ Particles load_particles(const char* file_name) {
  * @param remove Whether to remove the selected particles from the input
  * particles
  */
-void select_particles(Particles& input, Particles& output,
+void SelectParticles(Particles& input, Particles& output,
                       ParticleStatus status, bool remove) {
   uint32_t npar = input.npar();
 
@@ -361,8 +361,7 @@ void select_particles(Particles& input, Particles& output,
 
   // Clean up input particles
   if (remove) {
-    input.clean_out();
+    input.CleanOut();
   }
 }
-
 }  // namespace lili::particle
