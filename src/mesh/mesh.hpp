@@ -9,16 +9,6 @@
 
 namespace lili::mesh {
 /**
- * @brief Enumeration class for the mesh axis
- */
-typedef enum {
-  None, /**< Irrelevant axis*/
-  X,    /**< X-axis */
-  Y,    /**< Y-axis */
-  Z     /**< Z-axis */
-} MeshAxis;
-
-/**
  * @brief Enumeration class for the ghost cell locations
  */
 typedef enum {
