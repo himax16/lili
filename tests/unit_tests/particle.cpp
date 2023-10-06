@@ -27,3 +27,15 @@ lili::particle::Particles particles2 =
 
 particles2.clean_out();
 lili::particle::save_particles(particles2, "test2.h5");
+
+// Test particles
+int npar = input.particles()[0].n;
+particle::Particles particles(npar);
+// lili::particle::GammaTable table = particle::GTMonoenergetic(1.25);
+// lili::particle::GammaTable table = particle::GTUniform(1., 1.25);
+particle::GammaTable table = particle::GTMaxwellian3D(0.36);
+
+particle::DistributeLocationUniform(particles, 0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
+particle::DistributeVelocityUniform(particles, 0, table);
+
+particle::SaveParticles(particles, "test.h5");

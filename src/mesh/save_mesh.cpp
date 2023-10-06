@@ -32,7 +32,7 @@ void SaveMesh(Mesh<double> &mesh, const char *file_name,
   }
 
   // Create dataspace with mesh size as the final size
-  hsize_t dims[3] = {mesh.n0(), mesh.n1(), mesh.n2()};
+  hsize_t dims[3] = {mesh.nx(), mesh.ny(), mesh.nz()};
   hid_t dataspace_id = H5Screate_simple(3, dims, NULL);
 
   // Create dataset

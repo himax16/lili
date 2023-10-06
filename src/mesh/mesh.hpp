@@ -6,25 +6,29 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iostream>
 
 namespace lili::mesh {
 /**
  * @brief Enumeration class for the ghost cell locations
  */
 typedef enum {
-  XG0, /**< Previous X-axis ghost */
-  XG1, /**< Next X-axis ghost */
-  YG0, /**< Previous Y-axis ghost */
-  YG1, /**< Next Y-axis ghost */
-  ZG0, /**< Previous Z-axis ghost */
-  ZG1  /**< Next Z-axis ghost */
+  XPrev, /**< Previous X-axis ghost */
+  XNext, /**< Next X-axis ghost */
+  YPrev, /**< Previous Y-axis ghost */
+  YNext, /**< Next Y-axis ghost */
+  ZPrev, /**< Previous Z-axis ghost */
+  ZNext  /**< Next Z-axis ghost */
 } MeshGhostLocation;
 
 /**
  * @brief Mesh size struct
  */
 typedef struct {
-  uint32_t n0, n1, n2;
+  int dim;
+  uint32_t nx, ny, nz;
+  uint32_t ngx, ngy, ngz;
+  double lx, ly, lz;
 } MeshSize;
 
 /**
@@ -34,51 +38,138 @@ template <typename T>
 class Mesh {
  public:
   // Default constructor
-  Mesh() : data_(nullptr), n0_(0), n1_(0), n2_(0), n0g_(0), n1g_(0), n2g_(0){};
+  Mesh()
+      : dim_(0),
+        nx_(0),
+        ny_(0),
+        nz_(0),
+        ngx_(0),
+        ngy_(0),
+        ngz_(0),
+        data_(nullptr){};
 
   // Size-based initialization
-  Mesh(uint32_t n0);
-  Mesh(uint32_t n0, uint32_t n1);
-  Mesh(uint32_t n0, uint32_t n1, uint32_t n2);
-  Mesh(uint32_t n0, uint32_t n1, uint32_t n2, uint32_t ng);
-  Mesh(uint32_t n0, uint32_t n1, uint32_t n2, uint32_t n0g, uint32_t n1g,
-       uint32_t n2g);
-  Mesh(MeshSize domain_size);
-  Mesh(MeshSize domain_size, MeshSize ghost_size);
+  Mesh(uint32_t nx)
+      : dim_(1),
+        nx_(nx),
+        ny_(1),
+        nz_(1),
+        ngx_(0),
+        ngy_(0),
+        ngz_(0),
+        data_(nullptr) {
+    InitializeData();
+  };
+  Mesh(uint32_t nx, uint32_t ny)
+      : dim_(2),
+        nx_(nx),
+        ny_(ny),
+        nz_(1),
+        ngx_(0),
+        ngy_(0),
+        ngz_(0),
+        data_(nullptr) {
+    InitializeData();
+  };
+  Mesh(uint32_t nx, uint32_t ny, uint32_t nz)
+      : dim_(3),
+        nx_(nx),
+        ny_(ny),
+        nz_(nz),
+        ngx_(0),
+        ngy_(0),
+        ngz_(0),
+        data_(nullptr) {
+    InitializeData();
+  };
+  Mesh(uint32_t nx, uint32_t ny, uint32_t nz, uint32_t ng)
+      : dim_(3),
+        nx_(nx),
+        ny_(ny),
+        nz_(nz),
+        ngx_(ng),
+        ngy_(ng),
+        ngz_(ng),
+        data_(nullptr) {
+    InitializeData();
+  };
+  Mesh(uint32_t nx, uint32_t ny, uint32_t nz, uint32_t ngx, uint32_t ngy,
+       uint32_t ngz)
+      : dim_(3),
+        nx_(nx),
+        ny_(ny),
+        nz_(nz),
+        ngx_(ngx),
+        ngy_(ngy),
+        ngz_(ngz),
+        data_(nullptr) {
+    InitializeData();
+  };
+  Mesh(MeshSize domain_size)
+      : dim_(domain_size.dim),
+        nx_(domain_size.nx),
+        ny_(domain_size.ny),
+        nz_(domain_size.nz),
+        ngx_(domain_size.ngx),
+        ngy_(domain_size.ngy),
+        ngz_(domain_size.ngz),
+        data_(nullptr) {
+    InitializeData();
+  };
 
   // Copy constructor
-  Mesh(const Mesh& other);
+  Mesh(const Mesh& other)
+      : dim_(other.dim_),
+        nx_(other.nx_),
+        ny_(other.ny_),
+        nz_(other.nz_),
+        ngx_(other.ngx_),
+        ngy_(other.ngy_),
+        ngz_(other.ngz_),
+        data_(nullptr) {
+    InitializeData();
+    std::copy(other.data_, other.data_ + other.nt(), data_);
+  };
 
   // Move constructor
   Mesh(Mesh&& other) noexcept : Mesh() { swap(*this, other); };
 
   // Destructor
-  ~Mesh();
+  ~Mesh() {
+    if (data_ != nullptr) {
+      delete[] data_;
+    }
+  };
 
   // Getters
+  constexpr int dim() const { return dim_; };
+  constexpr uint32_t nx() const { return nx_; };
+  constexpr uint32_t ny() const { return ny_; };
+  constexpr uint32_t nz() const { return nz_; };
+  constexpr uint32_t ngx() const { return ngx_; };
+  constexpr uint32_t ngy() const { return ngy_; };
+  constexpr uint32_t ngz() const { return ngz_; };
+  constexpr uint32_t ntx() const { return ntx_; };
+  constexpr uint32_t nty() const { return nty_; };
+  constexpr uint32_t ntz() const { return ntz_; };
+  constexpr uint32_t nt() const { return nt_; };
   constexpr T* data() const { return data_; };
-  constexpr uint32_t n0() const { return n0_; };
-  constexpr uint32_t n1() const { return n1_; };
-  constexpr uint32_t n2() const { return n2_; };
-  constexpr uint32_t n0g() const { return n0g_; };
-  constexpr uint32_t n1g() const { return n1g_; };
-  constexpr uint32_t n2g() const { return n2g_; };
-  constexpr uint32_t n0t() const { return n0_ + 2 * n0g_; };
-  constexpr uint32_t n1t() const { return n1_ + 2 * n1g_; };
-  constexpr uint32_t n2t() const { return n2_ + 2 * n2g_; };
-  constexpr uint32_t nt() const { return n0t() * n1t() * n2t(); };
-  constexpr int dim() const { return (n2_ > 1) ? 3 : ((n1_ > 1) ? 2 : 1); };
 
   // Swap data
   friend void swap(Mesh<T>& first, Mesh<T>& second) noexcept {
     using std::swap;
+    swap(first.dim_, second.dim_);
+    swap(first.nx_, second.nx_);
+    swap(first.ny_, second.ny_);
+    swap(first.nz_, second.nz_);
+    swap(first.ngx_, second.ngx_);
+    swap(first.ngy_, second.ngy_);
+    swap(first.ngz_, second.ngz_);
+    swap(first.ntx_, second.ntx_);
+    swap(first.nty_, second.nty_);
+    swap(first.ntz_, second.ntz_);
+    swap(first.nt_, second.nt_);
     swap(first.data_, second.data_);
-    swap(first.n0_, second.n0_);
-    swap(first.n1_, second.n1_);
-    swap(first.n2_, second.n2_);
-    swap(first.n0g_, second.n0g_);
-    swap(first.n1g_, second.n1g_);
-    swap(first.n2g_, second.n2g_);
   }
 
   // Operators
@@ -87,127 +178,98 @@ class Mesh {
     return *this;
   };
 
-  T operator()(uint32_t i0) const { return data_[i0]; };
-  T& operator()(uint32_t i0) { return data_[i0]; };
+  // Raw access operator
+  T operator()(uint32_t i) const { return data_[i]; };
+  T& operator()(uint32_t i) { return data_[i]; };
 
-  T operator()(uint32_t i0, uint32_t i1) const { return data_[i0 + n0_ * i1]; };
-  T& operator()(uint32_t i0, uint32_t i1) { return data_[i0 + n0_ * i1]; };
-
-  T operator()(uint32_t i0, uint32_t i1, uint32_t i2) const {
-    return data_[i0 + n0_ * (i1 + n1_ * i2)];
+  // Smart access operator
+  T operator()(uint32_t i, uint32_t j, uint32_t k) const {
+    return data_[ngx_ + i + ntx_ * (ngy_ + j + nty_ * (ngz_ + k))];
   };
-  T& operator()(uint32_t i0, uint32_t i1, uint32_t i2) {
-    return data_[i0 + n0_ * (i1 + n1_ * i2)];
+  T& operator()(uint32_t i, uint32_t j, uint32_t k) {
+    return data_[ngx_ + i + ntx_ * (ngy_ + j + nty_ * (ngz_ + k))];
+  };
+
+  // Update total mesh sizes
+  void UpdateTotalSizes() {
+    // Update dimension if needed
+    if (dim_ == 0) {
+      dim_ = (nz_ > 1) ? 3 : ((ny_ > 1) ? 2 : 1);
+    }
+
+    ntx_ = nx_ + 2 * ngx_;
+    nty_ = ny_ + 2 * ngy_;
+    ntz_ = nz_ + 2 * ngz_;
+
+    nt_ = ntx_ * nty_ * ntz_;
   };
 
   // Compare Mesh sizes
-  bool SameSizeAs(const Mesh& other);
+  bool SameSizeAs(const Mesh& other) {
+    return (nx_ == other.nx_ && ny_ == other.ny_ && nz_ == other.nz_ &&
+            ngx_ == other.ngx_ && ngy_ == other.ngy_ && ngz_ == other.ngz_);
+  };
 
   // Initialize data
-  void InitializeData();
+  void InitializeData() {
+    // Update total mesh sizes
+    UpdateTotalSizes();
+
+    // Allocate memory
+    data_ = new T[nt_]();
+  };
+
+  // Ghost size utilities
+  void CopyToGhost(const Mesh& other, MeshGhostLocation gl) {
+    switch (gl) {
+      case XPrev:
+        // Make sure the other mesh has the same relevant size
+        if (other.ny() != ny_ || other.nz() != nz_ || other.nx() < ngx_) {
+          std::cerr << "Invalid ghost mesh size..." << std::endl;
+          exit(2);
+        } else {
+          // Cache variable
+          uint32_t noff = other.nx();
+          // Copy data
+          for (uint32_t i = -ngx_; i < 0; ++i) {
+            for (uint32_t j = 0; j < ny_; ++j) {
+              for (uint32_t k = 0; k < nz_; ++k) {
+                (*this)(i, j, k) = other(noff + i, j, k);
+              }
+            }
+          }
+        }
+        break;
+      case XNext:
+        // Make sure the other mesh has the same relevant size
+        if (other.ny() != ny_ || other.nz() != nz_ || other.nx() < ngx_) {
+          std::cerr << "Invalid ghost mesh size..." << std::endl;
+          exit(2);
+        } else {
+          // Cache variable
+          uint32_t noff = -nx_;
+          // Copy data
+          for (uint32_t i = nx_; i < (nx_ + ngx_); ++i) {
+            for (uint32_t j = 0; j < ny_; ++j) {
+              for (uint32_t k = 0; k < nz_; ++k) {
+                (*this)(i, j, k) = other(noff + i, j, k);
+              }
+            }
+          }
+        }
+        break;
+      default:
+        std::cerr << "Invalid ghost location..." << std::endl;
+        break;
+    }
+  }
 
  private:
+  int dim_;                   // Mesh dimension
+  uint32_t nx_, ny_, nz_;     // Mesh sizes
+  uint32_t ngx_, ngy_, ngz_;  // Ghost cells sizes (same for before and after)
+  uint32_t ntx_, nty_, ntz_, nt_;  // Total mesh sizes (including ghost cells)
+
   T* data_;  // Pointer to the data block
-
-  uint32_t n0_, n1_, n2_;     // Mesh sizes
-  uint32_t n0g_, n1g_, n2g_;  // Ghost cells sizes (same for before and after)
-};
-
-// Size-based initialization
-template <typename T>
-inline Mesh<T>::Mesh(uint32_t n0)
-    : data_(nullptr), n0_(n0), n1_(1), n2_(1), n0g_(0), n1g_(0), n2g_(0) {
-  InitializeData();
-};
-
-template <typename T>
-inline Mesh<T>::Mesh(uint32_t n0, uint32_t n1)
-    : data_(nullptr), n0_(n0), n1_(n1), n2_(1), n0g_(0), n1g_(0), n2g_(0) {
-  InitializeData();
-};
-
-template <typename T>
-inline Mesh<T>::Mesh(uint32_t n0, uint32_t n1, uint32_t n2)
-    : data_(nullptr), n0_(n0), n1_(n1), n2_(n2), n0g_(0), n1g_(0), n2g_(0) {
-  InitializeData();
-};
-
-template <typename T>
-inline Mesh<T>::Mesh(uint32_t n0, uint32_t n1, uint32_t n2, uint32_t ng)
-    : data_(nullptr), n0_(n0), n1_(n1), n2_(n2), n0g_(ng), n1g_(ng), n2g_(ng) {
-  InitializeData();
-};
-
-template <typename T>
-inline Mesh<T>::Mesh(uint32_t n0, uint32_t n1, uint32_t n2, uint32_t n0g,
-                     uint32_t n1g, uint32_t n2g)
-    : data_(nullptr),
-      n0_(n0),
-      n1_(n1),
-      n2_(n2),
-      n0g_(n0g),
-      n1g_(n1g),
-      n2g_(n2g) {
-  InitializeData();
-};
-
-template <typename T>
-inline Mesh<T>::Mesh(MeshSize domain_size)
-    : data_(nullptr),
-      n0_(domain_size.n0),
-      n1_(domain_size.n1),
-      n2_(domain_size.n2),
-      n0g_(0),
-      n1g_(0),
-      n2g_(0) {
-  InitializeData();
-};
-
-template <typename T>
-inline Mesh<T>::Mesh(MeshSize domain_size, MeshSize ghost_size)
-    : data_(nullptr),
-      n0_(domain_size.n0),
-      n1_(domain_size.n1),
-      n2_(domain_size.n2),
-      n0g_(ghost_size.n0),
-      n1g_(ghost_size.n1),
-      n2g_(ghost_size.n2) {
-  InitializeData();
-};
-
-// Copy constructor
-template <typename T>
-inline Mesh<T>::Mesh(const Mesh& other)
-    : data_(nullptr),
-      n0_(other.n0_),
-      n1_(other.n1_),
-      n2_(other.n2_),
-      n0g_(other.n0g_),
-      n1g_(other.n1g_),
-      n2g_(other.n2g_) {
-  InitializeData();
-  std::copy(other.data_, other.data_ + other.nt(), data_);
-};
-
-// Destructor
-template <typename T>
-inline Mesh<T>::~Mesh() {
-  if (data_ != nullptr) {
-    delete[] data_;
-  }
-};
-
-// Compare Mesh sizes
-template <typename T>
-inline bool Mesh<T>::SameSizeAs(const Mesh& other) {
-  return (n0_ == other.n0_ && n1_ == other.n1_ && n2_ == other.n2_ &&
-          n0g_ == other.n0g_ && n1g_ == other.n1g_ && n2g_ == other.n2g_);
-}
-
-// Initialize data
-template <typename T>
-inline void Mesh<T>::InitializeData() {
-  // Allocate memory
-  data_ = new T[(n0_ + 2 * n0g_) * (n1_ + 2 * n1g_) * (n2_ + 2 * n2g_)]();
 };
 }  // namespace lili::mesh

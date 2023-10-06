@@ -62,19 +62,6 @@ int main(int argc, char *argv[]) {
   }
   std::cout << "==============================" << std::endl;
 
-  // Test particles
-  int npar = input.particles()[0].n;
-  particle::Particles particles(npar);
-  // lili::particle::GammaTable table = particle::GTMonoenergetic(1.25);
-  // lili::particle::GammaTable table = particle::GTUniform(1., 1.25);
-  particle::GammaTable table = particle::GTMaxwellian3D(0.36);
-
-  particle::DistributeLocationUniform(particles, 0, 0.0, 1.0, 0.0, 1.0, 0.0,
-                                      1.0);
-  particle::DistributeVelocityUniform(particles, 0, table);
-
-  particle::SaveParticles(particles, "test.h5");
-
   /****************************************************************************/
   // Variable declaration
   // int n_simsys = 0;
