@@ -65,3 +65,28 @@ std::cout << "----" << std::endl;
 // lili::mesh::SaveMesh(mesh, "test.h5", "test2");
 // lili::mesh::SaveMeshHyperslab(mesh, {1, 2, 3}, {2, 2, 2}, "test.h5",
 // "test");
+
+  // Test Mesh
+  mesh::Mesh<double> bz(input.mesh());
+
+  // Set mesh values according to its X location
+  double lx = input.mesh().lx;
+  for (int k = 0; k < bz.nz(); ++k) {
+    for (int j = 0; j < bz.ny(); ++j) {
+      for (int i = 0; i < bz.nx(); ++i) {
+        bz(i, j, k) = lx * i / bz.nx();
+      }
+    }
+  }
+
+  // Test boundary condition
+  bz.CopyToGhost(bz, mesh::MeshGhostLocation::XPrev);
+  bz.CopyToGhost(bz, mesh::MeshGhostLocation::XNext);
+
+  mesh::SaveMesh(bz, "test.h5", "bz", true);
+
+  // Test load
+  mesh::Mesh<double> bz_load;
+  mesh::LoadMeshTo(bz_load, "test.h5", "bz", false);
+  bz_load.Shrink(bz.nx(), bz.ny(), bz.nz(), bz.ngx(), bz.ngy(), bz.ngz());
+  mesh::SaveMesh(bz_load, "test_copy.h5", "bz", true);

@@ -148,21 +148,7 @@ class Mesh {
     }
   };
 
-  // Getters
-  constexpr int dim() const { return dim_; };
-  constexpr int nx() const { return nx_; };
-  constexpr int ny() const { return ny_; };
-  constexpr int nz() const { return nz_; };
-  constexpr int ngx() const { return ngx_; };
-  constexpr int ngy() const { return ngy_; };
-  constexpr int ngz() const { return ngz_; };
-  constexpr int ntx() const { return ntx_; };
-  constexpr int nty() const { return nty_; };
-  constexpr int ntz() const { return ntz_; };
-  constexpr int nt() const { return nt_; };
-  constexpr T* data() const { return data_; };
-
-  // Swap data
+  // Swap function
   friend void swap(Mesh<T>& first, Mesh<T>& second) noexcept {
     using std::swap;
     swap(first.dim_, second.dim_);
@@ -178,6 +164,20 @@ class Mesh {
     swap(first.nt_, second.nt_);
     swap(first.data_, second.data_);
   }
+
+  // Getters
+  constexpr int dim() const { return dim_; };
+  constexpr int nx() const { return nx_; };
+  constexpr int ny() const { return ny_; };
+  constexpr int nz() const { return nz_; };
+  constexpr int ngx() const { return ngx_; };
+  constexpr int ngy() const { return ngy_; };
+  constexpr int ngz() const { return ngz_; };
+  constexpr int ntx() const { return ntx_; };
+  constexpr int nty() const { return nty_; };
+  constexpr int ntz() const { return ntz_; };
+  constexpr int nt() const { return nt_; };
+  constexpr T* data() const { return data_; };
 
   // Operators
   Mesh<T>& operator=(Mesh<T> other) {

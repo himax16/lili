@@ -8,6 +8,7 @@
 
 #include <iomanip>
 
+#include "field.hpp"
 #include "hdf5.h"
 #include "input.hpp"
 #include "mesh.hpp"
@@ -61,30 +62,14 @@ int main(int argc, char *argv[]) {
   }
   std::cout << "==============================" << std::endl;
 
-  // Test Mesh
-  mesh::Mesh<double> bz(input.mesh());
-
-  // Set mesh values according to its X location
-  double lx = input.mesh().lx;
-  for (int k = 0; k < bz.nz(); ++k) {
-    for (int j = 0; j < bz.ny(); ++j) {
-      for (int i = 0; i < bz.nx(); ++i) {
-        bz(i, j, k) = lx * i / bz.nx();
-      }
-    }
-  }
-
-  // Test boundary condition
-  bz.CopyToGhost(bz, mesh::MeshGhostLocation::XPrev);
-  bz.CopyToGhost(bz, mesh::MeshGhostLocation::XNext);
-
-  mesh::SaveMesh(bz, "test.h5", "bz", true);
-
-  // Test load
-  mesh::Mesh<double> bz_load;
-  mesh::LoadMeshTo(bz_load, "test.h5", "bz", false);
-  bz_load.Shrink(bz.nx(), bz.ny(), bz.nz(), bz.ngx(), bz.ngy(), bz.ngz());
-  mesh::SaveMesh(bz_load, "test_copy.h5", "bz", true);
+  // Test initializing field
+  mesh::Field field(input.mesh());
+  std::cout << "nx = " << field.nx() << " " << field.ex.nx() << " "
+            << field.ey.nx() << " " << field.ez.nx() << std::endl;
+  std::cout << "ny = " << field.ny() << " " << field.ex.ny() << " "
+            << field.ey.ny() << " " << field.ez.ny() << std::endl;
+  std::cout << "nz = " << field.nz() << " " << field.ex.nz() << " "
+            << field.ey.nz() << " " << field.ez.nz() << std::endl;
 
   /****************************************************************************/
   // Variable declaration
