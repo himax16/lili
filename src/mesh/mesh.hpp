@@ -185,6 +185,13 @@ class Mesh {
     return *this;
   };
 
+  Mesh<T>& operator=(T value) {
+    for (int i = 0; i < nt_; ++i) {
+      data_[i] = value;
+    }
+    return *this;
+  };
+
   // Raw access operator
   T operator()(int i) const { return data_[i]; };
   T& operator()(int i) { return data_[i]; };

@@ -8,6 +8,7 @@ add_subdirectory(mesh)
 add_subdirectory(field)
 add_subdirectory(particle)
 add_subdirectory(particle_initialization)
+add_subdirectory(particle_mover)
 
 # # Add parameter.hpp to an interface library
 # add_library(parameter INTERFACE)
@@ -23,6 +24,7 @@ target_link_libraries(lili PUBLIC mesh)
 target_link_libraries(lili PUBLIC field)
 target_link_libraries(lili PUBLIC particle)
 target_link_libraries(lili PUBLIC particle_initialization)
+target_link_libraries(lili PUBLIC particle_mover)
 target_link_libraries(lili PUBLIC hdf5::hdf5)
 
 # HIMA: Kalau pakai Boost

@@ -14,6 +14,7 @@
 #include "mesh.hpp"
 #include "particle.hpp"
 #include "particle_initialization.hpp"
+#include "particle_mover.hpp"
 
 using namespace lili;
 /**
