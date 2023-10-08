@@ -47,3 +47,14 @@ macro(set_lili_hdf5)
   # Find HDF5
   find_package(HDF5 REQUIRED COMPONENTS C)
 endmacro()
+
+# Set the compiler flags
+macro(set_lili_compiler_flags)
+  message(STATUS "Setting compiler flags")
+
+  # Set the compiler flags
+  add_compile_options(
+    -Wall -Wextra -Werror
+    $<$<CONFIG:Release>:-O3>
+  )
+endmacro()

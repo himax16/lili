@@ -35,6 +35,9 @@ set_lili_mpi()
 # HDF5
 set_lili_hdf5()
 
+# Compiler flags
+set_lili_compiler_flags()
+
 # Version configuration
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 git_local_changes(GIT_STATUS)
