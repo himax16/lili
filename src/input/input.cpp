@@ -254,6 +254,7 @@ Input ParseArguments(int argc, char *argv[]) {
             std::cerr << "Unrecognized option: " << argv[i_arg] << std::endl;
             exit(1);
           }
+          break;
         case 'i':
           if (has_input) {
             // Throw error for multiple input file
@@ -264,6 +265,7 @@ Input ParseArguments(int argc, char *argv[]) {
           input.input_file() = argv[++i_arg];
           input.Parse();
           has_input = true;
+          break;
         case 'h':
           // Print help
           lili::output::PrintHelp();
