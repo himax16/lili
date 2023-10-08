@@ -12,18 +12,31 @@ namespace lili::mesh {
  */
 class Field {
  public:
-  // Public data members
-  Mesh<double> ex, ey, ez;
-  Mesh<double> bx, by, bz;
-
   // Constructor
-  Field() : nx_(1), ny_(1), nz_(1), ngx_(0), ngy_(0), ngz_(0) {
+  Field()
+      : nx_(1),
+        ny_(1),
+        nz_(1),
+        ngx_(0),
+        ngy_(0),
+        ngz_(0),
+        dx_(1.0),
+        dy_(1.0),
+        dz_(1.0) {
     InitializeMesh();
   };
 
   // Size-based initialization
   Field(int nx, int ny, int nz, int ngx, int ngy, int ngz)
-      : nx_(nx), ny_(ny), nz_(nz), ngx_(ngx), ngy_(ngy), ngz_(ngz) {
+      : nx_(nx),
+        ny_(ny),
+        nz_(nz),
+        ngx_(ngx),
+        ngy_(ngy),
+        ngz_(ngz),
+        dx_(1.0),
+        dy_(1.0),
+        dz_(1.0) {
     InitializeMesh();
   };
 
@@ -33,7 +46,10 @@ class Field {
         nz_(domain_size.nz),
         ngx_(domain_size.ngx),
         ngy_(domain_size.ngy),
-        ngz_(domain_size.ngz) {
+        ngz_(domain_size.ngz),
+        dx_(1.0),
+        dy_(1.0),
+        dz_(1.0) {
     InitializeMesh();
   };
 
@@ -45,12 +61,15 @@ class Field {
         ngx_(field.ngx_),
         ngy_(field.ngy_),
         ngz_(field.ngz_),
-        ex(field.ex),
-        ey(field.ey),
-        ez(field.ez),
-        bx(field.bx),
-        by(field.by),
-        bz(field.bz) {
+        dx_(field.dx_),
+        dy_(field.dy_),
+        dz_(field.dz_) {
+    ex = field.ex;
+    ey = field.ey;
+    ez = field.ez;
+    bx = field.bx;
+    by = field.by;
+    bz = field.bz;
     SyncSize();
   };
 
@@ -76,6 +95,10 @@ class Field {
     swap(first.ntz_, second.ntz_);
     swap(first.nt_, second.nt_);
 
+    swap(first.dx_, second.dx_);
+    swap(first.dy_, second.dy_);
+    swap(first.dz_, second.dz_);
+
     swap(first.ex, second.ex);
     swap(first.ey, second.ey);
     swap(first.ez, second.ez);
@@ -96,6 +119,9 @@ class Field {
   constexpr int nty() const { return nty_; };
   constexpr int ntz() const { return ntz_; };
   constexpr int nt() const { return nt_; };
+  constexpr double dx() const { return dx_; };
+  constexpr double dy() const { return dy_; };
+  constexpr double dz() const { return dz_; };
 
   void SyncSize() {
     // Sync sizes
@@ -126,11 +152,17 @@ class Field {
     SyncSize();
   };
 
+  // Public data members
+  Mesh<double> ex, ey, ez;
+  Mesh<double> bx, by, bz;
+
  private:
   int dim_;                   // Mesh dimension
   int nx_, ny_, nz_;          // Mesh sizes
   int ngx_, ngy_, ngz_;       // Ghost cells sizes (same for before and after)
   int ntx_, nty_, ntz_, nt_;  // Total mesh sizes (including ghost cells)
+
+  double dx_, dy_, dz_;  // Mesh spacings
 };
 
 Field LoadField(const char* file_name);
