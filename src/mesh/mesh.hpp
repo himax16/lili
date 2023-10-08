@@ -364,6 +364,66 @@ class Mesh {
     }
   };
 
+  /**
+   * @brief Linear interpolation
+   * @param x X-axis coordinate relative to the mesh
+   */
+  T LinearInterpolation(double x) const {
+    // Cache variables
+    int ix = static_cast<int>(x);
+    double xd = x - ix;
+
+    // Interpolate
+    return (1.0 - xd) * (*this)(ix, 0, 0) + xd * (*this)(ix + 1, 0, 0);
+  };
+
+  /**
+   * @brief Bilenar interpolation
+   * @param x X-axis coordinate relative to the mesh
+   * @param y Y-axis coordinate relative to the mesh
+   */
+  T BilinearInterpolation(double x, double y) const {
+    // Cache variables
+    int ix = static_cast<int>(x);
+    int iy = static_cast<int>(y);
+
+    double xd = x - ix;
+    double yd = y - iy;
+
+    // Interpolate
+    return (1.0 - xd) *
+               ((1.0 - yd) * (*this)(ix, iy, 0) + yd * (*this)(ix, iy + 1, 0)) +
+           xd * ((1.0 - yd) * (*this)(ix + 1, iy, 0) +
+                 yd * (*this)(ix + 1, iy + 1, 0));
+  }
+
+  /**
+   * @brief Trilinear interpolation
+   * @param x X-axis coordinate relative to the mesh
+   * @param y Y-axis coordinate relative to the mesh
+   * @param z Z-axis coordinate relative to the mesh
+   */
+  T TrilinearInterpolation(double x, double y, double z) const {
+    // Cache variables
+    int ix = static_cast<int>(x);
+    int iy = static_cast<int>(y);
+    int iz = static_cast<int>(z);
+
+    double xd = x - ix;
+    double yd = y - iy;
+    double zd = z - iz;
+
+    // Interpolate
+    return (1.0 - xd) * ((1.0 - yd) * ((1.0 - zd) * (*this)(ix, iy, iz) +
+                                       zd * (*this)(ix, iy, iz + 1)) +
+                         yd * ((1.0 - zd) * (*this)(ix, iy + 1, iz) +
+                               zd * (*this)(ix, iy + 1, iz + 1))) +
+           xd * ((1.0 - yd) * ((1.0 - zd) * (*this)(ix + 1, iy, iz) +
+                               zd * (*this)(ix + 1, iy, iz + 1)) +
+                 yd * ((1.0 - zd) * (*this)(ix + 1, iy + 1, iz) +
+                       zd * (*this)(ix + 1, iy + 1, iz + 1)));
+  };
+
  private:
   int dim_;                   // Mesh dimension
   int nx_, ny_, nz_;          // Mesh sizes
