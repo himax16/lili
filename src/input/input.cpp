@@ -18,6 +18,8 @@ Input::Input() {
   input_file_ = "";
   problem_name_ = "LILI";
   input_type_ = InputType::None;
+  dt_ = 1.0;
+  nt_ = 1;
 }
 
 /**
@@ -30,6 +32,8 @@ Input::Input(const char *in_file) {
   input_file_ = in_file;
   problem_name_ = "LILI";
   input_type_ = InputType::None;
+  dt_ = 1.0;
+  nt_ = 1;
 }
 
 /**
@@ -44,6 +48,8 @@ Input::Input(const Input &input) {
 
   mesh_ = input.mesh_;
   particles_ = input.particles_;
+  dt_ = input.dt_;
+  nt_ = input.nt_;
 }
 
 /**
@@ -63,6 +69,8 @@ void swap(Input &first, Input &second) {
 
   swap(first.mesh_, second.mesh_);
   swap(first.particles_, second.particles_);
+  swap(first.dt_, second.dt_);
+  swap(first.nt_, second.nt_);
 }
 
 /**
@@ -183,6 +191,15 @@ void Input::Parse() {
       // Add particle to the list
       particles_.push_back(particle);
     }
+  }
+
+  // Parse integrator
+  if (j.contains("integrator")) {
+    // Parse time step
+    dt_ = j.at("integrator").at("dt").get<double>();
+
+    // Parse number of time steps
+    nt_ = j.at("integrator").at("nt").get<long>();
   }
 
   // // serialization with pretty printing

@@ -58,6 +58,8 @@ class Input {
   InputType input_type() const { return input_type_; }
   lili::mesh::MeshSize mesh() const { return mesh_; }
   std::vector<InputParticle> particles() const { return particles_; }
+  long nt() const { return nt_; }
+  double dt() const { return dt_; }
 
   // Setters
   std::string& input_file() { return input_file_; }
@@ -65,6 +67,8 @@ class Input {
   InputType& input_type() { return input_type_; }
   lili::mesh::MeshSize& mesh() { return mesh_; }
   std::vector<InputParticle>& particles() { return particles_; }
+  long& nt() { return nt_; }
+  double& dt() { return dt_; }
 
   // Function to parse input file
   void Parse();
@@ -76,6 +80,9 @@ class Input {
 
   lili::mesh::MeshSize mesh_;
   std::vector<InputParticle> particles_;
+
+  long nt_;
+  double dt_;
 };
 
 // Function declaration
