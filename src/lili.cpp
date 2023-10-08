@@ -6,7 +6,9 @@
 
 // #include <numbers>
 
+#include <chrono>
 #include <iomanip>
+#include <thread>
 
 #include "field.hpp"
 #include "hdf5.h"
@@ -65,12 +67,31 @@ int main(int argc, char *argv[]) {
 
   // Test initializing field
   mesh::Field field(input.mesh());
-  std::cout << "nx = " << field.nx() << " " << field.ex.nx() << " "
-            << field.ey.nx() << " " << field.ez.nx() << std::endl;
-  std::cout << "ny = " << field.ny() << " " << field.ex.ny() << " "
-            << field.ey.ny() << " " << field.ez.ny() << std::endl;
-  std::cout << "nz = " << field.nz() << " " << field.ex.nz() << " "
-            << field.ey.nz() << " " << field.ez.nz() << std::endl;
+  std::cout << "Ex init : " << field.ex.data() << std::endl;
+  // Change some data
+  field.ex = 5.0;
+  field.ex(5, 5, 0) = 1.2;
+  mesh::Field field2(field);
+  std::cout << "Ex copy : " << field2.ex.data() << std::endl;
+  std::cout << "Ex after: " << field.ex.data() << std::endl;
+  // Check if the data is the same
+  std::cout << "Ex check: " << field.ex(5, 5, 0) << " and "
+            << field2.ex(5, 5, 0) << std::endl;
+  std::cout << "Ex check: " << field.ex(1, 5, 0) << " and "
+            << field2.ex(1, 5, 0) << std::endl;
+
+  // Get current time
+  auto start = std::chrono::high_resolution_clock::now();
+
+  // Sleep for 1 second
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+
+  // Print elapsed time
+  std::cout << "Elapsed time: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(
+                   std::chrono::high_resolution_clock::now() - start)
+                   .count()
+            << " ms" << std::endl;
 
   /****************************************************************************/
   // Variable declaration

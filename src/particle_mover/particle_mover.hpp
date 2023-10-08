@@ -5,6 +5,7 @@
 #pragma once
 
 #include "field.hpp"
+#include "input.hpp"
 #include "particle.hpp"
 
 namespace lili::particle {
@@ -23,9 +24,11 @@ typedef enum : int {
 class ParticleMover {
  public:
   // Constructor
-  ParticleMover() : type_(ParticleMoverType::None), dt_(0.0), cache_(nullptr){};
-  ParticleMover(double dt)
-      : type_(ParticleMoverType::None), dt_(dt), cache_(nullptr){};
+  ParticleMover()
+      : type_(ParticleMoverType::None),
+        dt_(0.0),
+        cache_(nullptr),
+        Move_(nullptr){};
 
   // Destructor
   ~ParticleMover() {
@@ -34,11 +37,13 @@ class ParticleMover {
     }
   };
 
-  // Cache initialization
-  virtual void InitializeCache(Particles& particles, mesh::Field& field);
+  // Initialize Mover
+  virtual void InitializeMover(const input::Input& input);
 
   // Move particles
-  virtual void Move(Particles& particles, mesh::Field& field);
+  void Move(Particles& particles, mesh::Field& field) {
+    (this->*Move_)(particles, field);
+  };
 
   // Getter
   constexpr ParticleMoverType type() const { return type_; };
@@ -49,10 +54,13 @@ class ParticleMover {
   constexpr ParticleMoverType& type() { return type_; };
   constexpr double& dt() { return dt_; };
 
- private:
+ protected:
   ParticleMoverType type_;
   double dt_;
   double* cache_;
+
+  // Function pointer to actual Mover used
+  void (ParticleMover::*Move_)(Particles& particles, mesh::Field& field);
 };
 
 /**
@@ -61,21 +69,16 @@ class ParticleMover {
 class BorisParticleMover : public ParticleMover {
  public:
   // Constructor
-  BorisParticleMover() : ParticleMover() {
-    ParticleMover::type() = ParticleMoverType::Boris;
-  };
-  BorisParticleMover(double dt) : ParticleMover(dt) {
-    ParticleMover::type() = ParticleMoverType::Boris;
+  BorisParticleMover() : ParticleMover() { type_ = ParticleMoverType::Boris; };
+  BorisParticleMover(input::Input input) : ParticleMover() {
+    InitializeMover(input);
   };
 
   // Destructor
   ~BorisParticleMover(){};
 
-  // Cache initialization
-  void InitializeCache(Particles& particles, mesh::Field& field);
-
-  // Move particles
-  void Move(Particles& particles, mesh::Field& field);
+  // Initialize Mover
+  void InitializeMover(const input::Input& input);
 
   // Getter
   constexpr double qm() const { return qm_; };
@@ -84,7 +87,11 @@ class BorisParticleMover : public ParticleMover {
   constexpr double& qm() { return qm_; };
 
  private:
+  int dim_;
   double qm_;
+
+  // Move particles
+  void Move2D(Particles& particles, mesh::Field& field);
 };
 
 }  // namespace lili::particle
