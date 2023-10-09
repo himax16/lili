@@ -33,6 +33,8 @@ typedef struct {
   int nx, ny, nz;
   int ngx, ngy, ngz;
   double lx, ly, lz;
+  double dx, dy, dz;
+  double x0, y0, z0;
 } MeshSize;
 
 /**
