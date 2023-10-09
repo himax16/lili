@@ -13,20 +13,20 @@ namespace lili::particle {
  * @brief Enumeration class for the particle mover type
  */
 typedef enum : int {
-  None,  /**< No particle mover */
-  Boris, /**< Boris particle mover */
-  Vay    /**< Vay particle mover */
+  None,    /**< No particle mover */
+  Boris2D, /**< Boris 2D particle mover */
+  Boris3D  /**< Boris 3D particle mover */
 } ParticleMoverType;
 
 /**
- * @brief Base class for Particle mover
+ * @brief Class for Particle mover
  */
 class ParticleMover {
  public:
   // Constructor
   ParticleMover()
       : type_(ParticleMoverType::None),
-        dt_(0.0),
+        dt_(1.0),
         cache_(nullptr),
         Move_(nullptr){};
 
@@ -38,7 +38,7 @@ class ParticleMover {
   };
 
   // Initialize Mover
-  virtual void InitializeMover(const input::Input& input);
+  void InitializeMover(const input::Input& input);
 
   // Move particles
   void Move(Particles& particles, mesh::Field& field) {
@@ -47,6 +47,7 @@ class ParticleMover {
 
   // Getter
   constexpr ParticleMoverType type() const { return type_; };
+
   constexpr double dt() const { return dt_; };
   constexpr double* cache() const { return cache_; };
 
@@ -54,44 +55,37 @@ class ParticleMover {
   constexpr ParticleMoverType& type() { return type_; };
   constexpr double& dt() { return dt_; };
 
- protected:
+ private:
   ParticleMoverType type_;
+
   double dt_;
   double* cache_;
 
   // Function pointer to actual Mover used
   void (ParticleMover::*Move_)(Particles& particles, mesh::Field& field);
-};
 
-/**
- * @brief Class for the Boris particle mover
- */
-class BorisParticleMover : public ParticleMover {
- public:
-  // Constructor
-  BorisParticleMover() : ParticleMover() { type_ = ParticleMoverType::Boris; };
-  BorisParticleMover(input::Input input) : ParticleMover() {
-    InitializeMover(input);
+  // Different Movers
+  void MoveNone(Particles& particles, mesh::Field& field) {
+    std::cout << "Moving particles using no particle mover" << std::endl;
+
+    int npar = particles.npar();
+    double* __restrict__ ex = field.ex.data();
+    double sum = 0.;
+    for (int i = 0; i < npar; ++i) {
+      sum += ex[i];
+    }
   };
+  void MoveBoris2D(Particles& particles, mesh::Field& field);
+  void MoveBoris3D(Particles& particles, mesh::Field& field) {
+    std::cout << "Moving particles using Boris 3D particle mover" << std::endl;
 
-  // Destructor
-  ~BorisParticleMover(){};
-
-  // Initialize Mover
-  void InitializeMover(const input::Input& input);
-
-  // Getter
-  constexpr double qm() const { return qm_; };
-
-  // Setter
-  constexpr double& qm() { return qm_; };
-
- private:
-  int dim_;
-  double qm_;
-
-  // Move particles
-  void Move2D(Particles& particles, mesh::Field& field);
+    int npar = particles.npar();
+    double* __restrict__ ex = field.ex.data();
+    double sum = 0.;
+    for (int i = 0; i < npar; ++i) {
+      sum += ex[i];
+    }
+  };
 };
 
 }  // namespace lili::particle

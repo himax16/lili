@@ -39,7 +39,8 @@ int main(int argc, char *argv[]) {
   // Print input mesh information
   std::cout << "====== Mesh information ======" << std::endl;
   std::cout << "dim = " << input.mesh().dim << std::endl;
-  std::cout << "lx  = " << input.mesh().lx << std::endl;
+  std::cout << std::endl;
+  std::cout << "l   = " << input.mesh().lx << std::endl;
   std::cout << "nx  = " << input.mesh().nx << std::endl;
   std::cout << "ngx = " << input.mesh().ngx << std::endl;
   std::cout << std::endl;
@@ -52,33 +53,32 @@ int main(int argc, char *argv[]) {
   std::cout << "lz  = " << input.mesh().lz << std::endl;
   std::cout << "nz  = " << input.mesh().nz << std::endl;
   std::cout << "ngz = " << input.mesh().ngz << std::endl;
-  std::cout << "==============================" << std::endl;
 
   // Print input particle information
   std::cout << "==== Particle information ====" << std::endl;
   for (input::InputParticle particle : input.particles()) {
-    std::cout << "== " << particle.name << std::endl;
+    std::cout << "* " << particle.name << std::endl;
     std::cout << "  n   = " << particle.n << std::endl;
     std::cout << "  m   = " << particle.m << std::endl;
     std::cout << "  q   = " << particle.q << std::endl;
     std::cout << "  tau = " << particle.tau << std::endl;
   }
-  std::cout << "==============================" << std::endl;
 
-  // Test initializing field
+  // Initialize particles
+  int n_kind = input.particles().size();
+  std::vector<particle::Particles> particles;
+  for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
+    // particles.push_back(particle::Particles(input.particles()[i_kind]));
+  }
+
+  // Initialize field
   mesh::Field field(input.mesh());
-  std::cout << "Ex init : " << field.ex.data() << std::endl;
-  // Change some data
-  field.ex = 5.0;
-  field.ex(5, 5, 0) = 1.2;
-  mesh::Field field2(field);
-  std::cout << "Ex copy : " << field2.ex.data() << std::endl;
-  std::cout << "Ex after: " << field.ex.data() << std::endl;
-  // Check if the data is the same
-  std::cout << "Ex check: " << field.ex(5, 5, 0) << " and "
-            << field2.ex(5, 5, 0) << std::endl;
-  std::cout << "Ex check: " << field.ex(1, 5, 0) << " and "
-            << field2.ex(1, 5, 0) << std::endl;
+
+  // Test ParticleMover
+  particle::ParticleMover mover;
+  mover.InitializeMover(input);
+  std::cout << "Particle mover type: " << mover.type() << std::endl;
+  std::cout << "Particle mover dt  : " << mover.dt() << std::endl;
 
   // Get current time
   auto start = std::chrono::high_resolution_clock::now();
