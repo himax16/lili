@@ -68,6 +68,33 @@ Particles::Particles(int npar, int npar_max)
   }
 }
 
+Particles::Particles(input::InputParticle input_particle)
+    : npar_(input_particle.n),
+      npar_max_(input_particle.n < __LILIP_DEFAULT_BSIZE ? __LILIP_DEFAULT_BSIZE
+                                                         : input_particle.n),
+      id_(nullptr),
+      status_(nullptr),
+      x_(nullptr),
+      y_(nullptr),
+      z_(nullptr),
+      u_(nullptr),
+      v_(nullptr),
+      w_(nullptr) {
+  id_ = new ulong[npar_max_]();
+  status_ = new ParticleStatus[npar_max_]();
+  x_ = new double[npar_max_]();
+  y_ = new double[npar_max_]();
+  z_ = new double[npar_max_]();
+  u_ = new double[npar_max_]();
+  v_ = new double[npar_max_]();
+  w_ = new double[npar_max_]();
+
+  // Initialize status
+  for (int i = 0; i < npar_; ++i) {
+    status_[i] = ParticleStatus::In;
+  }
+}
+
 // Copy constructor
 Particles::Particles(const Particles& other)
     : npar_(other.npar_),
@@ -363,5 +390,14 @@ void SelectParticles(Particles& input, Particles& output, ParticleStatus status,
   if (remove) {
     input.CleanOut();
   }
+}
+
+/**
+ * @brief Function to label particles that are out of bounds
+ * @param particles Particles object
+ * @param mesh Mesh object
+ */
+void LabelBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size) {
+  // Get the range of each dimension
 }
 }  // namespace lili::particle

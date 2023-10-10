@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "input.hpp"
+
 #ifndef __LILIP_DEFAULT_BSIZE
 #define __LILIP_DEFAULT_BSIZE 1000000
 #endif
@@ -49,6 +51,7 @@ class Particles {
   Particles();
   Particles(int npar);
   Particles(int npar, int npar_max);
+  Particles(input::InputParticle input_particle);
 
   // Copy constructor
   Particles(const Particles& other);
@@ -174,5 +177,6 @@ Particles LoadParticles(const char* file_name);
 
 void SelectParticles(Particles& input, Particles& output, ParticleStatus status,
                      bool remove = false);
+void LabelBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size);
 
 }  // namespace lili::particle
