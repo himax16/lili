@@ -130,6 +130,7 @@ void Input::Parse() {
   // Parse mesh
   if (j.contains("mesh")) {
     auto j_mesh = j.at("mesh");
+
     // Parse mesh dimension
     mesh_.dim = j_mesh.at("dimension").get<int>();
     if (mesh_.dim < 1 || mesh_.dim > 3) {
@@ -173,6 +174,15 @@ void Input::Parse() {
       mesh_.lz = 1.0;
       mesh_.ngz = 0;
     }
+
+    // Calculate spacing and start
+    mesh_.dx = (double)mesh_.lx / mesh_.nx;
+    mesh_.dy = (double)mesh_.ly / mesh_.ny;
+    mesh_.dz = (double)mesh_.lz / mesh_.nz;
+
+    mesh_.x0 = 0.;
+    mesh_.y0 = 0.;
+    mesh_.z0 = 0.;
   }
 
   // Parse particles
