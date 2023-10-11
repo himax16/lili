@@ -27,7 +27,7 @@ extern const char* __LILIP_DNAME_DOUBLE[];
 /**
  * @brief Enumeration class for the particle status
  */
-typedef enum : int {
+typedef enum {
   Out,     /**< Irrelevant status */
   In,      /**< Particle is in the simulation domain */
   Tracked, /**< Particle is tracked */
@@ -37,12 +37,74 @@ typedef enum : int {
   Y1,      /**< Particle crossed the positive Y boundary */
   Z0,      /**< Particle crossed the negative Z boundary */
   Z1,      /**< Particle crossed the positive Z boundary */
+  X0Y0,    /**< Particle crossed the negative X and Y boundaries */
+  X0Y1,    /**< Particle crossed the negative X and positive Y boundaries */
+  X1Y0,    /**< Particle crossed the positive X and negative Y boundaries */
+  X1Y1,    /**< Particle crossed the positive X and Y boundaries */
+  X0Z0,    /**< Particle crossed the negative X and Z boundaries */
+  X0Z1,    /**< Particle crossed the negative X and positive Z boundaries */
+  X1Z0,    /**< Particle crossed the positive X and negative Z boundaries */
+  X1Z1,    /**< Particle crossed the positive X and Z boundaries */
+  Y0Z0,    /**< Particle crossed the negative Y and Z boundaries */
+  Y0Z1,    /**< Particle crossed the negative Y and positive Z boundaries */
+  Y1Z0,    /**< Particle crossed the positive Y and negative Z boundaries */
+  Y1Z1,    /**< Particle crossed the positive Y and Z boundaries */
+  X0Y0Z0,  /**< Particle crossed the negative X, Y and Z boundaries */
+  X0Y0Z1,  /**< Particle crossed the negative X, Y and positive Z boundaries */
+  X0Y1Z0,  /**< Particle crossed the negative X, positive Y and negative Z
+              boundaries */
+  X0Y1Z1,  /**< Particle crossed the negative X, positive Y and Z boundaries */
+  X1Y0Z0,  /**< Particle crossed the positive X, negative Y and negative Z
+              boundaries */
+  X1Y0Z1,  /**< Particle crossed the positive X, negative Y and Z boundaries */
+  X1Y1Z0,  /**< Particle crossed the positive X, Y and negative Z boundaries */
+  X1Y1Z1,  /**< Particle crossed the positive X, Y and Z boundaries */
   TX0,     /**< Particle crossed the negative X boundary and is tracked */
   TX1,     /**< Particle crossed the positive X boundary and is tracked */
   TY0,     /**< Particle crossed the negative Y boundary and is tracked */
   TY1,     /**< Particle crossed the positive Y boundary and is tracked */
   TZ0,     /**< Particle crossed the negative Z boundary and is tracked */
-  TZ1      /**< Particle crossed the positive Z boundary and is tracked */
+  TZ1,     /**< Particle crossed the positive Z boundary and is tracked */
+  TX0Y0,   /**< Particle crossed the negative X and Y boundaries and is
+              tracked */
+  TX0Y1,   /**< Particle crossed the negative X and positive Y boundaries and
+              is tracked */
+  TX1Y0,   /**< Particle crossed the positive X and negative Y boundaries and
+              is tracked */
+  TX1Y1,   /**< Particle crossed the positive X and Y boundaries and is
+              tracked */
+  TX0Z0,   /**< Particle crossed the negative X and Z boundaries and is
+              tracked */
+  TX0Z1,   /**< Particle crossed the negative X and positive Z boundaries and
+              is tracked */
+  TX1Z0,   /**< Particle crossed the positive X and negative Z boundaries and
+              is tracked */
+  TX1Z1,   /**< Particle crossed the positive X and Z boundaries and is
+                tracked */
+  TY0Z0,   /**< Particle crossed the negative Y and Z boundaries and is
+              tracked */
+  TY0Z1,   /**< Particle crossed the negative Y and positive Z boundaries and
+              is tracked */
+  TY1Z0,   /**< Particle crossed the positive Y and negative Z boundaries and
+              is tracked */
+  TY1Z1,   /**< Particle crossed the positive Y and Z boundaries and is
+              tracked */
+  TX0Y0Z0, /**< Particle crossed the negative X, Y and Z boundaries and is
+              tracked */
+  TX0Y0Z1, /**< Particle crossed the negative X, Y and positive Z boundaries
+              and is tracked */
+  TX0Y1Z0, /**< Particle crossed the negative X, positive Y and negative Z
+              boundaries and is tracked */
+  TX0Y1Z1, /**< Particle crossed the negative X, positive Y and Z boundaries
+              and is tracked */
+  TX1Y0Z0, /**< Particle crossed the positive X, negative Y and negative Z
+              boundaries and is tracked */
+  TX1Y0Z1, /**< Particle crossed the positive X, negative Y and Z boundaries
+              and is tracked */
+  TX1Y1Z0, /**< Particle crossed the positive X, Y and negative Z boundaries
+              and is tracked */
+  TX1Y1Z1  /**< Particle crossed the positive X, Y and Z boundaries and is
+               tracked */
 } ParticleStatus;
 
 class Particles {

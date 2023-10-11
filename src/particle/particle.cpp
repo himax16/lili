@@ -399,5 +399,178 @@ void SelectParticles(Particles& input, Particles& output, ParticleStatus status,
  */
 void LabelBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size) {
   // Get the range of each dimension
+  const double xmin = mesh_size.x0;
+  const double xmax = mesh_size.x0 + mesh_size.lx;
+  const double ymin = mesh_size.y0;
+  const double ymax = mesh_size.y0 + mesh_size.ly;
+  const double zmin = mesh_size.z0;
+  const double zmax = mesh_size.z0 + mesh_size.lz;
+
+  double* __restrict__ x = particles.x();
+  double* __restrict__ y = particles.y();
+  double* __restrict__ z = particles.z();
+  ParticleStatus* __restrict__ status = particles.status();
+
+  // Loop over particles and label them
+  // TODO: Can probably improve this branching logic
+  for (int i = 0; i < particles.npar(); ++i) {
+    if (status[i] == ParticleStatus::Tracked) {
+      if (x[i] < xmin) {
+        if (y[i] < ymin) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::TX0Y0Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::TX0Y0Z1;
+          } else {
+            status[i] = ParticleStatus::TX0Y0;
+          }
+        } else if (y[i] > ymax) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::TX0Y1Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::TX0Y1Z1;
+          } else {
+            status[i] = ParticleStatus::TX0Y1;
+          }
+        } else {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::TX0Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::TX0Z1;
+          } else {
+            status[i] = ParticleStatus::TX0;
+          }
+        }
+      } else if (x[i] > xmax) {
+        if (y[i] < ymin) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::TX1Y0Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::TX1Y0Z1;
+          } else {
+            status[i] = ParticleStatus::TX1Y0;
+          }
+        } else if (y[i] > ymax) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::TX1Y1Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::TX1Y1Z1;
+          } else {
+            status[i] = ParticleStatus::TX1Y1;
+          }
+        } else {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::TX1Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::TX1Z1;
+          } else {
+            status[i] = ParticleStatus::TX1;
+          }
+        }
+      } else {
+        if (y[i] < ymin) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::TY0Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::TY0Z1;
+          } else {
+            status[i] = ParticleStatus::TY0;
+          }
+        } else if (y[i] > ymax) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::TY1Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::TY1Z1;
+          } else {
+            status[i] = ParticleStatus::TY1;
+          }
+        } else {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::TZ0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::TZ1;
+          }
+        }
+      }
+    } else {
+      if (x[i] < xmin) {
+        if (y[i] < ymin) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::X0Y0Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::X0Y0Z1;
+          } else {
+            status[i] = ParticleStatus::X0Y0;
+          }
+        } else if (y[i] > ymax) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::X0Y1Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::X0Y1Z1;
+          } else {
+            status[i] = ParticleStatus::X0Y1;
+          }
+        } else {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::X0Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::X0Z1;
+          } else {
+            status[i] = ParticleStatus::X0;
+          }
+        }
+      } else if (x[i] > xmax) {
+        if (y[i] < ymin) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::X1Y0Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::X1Y0Z1;
+          } else {
+            status[i] = ParticleStatus::X1Y0;
+          }
+        } else if (y[i] > ymax) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::X1Y1Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::X1Y1Z1;
+          } else {
+            status[i] = ParticleStatus::X1Y1;
+          }
+        } else {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::X1Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::X1Z1;
+          } else {
+            status[i] = ParticleStatus::X1;
+          }
+        }
+      } else {
+        if (y[i] < ymin) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::Y0Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::Y0Z1;
+          } else {
+            status[i] = ParticleStatus::Y0;
+          }
+        } else if (y[i] > ymax) {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::Y1Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::Y1Z1;
+          } else {
+            status[i] = ParticleStatus::Y1;
+          }
+        } else {
+          if (z[i] < zmin) {
+            status[i] = ParticleStatus::Z0;
+          } else if (z[i] > zmax) {
+            status[i] = ParticleStatus::Z1;
+          }
+        }
+      }
+    }
+  }
 }
 }  // namespace lili::particle
