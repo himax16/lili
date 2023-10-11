@@ -37,6 +37,8 @@ typedef struct {
   double x0, y0, z0;
 } MeshSize;
 
+void PrintMeshSize(const MeshSize& mesh_size);
+
 /**
  * @brief Mesh class
  * @tparam T Data type

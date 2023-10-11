@@ -37,22 +37,7 @@ int main(int argc, char *argv[]) {
   std::cout << "Input type   : " << input.input_type() << std::endl;
 
   // Print input mesh information
-  std::cout << "====== Mesh information ======" << std::endl;
-  std::cout << "dim = " << input.mesh().dim << std::endl;
-  std::cout << std::endl;
-  std::cout << "l   = " << input.mesh().lx << std::endl;
-  std::cout << "nx  = " << input.mesh().nx << std::endl;
-  std::cout << "ngx = " << input.mesh().ngx << std::endl;
-  std::cout << std::endl;
-
-  std::cout << "ly  = " << input.mesh().ly << std::endl;
-  std::cout << "ny  = " << input.mesh().ny << std::endl;
-  std::cout << "ngy = " << input.mesh().ngy << std::endl;
-  std::cout << std::endl;
-
-  std::cout << "lz  = " << input.mesh().lz << std::endl;
-  std::cout << "nz  = " << input.mesh().nz << std::endl;
-  std::cout << "ngz = " << input.mesh().ngz << std::endl;
+  mesh::PrintMeshSize(input.mesh());
 
   // Print input particle information
   std::cout << "==== Particle information ====" << std::endl;
