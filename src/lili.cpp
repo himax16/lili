@@ -28,6 +28,9 @@ using namespace lili;
  *  Command line arguments
  */
 int main(int argc, char *argv[]) {
+  // Get start time
+  auto start = std::chrono::high_resolution_clock::now();
+
   // Parse inputs
   input::Input input = input::ParseArguments(argc, argv);
 
@@ -53,7 +56,7 @@ int main(int argc, char *argv[]) {
   int n_kind = input.particles().size();
   std::vector<particle::Particles> particles;
   for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
-    // particles.push_back(particle::Particles(input.particles()[i_kind]));
+    particles.push_back(particle::Particles(input.particles()[i_kind]));
   }
 
   // Initialize field
@@ -65,11 +68,8 @@ int main(int argc, char *argv[]) {
   std::cout << "Particle mover type: " << mover.type() << std::endl;
   std::cout << "Particle mover dt  : " << mover.dt() << std::endl;
 
-  // Get current time
-  auto start = std::chrono::high_resolution_clock::now();
-
-  // Sleep for 1 second
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  // // Sleep for 1 second
+  // std::this_thread::sleep_for(std::chrono::seconds(1));
 
   // Print elapsed time
   std::cout << "Elapsed time: "
