@@ -17,6 +17,7 @@
 #include "particle.hpp"
 #include "particle_initialization.hpp"
 #include "particle_mover.hpp"
+#include "track_particle.hpp"
 
 using namespace lili;
 /**
@@ -57,6 +58,35 @@ int main(int argc, char *argv[]) {
   std::vector<particle::Particles> particles;
   for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
     particles.push_back(particle::Particles(input.particles()[i_kind]));
+  }
+  particle::DistributeLocationUniform(particles[0], 0, 0.0, 1.0, 0.0, 1.0, 0.0,
+                                      0.0);
+  // particle::GammaTable gamma_table =
+  //     particle::GTMaxwellian3D(input.particles()[0].tau);
+  // particle::DistributeVelocityUniform(particles[0], 0, gamma_table);
+
+  // Set some particles to be tracked
+  int n_track = 10;
+  int n_dump = 7;
+  std::vector<int> track_ids(n_track);
+  for (int i_track = 0; i_track < n_track; ++i_track) {
+    particles[0].status()[i_track] = particle::ParticleStatus::Tracked;
+
+    track_ids[i_track] = particles[0].id()[i_track];
+  }
+  particle::TrackParticle track_particle(n_track, n_dump);
+
+  // Time loop
+  int n_loop = 10;
+  for (int i_loop = 0; i_loop < n_loop; ++i_loop) {
+    track_particle.SaveTrackedParticles(particles[0]);
+
+    // Move particles
+    for (int i_p = 0; i_p < particles[0].npar(); ++i_p) {
+      particles[0].x()[i_p] += 0.1;
+      particles[0].y()[i_p] += 0.1;
+      particles[0].z()[i_p] += 0.1;
+    }
   }
 
   // Initialize field

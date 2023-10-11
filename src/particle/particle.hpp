@@ -131,6 +131,9 @@ class Particles {
     swap(first.npar_, second.npar_);
     swap(first.npar_max_, second.npar_max_);
 
+    swap(first.q_, second.q_);
+    swap(first.m_, second.m_);
+
     swap(first.id_, second.id_);
     swap(first.status_, second.status_);
 
@@ -152,6 +155,9 @@ class Particles {
   constexpr int npar() const { return npar_; };
   constexpr int npar_max() const { return npar_max_; };
 
+  constexpr double q() const { return q_; };
+  constexpr double m() const { return m_; };
+
   constexpr ulong* id() const { return id_; };
   constexpr ParticleStatus* status() const { return status_; };
   constexpr double* x() const { return x_; };
@@ -172,6 +178,9 @@ class Particles {
 
   // Setters
   constexpr int& npar() { return npar_; };
+
+  constexpr double& q() { return q_; };
+  constexpr double& m() { return m_; };
 
   constexpr ulong& id(int i) { return id_[i]; };
   constexpr ParticleStatus& status(int i) { return status_[i]; };
@@ -220,13 +229,14 @@ class Particles {
   void AddID(int offset);
 
   // Swap two swap two particles
-  void pswap(int i, int j);
+  void pswap(const int i, const int j);
 
   // Clean up out particles
   void CleanOut();
 
  private:
   int npar_, npar_max_;
+  double q_, m_;
 
   ulong* id_;
   ParticleStatus* status_;

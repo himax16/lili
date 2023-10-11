@@ -21,8 +21,8 @@ typedef enum {
 // InputParticle struct
 typedef struct {
   int n;
-  double m;
   double q;
+  double m;
   double tau;
   std::string name;
 } InputParticle;

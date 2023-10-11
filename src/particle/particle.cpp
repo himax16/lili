@@ -26,6 +26,8 @@ const char* __LILIP_SNAME[] = {
 Particles::Particles()
     : npar_(0),
       npar_max_(__LILIP_DEFAULT_BSIZE),
+      q_(1.0),
+      m_(1.0),
       id_(new ulong[__LILIP_DEFAULT_BSIZE]()),
       status_(new ParticleStatus[__LILIP_DEFAULT_BSIZE]()),
       x_(new double[__LILIP_DEFAULT_BSIZE]()),
@@ -38,6 +40,8 @@ Particles::Particles()
 Particles::Particles(int npar)
     : npar_(npar),
       npar_max_(npar < __LILIP_DEFAULT_BSIZE ? __LILIP_DEFAULT_BSIZE : npar),
+      q_(1.0),
+      m_(1.0),
       id_(nullptr),
       status_(nullptr),
       x_(nullptr),
@@ -64,6 +68,8 @@ Particles::Particles(int npar)
 Particles::Particles(int npar, int npar_max)
     : npar_(npar),
       npar_max_(npar_max),
+      q_(1.0),
+      m_(1.0),
       id_(new ulong[npar_max]()),
       status_(new ParticleStatus[npar_max]()),
       x_(new double[npar_max]()),
@@ -82,6 +88,8 @@ Particles::Particles(input::InputParticle input_particle)
     : npar_(input_particle.n),
       npar_max_(input_particle.n < __LILIP_DEFAULT_BSIZE ? __LILIP_DEFAULT_BSIZE
                                                          : input_particle.n),
+      q_(input_particle.q),
+      m_(input_particle.m),
       id_(nullptr),
       status_(nullptr),
       x_(nullptr),
@@ -109,6 +117,8 @@ Particles::Particles(input::InputParticle input_particle)
 Particles::Particles(const Particles& other)
     : npar_(other.npar_),
       npar_max_(other.npar_max_),
+      q_(other.q_),
+      m_(other.m_),
       id_(new ulong[other.npar_max_]()),
       status_(new ParticleStatus[other.npar_max_]()),
       x_(new double[other.npar_max_]()),
@@ -198,7 +208,7 @@ void Particles::AddID(int offset) {
  * @param i Index of the first particle
  * @param j Index of the second particle
  */
-void Particles::pswap(int i, int j) {
+void Particles::pswap(const int i, const int j) {
   int tmp_uint32 = id_[i];
   id_[i] = id_[j];
   id_[j] = tmp_uint32;
