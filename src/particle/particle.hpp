@@ -23,6 +23,7 @@
 namespace lili::particle {
 extern const char* __LILIP_DNAME_UINT32[];
 extern const char* __LILIP_DNAME_DOUBLE[];
+extern const char* __LILIP_SNAME[];
 
 /**
  * @brief Enumeration class for the particle status

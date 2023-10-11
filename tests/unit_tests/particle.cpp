@@ -39,3 +39,27 @@ particle::DistributeLocationUniform(particles, 0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
 particle::DistributeVelocityUniform(particles, 0, table);
 
 particle::SaveParticles(particles, "test.h5");
+
+// Randomly set particle status
+particles[0].status(2) = particle::ParticleStatus::Tracked;
+particles[0].status(7) = particle::ParticleStatus::Tracked;
+particles[0].status(9) = particle::ParticleStatus::Tracked;
+
+// Randomly move particles
+particles[0].x(0) = -2.0;
+particles[0].y(0) = -2.0;
+particles[0].z(0) = -2.0;
+particles[0].x(1) = 2.0;
+particles[0].y(1) = -2.0;
+particles[0].z(7) = -2.0;
+
+// Reclassify particles
+particle::LabelBoundaryParticles(particles[0], input.mesh());
+
+// Print particle status
+for (int i = 0; i < particles[0].npar(); ++i) {
+  if (particles[0].status(i) != particle::ParticleStatus::In) {
+    std::cout << "Par " << i << " "
+              << particle::__LILIP_SNAME[particles[0].status(i)] << std::endl;
+  }
+}
