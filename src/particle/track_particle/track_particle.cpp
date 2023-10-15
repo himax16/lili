@@ -5,7 +5,11 @@
 
 #include "track_particle.hpp"
 
+#include <iomanip>
 #include <iostream>
+#include <sstream>
+
+#include "hdf5.h"
 
 namespace lili::particle {
 /**
@@ -39,22 +43,21 @@ void TrackParticle::SaveTrackedParticles(Particles &particles) {
 
   // Move the data to the dump cache
   for (int i_track = 0; i_track < ntrack_; ++i_track) {
-    idtrack_[idump_ * ntrack_ + i_track] = track_particles.id()[i_track];
-    xtrack_[idump_ * ntrack_ + i_track] = track_particles.x()[i_track];
-    ytrack_[idump_ * ntrack_ + i_track] = track_particles.y()[i_track];
-    ztrack_[idump_ * ntrack_ + i_track] = track_particles.z()[i_track];
-    utrack_[idump_ * ntrack_ + i_track] = track_particles.u()[i_track];
-    vtrack_[idump_ * ntrack_ + i_track] = track_particles.v()[i_track];
-    wtrack_[idump_ * ntrack_ + i_track] = track_particles.w()[i_track];
+    idtrack_[itrack_ * ntrack_ + i_track] = track_particles.id()[i_track];
+    xtrack_[itrack_ * ntrack_ + i_track] = track_particles.x()[i_track];
+    ytrack_[itrack_ * ntrack_ + i_track] = track_particles.y()[i_track];
+    ztrack_[itrack_ * ntrack_ + i_track] = track_particles.z()[i_track];
+    utrack_[itrack_ * ntrack_ + i_track] = track_particles.u()[i_track];
+    vtrack_[itrack_ * ntrack_ + i_track] = track_particles.v()[i_track];
+    wtrack_[itrack_ * ntrack_ + i_track] = track_particles.w()[i_track];
   }
 
-  // Increment the dump index
-  ++idump_;
+  // Increment the tracking index
+  ++itrack_;
 
-  // Dump the tracked particles if the dump index reaches the dump number
-  if (idump_ >= ndump_) {
+  // Dump the tracked particles if the tracking index reaches the dump number
+  if (itrack_ >= ndump_) {
     DumpTrackedParticles();
-    idump_ = 0;
   }
 }
 
@@ -63,18 +66,66 @@ void TrackParticle::SaveTrackedParticles(Particles &particles) {
  */
 void TrackParticle::DumpTrackedParticles() {
   // Dump the tracked particles
-  std::cout << "Dumping tracked particles..." << std::endl;
-  for (int i_dump = 0; i_dump < ndump_; ++i_dump) {
-    std::cout << "Dump " << i_dump << std::endl;
-    for (int i_track = 0; i_track < ntrack_; ++i_track) {
-      std::cout << idtrack_[i_dump * ntrack_ + i_track] << " "
-                << xtrack_[i_dump * ntrack_ + i_track] << " "
-                << ytrack_[i_dump * ntrack_ + i_track] << " "
-                << ztrack_[i_dump * ntrack_ + i_track] << " "
-                << utrack_[i_dump * ntrack_ + i_track] << " "
-                << vtrack_[i_dump * ntrack_ + i_track] << " "
-                << wtrack_[i_dump * ntrack_ + i_track] << std::endl;
-    }
-  }
+  // Set filename and create file
+  std::stringstream ss;
+  ss << std::setw(5) << std::setfill('0') << idump_;
+  std::string filename = prefix_ + "_" + ss.str() + ".h5";
+  std::cout << "Dumping tracked particles to " << filename << std::endl;
+  hid_t file_id =
+      H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+
+  // Create dataspace to store particles
+  hsize_t dims[2] = {static_cast<hsize_t>(ndump_),
+                     static_cast<hsize_t>(ntrack_)};
+  hid_t dataspace_id = H5Screate_simple(2, dims, NULL);
+
+  // Write the particle IDs
+  hid_t dataset_id = H5Dcreate(file_id, "id", H5T_NATIVE_ULONG, dataspace_id,
+                               H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_ULONG, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           idtrack_);
+  H5Dclose(dataset_id);
+
+  // Write the particle coordinates
+  dataset_id = H5Dcreate(file_id, "x", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           xtrack_);
+  H5Dclose(dataset_id);
+  dataset_id = H5Dcreate(file_id, "y", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           ytrack_);
+  H5Dclose(dataset_id);
+  dataset_id = H5Dcreate(file_id, "z", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           ztrack_);
+  H5Dclose(dataset_id);
+
+  // Write the particle velocities
+  dataset_id = H5Dcreate(file_id, "u", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           utrack_);
+  H5Dclose(dataset_id);
+  dataset_id = H5Dcreate(file_id, "v", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           vtrack_);
+  H5Dclose(dataset_id);
+  dataset_id = H5Dcreate(file_id, "w", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           wtrack_);
+  H5Dclose(dataset_id);
+
+  // Close dataspace and file
+  H5Sclose(dataspace_id);
+  H5Fclose(file_id);
+
+  // Add the dump index and clear the tracking index
+  ++idump_;
+  itrack_ = 0;
 }
 }  // namespace lili::particle
