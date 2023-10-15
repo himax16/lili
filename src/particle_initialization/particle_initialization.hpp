@@ -17,6 +17,7 @@
 #endif
 
 namespace lili::particle {
+void DistributeID(Particles& particles, const int offset);
 void DistributeLocationUniform(Particles& particles, const int seed,
                                const double x0, const double x1,
                                const double y0, const double y1,

@@ -15,6 +15,19 @@
 
 namespace lili::particle {
 /**
+ * @brief Distribute particle IDs
+ * @param[in] particles
+ * Particle object
+ * @param[in] offset
+ * Offset for the particle IDs
+ */
+void DistributeID(Particles& particles, const int offset) {
+  for (int i = 0; i < particles.npar(); ++i) {
+    particles.id(i) = i + offset;
+  }
+}
+
+/**
  * @brief Distribute particles uniformly in the simulation domain
  * @param[in] particles
  * Particle object
