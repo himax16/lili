@@ -251,5 +251,6 @@ Particles LoadParticles(const char* file_name);
 void SelectParticles(Particles& input, Particles& output, ParticleStatus status,
                      bool remove = false);
 void LabelBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size);
+void PeriodicBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size);
 
 }  // namespace lili::particle

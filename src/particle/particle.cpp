@@ -593,4 +593,46 @@ void LabelBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size) {
     }
   }
 }
+
+/**
+ * @brief Function to move particle positions assuming periodic boundaries
+ * @param particles Particles object
+ * @param mesh_size Mesh size
+ */
+void PeriodicBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size) {
+  // Get the range of each dimension
+  const double lx = mesh_size.lx;
+  const double ly = mesh_size.ly;
+  const double lz = mesh_size.lz;
+
+  const double xmin = mesh_size.x0;
+  const double xmax = mesh_size.x0 + lx;
+  const double ymin = mesh_size.y0;
+  const double ymax = mesh_size.y0 + ly;
+  const double zmin = mesh_size.z0;
+  const double zmax = mesh_size.z0 + lz;
+
+  double* __restrict__ x = particles.x();
+  double* __restrict__ y = particles.y();
+  double* __restrict__ z = particles.z();
+
+  // Loop over particles and move them
+  for (int i = 0; i < particles.npar(); ++i) {
+    if (x[i] < xmin) {
+      x[i] += lx;
+    } else if (x[i] > xmax) {
+      x[i] -= lx;
+    }
+    if (y[i] < ymin) {
+      y[i] += ly;
+    } else if (y[i] > ymax) {
+      y[i] -= ly;
+    }
+    if (z[i] < zmin) {
+      z[i] += lz;
+    } else if (z[i] > zmax) {
+      z[i] -= lz;
+    }
+  }
+}
 }  // namespace lili::particle
