@@ -27,6 +27,7 @@ target_link_libraries(lili PUBLIC track_particle)
 target_link_libraries(lili PUBLIC particle_initialization)
 target_link_libraries(lili PUBLIC particle_mover)
 target_link_libraries(lili PUBLIC hdf5::hdf5)
+target_link_libraries(lili PUBLIC stdc++fs)
 
 # HIMA: Kalau pakai Boost
 # target_include_directories(

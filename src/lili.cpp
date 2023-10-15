@@ -7,6 +7,7 @@
 // #include <numbers>
 
 #include <chrono>
+#include <filesystem>
 #include <iomanip>
 #include <thread>
 
@@ -28,7 +29,7 @@ using namespace lili;
  * @param[in] argv
  *  Command line arguments
  */
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   // Get start time
   auto start = std::chrono::high_resolution_clock::now();
 
@@ -43,6 +44,11 @@ int main(int argc, char *argv[]) {
   // Print input mesh information
   mesh::PrintMeshSize(input.mesh());
 
+  // Initialize field
+  mesh::Field field(input.mesh());
+  field.bz = 1.0;
+  field.ex = 1.0;
+
   // Print input particle information
   std::cout << "==== Particle information ====" << std::endl;
   for (input::InputParticle particle : input.particles()) {
@@ -55,19 +61,38 @@ int main(int argc, char *argv[]) {
 
   // Initialize particles
   int n_kind = input.particles().size();
-  std::vector<particle::Particles> particles;
+  std::vector<particle::Particles> particles(n_kind);
   for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
-    particles.push_back(particle::Particles(input.particles()[i_kind]));
+    particles[i_kind] = particle::Particles(input.particles()[i_kind]);
+    particle::DistributeID(particles[i_kind], 17);
+
+    // Distribute positions
+    particle::DistributeLocationUniform(particles[i_kind], 0, 0.0, 1.0, 0.0,
+                                        1.0, 0.0, 0.0);
+    // Distribute velocities
+    particle::GammaTable gamma_table =
+        particle::GTMaxwellian3D(input.particles()[i_kind].tau);
+    particle::DistributeVelocityUniform(particles[i_kind], 0, gamma_table);
   }
-  particle::DistributeLocationUniform(particles[0], 0, 0.0, 1.0, 0.0, 1.0, 0.0,
-                                      0.0);
-  // particle::GammaTable gamma_table =
-  //     particle::GTMaxwellian3D(input.particles()[0].tau);
-  // particle::DistributeVelocityUniform(particles[0], 0, gamma_table);
+
+  // Initialize particle mover
+  particle::ParticleMover mover;
+  mover.InitializeMover(input);
+  std::cout << "Particle mover type: " << mover.type() << std::endl;
+  std::cout << "Particle mover dt  : " << mover.dt() << std::endl;
+
+  // Initialize output folder
+  std::string output_folder = "output";
+  if (!std::filesystem::is_directory(output_folder)) {
+    std::filesystem::create_directory(output_folder);
+    std::cout << "Created output folder: " << output_folder << std::endl;
+  } else {
+    std::cout << "Output folder: " << output_folder << std::endl;
+  }
 
   // Set some particles to be tracked
-  int n_track = 10;
-  int n_dump = 7;
+  int n_track = 100000;
+  int n_dump = 1000;
   std::vector<int> track_ids(n_track);
   for (int i_track = 0; i_track < n_track; ++i_track) {
     particles[0].status()[i_track] = particle::ParticleStatus::Tracked;
@@ -75,92 +100,35 @@ int main(int argc, char *argv[]) {
     track_ids[i_track] = particles[0].id()[i_track];
   }
   particle::TrackParticle track_particle(n_track, n_dump);
+  track_particle.SetPrefix(std::filesystem::path(output_folder) / "tp");
 
   // Time loop
-  int n_loop = 10;
+  int n_loop = 10000;
   for (int i_loop = 0; i_loop < n_loop; ++i_loop) {
     track_particle.SaveTrackedParticles(particles[0]);
 
     // Move particles
-    for (int i_p = 0; i_p < particles[0].npar(); ++i_p) {
-      particles[0].x()[i_p] += 0.1;
-      particles[0].y()[i_p] += 0.1;
-      particles[0].z()[i_p] += 0.1;
+    for (particle::Particles& par : particles) {
+      mover.Move(par, field);
+      particle::PeriodicBoundaryParticles(par, input.mesh());
     }
   }
 
-  // Initialize field
-  mesh::Field field(input.mesh());
-
-  // Test ParticleMover
-  particle::ParticleMover mover;
-  mover.InitializeMover(input);
-  std::cout << "Particle mover type: " << mover.type() << std::endl;
-  std::cout << "Particle mover dt  : " << mover.dt() << std::endl;
+  // Save and dump tracked particles
+  track_particle.SaveTrackedParticles(particles[0]);
+  if (track_particle.itrack() > 0) {
+    track_particle.DumpTrackedParticles();
+  }
 
   // // Sleep for 1 second
   // std::this_thread::sleep_for(std::chrono::seconds(1));
 
   // Print elapsed time
-  std::cout << "Elapsed time: "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(
-                   std::chrono::high_resolution_clock::now() - start)
-                   .count()
-            << " ms" << std::endl;
-
-  /****************************************************************************/
-  // Variable declaration
-  // int n_simsys = 0;
-  // bool has_mhd = false;
-  // bool use_emf = true;
-
-  // int i_loop = 0;
-  // int n_loop = 10;
-
-  // // Initialize simulation system based on the input file
-  // if (n_simsys <= 0) {
-  //   std::cerr << "Number of simulated system must be positive" << std::endl;
-  //   exit(10);
-  // }
-  // for (int i_simsys = 0; i_simsys < n_simsys; ++i_simsys) {
-  //   switch (simsys[i_simsys].type) {
-  //     case 'm':
-  //       if (has_mhd) {
-  //         std::cerr << "There are multiple MHD simulation system" <<
-  //         std::endl; exit(12);
-  //       }
-  //       initialize_mhdsys(simsys[i_simsys].property);
-  //       has_mhd = true;
-  //     case 'p':
-  //       initialize_parsys(simsys[i_simsys].property);
-  //       break;
-  //     case 'f':
-  //       initialize_flusys(simsys[i_simsys].property);
-  //       break;
-  //     case 'n':
-  //       initialize_neusys(simsys[i_simsys].property);
-  //       break;
-  //     default:
-  //       std::cerr << "Unrecognized simulation system" << std::endl;
-  //       exit(11);
-  //   }
-  // }
-
-  // // Initialize field variable if needed
-  // if (use_emf) {
-  //   initialize_emfsys();
-  // }
-
-  // // boost::json::object obj;
-  // // obj["pi"] = boost::math::constants::pi<double>();
-
-  // // std::cout << obj << std::endl;
-
-  // // LILI main loop
-  // for (i_loop = 0; i_loop < n_loop; ++i_loop) {
-  //   std::cout << i_loop << std::endl;
-
-  // }
+  std ::cout << "Elapsed time: "
+             << std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::high_resolution_clock::now() - start)
+                    .count()
+             << " ms" << std::endl;
 
   return 0;
 }
