@@ -30,6 +30,14 @@ macro(set_lili_mpi)
   find_package(MPI REQUIRED)
 endmacro()
 
+# Set the OpenMP library
+macro(set_lili_openmp)
+  message(STATUS "Setting OpenMP")
+  
+  # Find OpenMP
+  find_package(OpenMP REQUIRED)
+endmacro()
+
 # Set the HDF5 library
 # Careful that FindHDF5.cmake API is not consistent across versions
 macro(set_lili_hdf5)

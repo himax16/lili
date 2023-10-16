@@ -32,6 +32,9 @@ set_lili_cxx()
 # MPI
 set_lili_mpi()
 
+# OpenMP
+set_lili_openmp()
+
 # HDF5
 set_lili_hdf5()
 
