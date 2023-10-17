@@ -12,7 +12,7 @@ namespace lili::particle {
  * @param[in] input
  * Input object
  */
-void ParticleMover::InitializeMover(const input::Input&) {
+void ParticleMover::InitializeMover(const input::Input& input) {
   // Set the particle mover type
   type_ = ParticleMoverType::Boris2D;
 
@@ -26,6 +26,9 @@ void ParticleMover::InitializeMover(const input::Input&) {
       Move_ = &ParticleMover::MoveNone;
       break;
   }
+
+  // Set the time step
+  dt_ = input.dt();
 }
 
 /**
@@ -39,7 +42,7 @@ void ParticleMover::InitializeMover(const input::Input&) {
 void ParticleMover::MoveBoris2D(Particles& particles, mesh::Field& field) {
   // Initialize variables
   int npar = particles.npar();
-  double qmhdt = particles.q() / (2.0 * particles.m() * dt_);
+  double qmhdt = particles.q() * dt_ / (2.0 * particles.m());
 
   // Get the particle information
   double* __restrict__ x = particles.x();
@@ -56,7 +59,6 @@ void ParticleMover::MoveBoris2D(Particles& particles, mesh::Field& field) {
 
   // Loop over the particles
   for (int i = 0; i < npar; ++i) {
-    // Get the electromagnetic field
     ex = qmhdt * field.ex(x[i], y[i], z[i]);
     ey = qmhdt * field.ey(x[i], y[i], z[i]);
     ez = qmhdt * field.ez(x[i], y[i], z[i]);
