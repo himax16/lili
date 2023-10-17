@@ -1,6 +1,6 @@
 /**
  * @file track_particle.hpp
- * @brief Header file for the TrackParticle helper class for tracking particles
+ * @brief Header file for the TrackParticles helper class for tracking particles
  */
 #pragma once
 
@@ -10,18 +10,18 @@
 
 namespace lili::particle {
 /**
- * @brief TrackParticle class
+ * @brief TrackParticles class
  */
-class TrackParticle {
+class TrackParticles {
  public:
   // Constructor
-  TrackParticle(int ntrack, int ndump)
+  TrackParticles(int ntrack, int ndump)
       : ntrack_(ntrack), ndump_(ndump), itrack_(0), idump_(0), prefix_("tp_") {
-    InitializeTrackParticle();
+    InitializeTrackParticles();
   }
 
   // Destructor
-  ~TrackParticle() {
+  ~TrackParticles() {
     delete[] idtrack_;
     delete[] xtrack_;
     delete[] ytrack_;
@@ -31,8 +31,8 @@ class TrackParticle {
     delete[] wtrack_;
   };
 
-  // Initialize the TrackParticle class
-  void InitializeTrackParticle();
+  // Initialize the TrackParticles class
+  void InitializeTrackParticles();
 
   // Save tracked particles
   void SaveTrackedParticles(Particles &particles);

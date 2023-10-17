@@ -1,6 +1,6 @@
 /**
  * @file track_particle.cpp
- * @brief Source file for the TrackParticle helper class for tracking particles
+ * @brief Source file for the TrackParticles helper class for tracking particles
  */
 
 #include "track_particle.hpp"
@@ -13,9 +13,9 @@
 
 namespace lili::particle {
 /**
- * @brief Initialize the TrackParticle class
+ * @brief Initialize the TrackParticles class
  */
-void TrackParticle::InitializeTrackParticle() {
+void TrackParticles::InitializeTrackParticles() {
   // Initialize the particles
   track_particles = Particles(ntrack_);
 
@@ -32,7 +32,7 @@ void TrackParticle::InitializeTrackParticle() {
 /**
  * @brief Save tracked particles
  */
-void TrackParticle::SaveTrackedParticles(Particles &particles) {
+void TrackParticles::SaveTrackedParticles(Particles &particles) {
   // Copy tracked particles to the current cache
   SelectParticles(particles, track_particles, ParticleStatus::Tracked);
   if (track_particles.npar() != ntrack_) {
@@ -64,7 +64,7 @@ void TrackParticle::SaveTrackedParticles(Particles &particles) {
 /**
  * @brief Dump tracked particles
  */
-void TrackParticle::DumpTrackedParticles() {
+void TrackParticles::DumpTrackedParticles() {
   // Dump the tracked particles
   // Set filename and create file
   std::stringstream ss;

@@ -7,6 +7,7 @@
 // #include <numbers>
 
 #include <chrono>
+#include <cmath>
 #include <filesystem>
 #include <iomanip>
 #include <thread>
@@ -41,13 +42,21 @@ int main(int argc, char* argv[]) {
   std::cout << "Problem name : " << input.problem_name() << std::endl;
   std::cout << "Input type   : " << input.input_type() << std::endl;
 
+  // Initialize output folder
+  std::string output_folder = "output";
+  if (!std::filesystem::is_directory(output_folder)) {
+    std::filesystem::create_directory(output_folder);
+    std::cout << "Created output folder: " << output_folder << std::endl;
+  } else {
+    std::cout << "Output folder: " << output_folder << std::endl;
+  }
+
   // Print input mesh information
   mesh::PrintMeshSize(input.mesh());
 
   // Initialize field
   mesh::Field field(input.mesh());
-  field.bz = 1.0;
-  field.ex = 1.0;
+  field.bz = 2.2627e-03;
 
   // Print input particle information
   std::cout << "==== Particle information ====" << std::endl;
@@ -62,32 +71,19 @@ int main(int argc, char* argv[]) {
   // Initialize particles
   int n_kind = input.particles().size();
   std::vector<particle::Particles> particles(n_kind);
+  std::vector<particle::TrackParticles> track_particles;
   for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
     particles[i_kind] = particle::Particles(input.particles()[i_kind]);
-    particle::DistributeID(particles[i_kind], 17);
+    particle::DistributeID(particles[i_kind], 0);
 
     // Distribute positions
-    particle::DistributeLocationUniform(particles[i_kind], 0, 0.0, 1.0, 0.0,
-                                        1.0, 0.0, 0.0);
+    particle::DistributeLocationUniform(particles[i_kind], 0, input.mesh());
+
     // Distribute velocities
     particle::GammaTable gamma_table =
         particle::GTMaxwellian3D(input.particles()[i_kind].tau);
     particle::DistributeVelocityUniform(particles[i_kind], 0, gamma_table);
-  }
-
-  // Initialize particle mover
-  particle::ParticleMover mover;
-  mover.InitializeMover(input);
-  std::cout << "Particle mover type: " << mover.type() << std::endl;
-  std::cout << "Particle mover dt  : " << mover.dt() << std::endl;
-
-  // Initialize output folder
-  std::string output_folder = "output";
-  if (!std::filesystem::is_directory(output_folder)) {
-    std::filesystem::create_directory(output_folder);
-    std::cout << "Created output folder: " << output_folder << std::endl;
-  } else {
-    std::cout << "Output folder: " << output_folder << std::endl;
+    // particle::AddBulkVelocity(particles[i_kind], 0.75, 0.0, 0.0);
   }
 
   // Set some particles to be tracked
@@ -99,13 +95,24 @@ int main(int argc, char* argv[]) {
 
     track_ids[i_track] = particles[0].id()[i_track];
   }
-  particle::TrackParticle track_particle(n_track, n_dump);
+  particle::TrackParticles track_particle(n_track, n_dump);
   track_particle.SetPrefix(std::filesystem::path(output_folder) / "tp");
+
+  // Initialize particle mover
+  particle ::ParticleMover mover;
+  mover.InitializeMover(input);
+  std::cout << "Particle mover type: " << mover.type() << std::endl;
+  std::cout << "Particle mover dt  : " << mover.dt() << std::endl;
 
   // Time loop
   int n_loop = 10000;
+  int n_rate = 1;
+
   for (int i_loop = 0; i_loop < n_loop; ++i_loop) {
-    track_particle.SaveTrackedParticles(particles[0]);
+    // Save tracked particle data
+    if (i_loop % n_rate == 0) {
+      track_particle.SaveTrackedParticles(particles[0]);
+    }
 
     // Move particles
     for (particle::Particles& par : particles) {
