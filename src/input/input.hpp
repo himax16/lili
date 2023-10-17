@@ -21,14 +21,24 @@ typedef struct {
   int n;
   int n_track;
   int dl_track;
-  int n_track_save;
+  int dtrack_save;
   double q;
   double m;
   double tau;
   std::string name;
 } InputParticle;
 
-// Input class
+/**
+ * @brief Struct to store integrator information from input file
+ */
+typedef struct {
+  int n_loop;
+  double dt;
+} InputIntegrator;
+
+/**
+ * @brief Class to store input information
+ */
 class Input {
  public:
   // Constructor
@@ -56,20 +66,20 @@ class Input {
   // Getters
   std::string input_file() const { return input_file_; }
   std::string problem_name() const { return problem_name_; }
+  std::string restart_file() const { return restart_file_; }
   InputType input_type() const { return input_type_; }
   lili::mesh::MeshSize mesh() const { return mesh_; }
   std::vector<InputParticle> particles() const { return particles_; }
-  long nt() const { return nt_; }
-  double dt() const { return dt_; }
+  InputIntegrator integrator() const { return integrator_; }
 
   // Setters
   std::string& input_file() { return input_file_; }
   std::string& problem_name() { return problem_name_; }
+  std::string& restart_file() { return restart_file_; }
   InputType& input_type() { return input_type_; }
   lili::mesh::MeshSize& mesh() { return mesh_; }
   std::vector<InputParticle>& particles() { return particles_; }
-  long& nt() { return nt_; }
-  double& dt() { return dt_; }
+  InputIntegrator& integrator() { return integrator_; }
 
   // Function to parse input file
   void Parse();
@@ -77,13 +87,13 @@ class Input {
  private:
   std::string input_file_;
   std::string problem_name_;
+  std::string restart_file_;
+
   InputType input_type_;
 
   lili::mesh::MeshSize mesh_;
   std::vector<InputParticle> particles_;
-
-  long nt_;
-  double dt_;
+  InputIntegrator integrator_;
 };
 
 // Function declaration

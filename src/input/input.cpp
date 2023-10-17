@@ -18,8 +18,6 @@ Input::Input() {
   input_file_ = "";
   problem_name_ = "LILI";
   input_type_ = InputType::None;
-  dt_ = 1.0;
-  nt_ = 1;
 }
 
 /**
@@ -32,8 +30,6 @@ Input::Input(const char *in_file) {
   input_file_ = in_file;
   problem_name_ = "LILI";
   input_type_ = InputType::None;
-  dt_ = 1.0;
-  nt_ = 1;
 }
 
 /**
@@ -44,12 +40,13 @@ Input::Input(const char *in_file) {
 Input::Input(const Input &input) {
   input_file_ = input.input_file_;
   problem_name_ = input.problem_name_;
+  restart_file_ = input.restart_file_;
+
   input_type_ = input.input_type_;
 
   mesh_ = input.mesh_;
   particles_ = input.particles_;
-  dt_ = input.dt_;
-  nt_ = input.nt_;
+  integrator_ = input.integrator_;
 }
 
 /**
@@ -65,12 +62,13 @@ void swap(Input &first, Input &second) {
 
   swap(first.input_file_, second.input_file_);
   swap(first.problem_name_, second.problem_name_);
+  swap(first.restart_file_, second.restart_file_);
+
   swap(first.input_type_, second.input_type_);
 
   swap(first.mesh_, second.mesh_);
   swap(first.particles_, second.particles_);
-  swap(first.dt_, second.dt_);
-  swap(first.nt_, second.nt_);
+  swap(first.integrator_, second.integrator_);
 }
 
 /**
@@ -112,6 +110,8 @@ void Input::Parse() {
       input_type_ = InputType::Initial;
     } else if (strcmp(input_type_str.c_str(), "restart") == 0) {
       input_type_ = InputType::Restart;
+    } else if (strcmp(input_type_str.c_str(), "test_particle") == 0) {
+      input_type_ = InputType::TestParticle;
     } else {
       std::cerr << "Unrecognized input type in " << input_type_str << std::endl;
       std::cerr << "Available input type: [initial | restart]" << std::endl;
@@ -125,6 +125,17 @@ void Input::Parse() {
     std::cerr << "Using default problem name: LILI" << std::endl;
   } else {
     problem_name_ = j.at("problem_name").get<std::string>();
+  }
+
+  // Parse restart file
+  if (input_type_ == InputType::Restart ||
+      input_type_ == InputType::TestParticle) {
+    if (!j.contains("restart_file")) {
+      std::cerr << "No restart file in " << input_file_ << std::endl;
+      exit(2);
+    } else {
+      restart_file_ = j.at("restart_file").get<std::string>();
+    }
   }
 
   // Parse mesh
@@ -201,7 +212,7 @@ void Input::Parse() {
       // Parse tracking variables
       particle.n_track = val.value("n_track", 0);
       particle.dl_track = val.value("dl_track", 1);
-      particle.n_track_save = val.value("n_track_save", 0);
+      particle.dtrack_save = val.value("dtrack_save", 0);
 
       // Add particle to the list
       particles_.push_back(particle);
@@ -211,15 +222,11 @@ void Input::Parse() {
   // Parse integrator
   if (j.contains("integrator")) {
     // Parse time step
-    dt_ = j.at("integrator").at("dt").get<double>();
+    integrator_.dt = j.at("integrator").value("dt", 1.0);
 
     // Parse number of time steps
-    nt_ = j.at("integrator").at("nt").get<long>();
+    integrator_.n_loop = j.at("integrator").value("n_loop", 1);
   }
-
-  // // serialization with pretty printing
-  // // pass in the amount of spaces to indent
-  // std::cout << j.dump(4) << std::endl;
 }
 
 /**
