@@ -165,6 +165,7 @@ class Field {
   double dx_, dy_, dz_;  // Mesh spacings
 };
 
-Field LoadField(const char* file_name);
+void LoadFieldTo(Field& field, const char* file_name,
+                 bool include_ghost = false);
 
 }  // namespace lili::mesh

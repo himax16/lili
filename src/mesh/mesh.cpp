@@ -149,13 +149,14 @@ void LoadMeshTo(Mesh<double>& mesh, const char* file_name,
 
   // Get dataset size
   hid_t dataspace_id = H5Dget_space(dataset_id);
-  hsize_t dims[3];
+  const int ndims = H5Sget_simple_extent_ndims(dataspace_id);
+  hsize_t dims[ndims];
   H5Sget_simple_extent_dims(dataspace_id, dims, NULL);
 
   // Resize mesh if needed
   int ndx = dims[0];
-  int ndy = dims[1];
-  int ndz = dims[2];
+  int ndy = ndims > 1 ? dims[1] : 1;
+  int ndz = ndims > 2 ? dims[2] : 1;
   int ngx = mesh.ngx();
   int ngy = mesh.ngy();
   int ngz = mesh.ngz();
@@ -197,5 +198,8 @@ void LoadMeshTo(Mesh<double>& mesh, const char* file_name,
 
   // Close file
   H5Fclose(file_id);
+
+  // Clean up
+  delete[] data;
 }
 }  // namespace lili::mesh
