@@ -75,7 +75,11 @@ void TrackParticle::DumpTrackedParticles() {
       H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
   // Create dataspace to store particles
-  hsize_t dims[2] = {static_cast<hsize_t>(ndump_),
+  if (itrack_ != ndump_) {
+    std::cout << "Different number TP dump: " << itrack_ << " " << ndump_
+              << std::endl;
+  }
+  hsize_t dims[2] = {static_cast<hsize_t>(itrack_),
                      static_cast<hsize_t>(ntrack_)};
   hid_t dataspace_id = H5Screate_simple(2, dims, NULL);
 
