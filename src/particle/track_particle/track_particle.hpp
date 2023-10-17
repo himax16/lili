@@ -21,7 +21,15 @@ class TrackParticle {
   }
 
   // Destructor
-  ~TrackParticle() = default;
+  ~TrackParticle() {
+    delete[] idtrack_;
+    delete[] xtrack_;
+    delete[] ytrack_;
+    delete[] ztrack_;
+    delete[] utrack_;
+    delete[] vtrack_;
+    delete[] wtrack_;
+  };
 
   // Initialize the TrackParticle class
   void InitializeTrackParticle();
