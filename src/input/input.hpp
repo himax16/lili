@@ -12,15 +12,16 @@
 
 namespace lili::input {
 // Input type
-typedef enum {
-  None,
-  Initial,
-  Restart,
-} InputType;
+typedef enum { None, Initial, Restart, TestParticle } InputType;
 
-// InputParticle struct
+/**
+ * @brief Struct to store particle information from input file
+ */
 typedef struct {
   int n;
+  int n_track;
+  int dl_track;
+  int n_track_save;
   double q;
   double m;
   double tau;
@@ -87,4 +88,5 @@ class Input {
 
 // Function declaration
 Input ParseArguments(int argc, char* argv[]);
+
 }  // namespace lili::input

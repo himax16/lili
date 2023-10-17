@@ -198,6 +198,11 @@ void Input::Parse() {
       particle.q = val.at("q").get<double>();
       particle.tau = val.value("tau", 0.0);
 
+      // Parse tracking variables
+      particle.n_track = val.value("n_track", 0);
+      particle.dl_track = val.value("dl_track", 1);
+      particle.n_track_save = val.value("n_track_save", 0);
+
       // Add particle to the list
       particles_.push_back(particle);
     }
