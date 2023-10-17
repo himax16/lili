@@ -12,7 +12,7 @@ namespace lili::particle {
  * @param[in] input
  * Input object
  */
-void ParticleMover::InitializeMover(const input::Input& input) {
+void ParticleMover::InitializeMover(const input::InputIntegrator& input) {
   // Set the particle mover type
   type_ = ParticleMoverType::Boris2D;
 
@@ -28,7 +28,7 @@ void ParticleMover::InitializeMover(const input::Input& input) {
   }
 
   // Set the time step
-  dt_ = input.dt();
+  dt_ = input.dt;
 }
 
 /**

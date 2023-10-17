@@ -38,7 +38,7 @@ class ParticleMover {
   };
 
   // Initialize Mover
-  void InitializeMover(const input::Input& input);
+  void InitializeMover(const input::InputIntegrator& input);
 
   // Move particles
   void Move(Particles& particles, mesh::Field& field) {
