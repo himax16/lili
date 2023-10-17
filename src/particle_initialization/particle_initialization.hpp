@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "mesh.hpp"
 #include "particle.hpp"
 
 #ifndef __LILIP_DEFAULT_GTSIZE
@@ -22,6 +23,8 @@ void DistributeLocationUniform(Particles& particles, const int seed,
                                const double x0, const double x1,
                                const double y0, const double y1,
                                const double z0, const double z1);
+void DistributeLocationUniform(Particles& particles, const int seed,
+                               const mesh::MeshSize& domain_size);
 
 // Gamma table
 class GammaTable {
@@ -49,7 +52,7 @@ class GammaTable {
 };
 
 // Gamma table initialization
-GammaTable GTMonoenergetic(const double gamma);
+GammaTable GTMonoenergetic(const double delta_gamma);
 GammaTable GTUniform(const double gamma_min, const double gamma_max);
 GammaTable GTMaxwellian3D(const double theta);
 

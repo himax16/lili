@@ -8,3 +8,4 @@ target_include_directories(particle_initialization PUBLIC ${CMAKE_CURRENT_SOURCE
 
 # Link internal libraries
 target_link_libraries(particle_initialization PUBLIC particle)
+target_link_libraries(particle_initialization PUBLIC mesh)

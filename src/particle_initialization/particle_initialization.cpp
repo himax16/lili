@@ -65,6 +65,25 @@ void DistributeLocationUniform(Particles& particles, const int seed,
 }
 
 /**
+ * @brief Distribute particles uniformly in the simulation domain
+ * @param[in] particles
+ * Particle object
+ * @param[in] seed
+ * Seed for the random number generator
+ * @param[in] domain_size
+ * Mesh size object
+ */
+void DistributeLocationUniform(Particles& particles, const int seed,
+                               const mesh::MeshSize& domain_size) {
+  double x1 = domain_size.x0 + domain_size.lx;
+  double y1 = domain_size.y0 + domain_size.ly;
+  double z1 = domain_size.z0 + domain_size.lz;
+
+  DistributeLocationUniform(particles, seed, domain_size.x0, x1, domain_size.y0,
+                            y1, domain_size.z0, z1);
+}
+
+/**
  * @brief Add bulk velocity to particles
  * @param[in] particles
  * Particle object
@@ -181,14 +200,14 @@ double GammaTable::GetGamma(const double cdf) const {
 
 /**
  * @brief Construct a new Gamma Table for monoenergetic particles
- * @param[in] gamma
- * Gamma value
+ * @param[in] delta_gamma
+ * Delta gamma value
  * @return GammaTable
  * Gamma table
  */
-GammaTable GTMonoenergetic(const double gamma) {
+GammaTable GTMonoenergetic(const double delta_gamma) {
   std::vector<double> cdf = {0.0, 1.0};
-  std::vector<double> gamma_vec = {gamma, gamma};
+  std::vector<double> gamma_vec = {1. + delta_gamma, 1. + delta_gamma};
 
   GammaTable gamma_table(cdf, gamma_vec);
   gamma_table.interpolate() = false;
