@@ -9,7 +9,9 @@
 #include <iostream>
 #include <sstream>
 
+#include "field.hpp"
 #include "hdf5.h"
+#include "mesh.hpp"
 
 namespace lili::particle {
 /**
@@ -27,10 +29,18 @@ void TrackParticles::InitializeTrackParticles() {
   utrack_ = new double[ntrack_ * ndump_]();
   vtrack_ = new double[ntrack_ * ndump_]();
   wtrack_ = new double[ntrack_ * ndump_]();
+  extrack_ = new double[ntrack_ * ndump_]();
+  eytrack_ = new double[ntrack_ * ndump_]();
+  eztrack_ = new double[ntrack_ * ndump_]();
+  bxtrack_ = new double[ntrack_ * ndump_]();
+  bytrack_ = new double[ntrack_ * ndump_]();
+  bztrack_ = new double[ntrack_ * ndump_]();
 }
 
 /**
- * @brief Save tracked particles
+ * @brief Save tracked particles with no field information
+ * @param[in] particles
+ * Particles object
  */
 void TrackParticles::SaveTrackedParticles(Particles &particles) {
   // Copy tracked particles to the current cache
@@ -43,13 +53,74 @@ void TrackParticles::SaveTrackedParticles(Particles &particles) {
 
   // Move the data to the dump cache
   for (int i_track = 0; i_track < ntrack_; ++i_track) {
-    idtrack_[itrack_ * ntrack_ + i_track] = track_particles.id()[i_track];
-    xtrack_[itrack_ * ntrack_ + i_track] = track_particles.x()[i_track];
-    ytrack_[itrack_ * ntrack_ + i_track] = track_particles.y()[i_track];
-    ztrack_[itrack_ * ntrack_ + i_track] = track_particles.z()[i_track];
-    utrack_[itrack_ * ntrack_ + i_track] = track_particles.u()[i_track];
-    vtrack_[itrack_ * ntrack_ + i_track] = track_particles.v()[i_track];
-    wtrack_[itrack_ * ntrack_ + i_track] = track_particles.w()[i_track];
+    idtrack_[itrack_ * ntrack_ + i_track] = track_particles.id(i_track);
+    xtrack_[itrack_ * ntrack_ + i_track] = track_particles.x(i_track);
+    ytrack_[itrack_ * ntrack_ + i_track] = track_particles.y(i_track);
+    ztrack_[itrack_ * ntrack_ + i_track] = track_particles.z(i_track);
+    utrack_[itrack_ * ntrack_ + i_track] = track_particles.u(i_track);
+    vtrack_[itrack_ * ntrack_ + i_track] = track_particles.v(i_track);
+    wtrack_[itrack_ * ntrack_ + i_track] = track_particles.w(i_track);
+  }
+
+  // Increment the tracking index
+  ++itrack_;
+
+  // Dump the tracked particles if the tracking index reaches the dump number
+  if (itrack_ >= ndump_) {
+    DumpTrackedParticles();
+  }
+}
+
+/**
+ * @brief Save tracked particles with field information
+ * @param[in] particles
+ * Particles object
+ * @param[in] field
+ * Field object
+ */
+void TrackParticles::SaveTrackedParticles(Particles &particles,
+                                          mesh::Field &field) {
+  // Copy tracked particles to the current cache
+  SelectParticles(particles, track_particles, ParticleStatus::Tracked);
+  if (track_particles.npar() != ntrack_) {
+    std::cout << "Error: number of tracked particles is not correct"
+              << std::endl;
+    exit(1);
+  }
+
+  // Move the data to the dump cache
+  for (int i_track = 0; i_track < ntrack_; ++i_track) {
+    idtrack_[itrack_ * ntrack_ + i_track] = track_particles.id(i_track);
+
+    double xloc = track_particles.x(i_track);
+    double yloc = track_particles.y(i_track);
+    double zloc = track_particles.z(i_track);
+
+    xtrack_[itrack_ * ntrack_ + i_track] = xloc;
+    ytrack_[itrack_ * ntrack_ + i_track] = yloc;
+    ztrack_[itrack_ * ntrack_ + i_track] = zloc;
+    utrack_[itrack_ * ntrack_ + i_track] = track_particles.u(i_track);
+    vtrack_[itrack_ * ntrack_ + i_track] = track_particles.v(i_track);
+    wtrack_[itrack_ * ntrack_ + i_track] = track_particles.w(i_track);
+
+    // Move the particle location to the mesh coordinate
+    xloc = (xloc - field.size.x0) / field.size.lx * field.size.nx;
+    yloc = (yloc - field.size.y0) / field.size.ly * field.size.ny;
+    zloc = (zloc - field.size.z0) / field.size.lz * field.size.nz;
+
+    // Store the fields
+    extrack_[itrack_ * ntrack_ + i_track] =
+        field.ex.Interpolation(xloc, yloc, zloc);
+    eytrack_[itrack_ * ntrack_ + i_track] =
+        field.ey.Interpolation(xloc, yloc, zloc);
+    eztrack_[itrack_ * ntrack_ + i_track] =
+        field.ez.Interpolation(xloc, yloc, zloc);
+    bxtrack_[itrack_ * ntrack_ + i_track] =
+        field.bx.Interpolation(xloc, yloc, zloc);
+    bytrack_[itrack_ * ntrack_ + i_track] =
+        field.by.Interpolation(xloc, yloc, zloc);
+    bztrack_[itrack_ * ntrack_ + i_track] =
+        field.bz.Interpolation(xloc, yloc, zloc);
   }
 
   // Increment the tracking index
@@ -122,6 +193,38 @@ void TrackParticles::DumpTrackedParticles() {
                          H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
            wtrack_);
+  H5Dclose(dataset_id);
+
+  // Write the particle local fields
+  dataset_id = H5Dcreate(file_id, "ex", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           extrack_);
+  H5Dclose(dataset_id);
+  dataset_id = H5Dcreate(file_id, "ey", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           eytrack_);
+  H5Dclose(dataset_id);
+  dataset_id = H5Dcreate(file_id, "ez", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           eztrack_);
+  H5Dclose(dataset_id);
+  dataset_id = H5Dcreate(file_id, "bx", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           bxtrack_);
+  H5Dclose(dataset_id);
+  dataset_id = H5Dcreate(file_id, "by", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           bytrack_);
+  H5Dclose(dataset_id);
+  dataset_id = H5Dcreate(file_id, "bz", H5T_NATIVE_DOUBLE, dataspace_id,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
+           bztrack_);
   H5Dclose(dataset_id);
 
   // Close dataspace and file

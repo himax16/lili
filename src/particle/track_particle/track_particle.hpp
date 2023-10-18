@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "field.hpp"
 #include "particle.hpp"
 
 namespace lili::particle {
@@ -39,6 +40,12 @@ class TrackParticles {
     std::copy(other.utrack_, other.utrack_ + ntrack_ * ndump_, utrack_);
     std::copy(other.vtrack_, other.vtrack_ + ntrack_ * ndump_, vtrack_);
     std::copy(other.wtrack_, other.wtrack_ + ntrack_ * ndump_, wtrack_);
+    std::copy(other.extrack_, other.extrack_ + ntrack_ * ndump_, extrack_);
+    std::copy(other.eytrack_, other.eytrack_ + ntrack_ * ndump_, eytrack_);
+    std::copy(other.eztrack_, other.eztrack_ + ntrack_ * ndump_, eztrack_);
+    std::copy(other.bxtrack_, other.bxtrack_ + ntrack_ * ndump_, bxtrack_);
+    std::copy(other.bytrack_, other.bytrack_ + ntrack_ * ndump_, bytrack_);
+    std::copy(other.bztrack_, other.bztrack_ + ntrack_ * ndump_, bztrack_);
   }
 
   // Move constructor
@@ -55,6 +62,12 @@ class TrackParticles {
     delete[] utrack_;
     delete[] vtrack_;
     delete[] wtrack_;
+    delete[] extrack_;
+    delete[] eytrack_;
+    delete[] eztrack_;
+    delete[] bxtrack_;
+    delete[] bytrack_;
+    delete[] bztrack_;
   };
 
   // Swap data
@@ -73,6 +86,12 @@ class TrackParticles {
     swap(first.utrack_, second.utrack_);
     swap(first.vtrack_, second.vtrack_);
     swap(first.wtrack_, second.wtrack_);
+    swap(first.extrack_, second.extrack_);
+    swap(first.eytrack_, second.eytrack_);
+    swap(first.eztrack_, second.eztrack_);
+    swap(first.bxtrack_, second.bxtrack_);
+    swap(first.bytrack_, second.bytrack_);
+    swap(first.bztrack_, second.bztrack_);
   }
 
   // Operators
@@ -86,6 +105,7 @@ class TrackParticles {
 
   // Save tracked particles
   void SaveTrackedParticles(Particles &particles);
+  void SaveTrackedParticles(Particles &particles, mesh::Field &field);
 
   // Dump tracked particles
   void DumpTrackedParticles();
@@ -109,5 +129,7 @@ class TrackParticles {
   ulong *idtrack_;
   double *xtrack_, *ytrack_, *ztrack_;
   double *utrack_, *vtrack_, *wtrack_;
+  double *extrack_, *eytrack_, *eztrack_;
+  double *bxtrack_, *bytrack_, *bztrack_;
 };
 }  // namespace lili::particle
