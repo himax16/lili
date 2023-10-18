@@ -41,7 +41,7 @@ class ParticleMover {
   void InitializeMover(const input::InputIntegrator& input);
 
   // Move particles
-  void Move(Particles& particles, mesh::Field& field) {
+  void Move(Particles& particles, const mesh::Field& field) {
     (this->*Move_)(particles, field);
   };
 
@@ -62,10 +62,10 @@ class ParticleMover {
   double* cache_;
 
   // Function pointer to actual Mover used
-  void (ParticleMover::*Move_)(Particles& particles, mesh::Field& field);
+  void (ParticleMover::*Move_)(Particles& particles, const mesh::Field& field);
 
   // Different Movers
-  void MoveNone(Particles& particles, mesh::Field& field) {
+  void MoveNone(Particles& particles, const mesh::Field& field) {
     std::cout << "Moving particles using no particle mover" << std::endl;
 
     int npar = particles.npar();
@@ -75,17 +75,7 @@ class ParticleMover {
       sum += ex[i];
     }
   };
-  void MoveBoris2D(Particles& particles, mesh::Field& field);
-  void MoveBoris3D(Particles& particles, mesh::Field& field) {
-    std::cout << "Moving particles using Boris 3D particle mover" << std::endl;
-
-    int npar = particles.npar();
-    double* __restrict__ ex = field.ex.data();
-    double sum = 0.;
-    for (int i = 0; i < npar; ++i) {
-      sum += ex[i];
-    }
-  };
+  void MoveBoris2D(Particles& particles, const mesh::Field& field);
 };
 
 }  // namespace lili::particle

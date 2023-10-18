@@ -39,10 +39,11 @@ void ParticleMover::InitializeMover(const input::InputIntegrator& input) {
  * @param[in] field
  * Field object
  */
-void ParticleMover::MoveBoris2D(Particles& particles, mesh::Field& field) {
+void ParticleMover::MoveBoris2D(Particles& particles,
+                                const mesh::Field& field) {
   // Initialize variables
-  int npar = particles.npar();
-  double qmhdt = particles.q() * dt_ / (2.0 * particles.m());
+  const int npar = particles.npar();
+  const double qmhdt = particles.q() * dt_ / (2.0 * particles.m());
 
   // Get the particle information
   double* __restrict__ x = particles.x();
@@ -58,11 +59,14 @@ void ParticleMover::MoveBoris2D(Particles& particles, mesh::Field& field) {
   double um, vm, wm, up, vp, wp;
   double temp;
 
+  const double crx = field.size.nx / field.size.lx;
+  const double cry = field.size.ny / field.size.ly;
+
   // Loop over the particles
   for (int i = 0; i < npar; ++i) {
-    //@todo Fix this
-    rx = x[i];
-    ry = y[i] / 2.;
+    // Get the particle position
+    rx = (x[i] - field.size.x0) * crx;
+    ry = (y[i] - field.size.y0) * cry;
 
     ex = qmhdt * field.ex.BilinearInterpolation(rx, ry);
     ey = qmhdt * field.ey.BilinearInterpolation(rx, ry);
