@@ -53,19 +53,24 @@ void ParticleMover::MoveBoris2D(Particles& particles, mesh::Field& field) {
   double* __restrict__ v = particles.v();
   double* __restrict__ w = particles.w();
 
+  double rx, ry;
   double ex, ey, ez, bx, by, bz;
   double um, vm, wm, up, vp, wp;
   double temp;
 
   // Loop over the particles
   for (int i = 0; i < npar; ++i) {
-    ex = qmhdt * field.ex(x[i], y[i], z[i]);
-    ey = qmhdt * field.ey(x[i], y[i], z[i]);
-    ez = qmhdt * field.ez(x[i], y[i], z[i]);
+    //@todo Fix this
+    rx = x[i];
+    ry = y[i] / 2.;
 
-    bx = qmhdt * field.bx(x[i], y[i], z[i]);
-    by = qmhdt * field.by(x[i], y[i], z[i]);
-    bz = qmhdt * field.bz(x[i], y[i], z[i]);
+    ex = qmhdt * field.ex.BilinearInterpolation(rx, ry);
+    ey = qmhdt * field.ey.BilinearInterpolation(rx, ry);
+    ez = qmhdt * field.ez.BilinearInterpolation(rx, ry);
+
+    bx = qmhdt * field.bx.BilinearInterpolation(rx, ry);
+    by = qmhdt * field.by.BilinearInterpolation(rx, ry);
+    bz = qmhdt * field.bz.BilinearInterpolation(rx, ry);
 
     // First half acceleration
     um = u[i] + ex;
