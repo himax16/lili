@@ -64,9 +64,9 @@ macro(set_lili_compiler_flags)
   add_compile_options(
     -Wall -Wextra -Werror
     -O3
-    # -g -fsanitize=address
+    -g -fsanitize=address
   )
 
   # Set the linker flags
-  # set(CMAKE_EXE_LINKER_FLAGS "-fsanitize=address")
+  set(CMAKE_EXE_LINKER_FLAGS "-fsanitize=address")
 endmacro()

@@ -1,0 +1,34 @@
+/* LILI Test Input File
+ * Track Particle case
+ */
+{
+  "input_type": "test_particle",
+  "problem_name": "tp",
+  "restart_file": "test.h5",
+  "mesh": {
+    "dimension": 2,
+    "x": {
+      "l": 2400,
+      "n": 2400
+    },
+    "y": {
+      "l": 480,
+      "n": 480
+    }
+  },
+  "particles": {
+    "electrons": {
+      "n": 100000,
+      "q": 1.0,
+      "m": 1.0,
+      "tau": 1.9737e-01,
+      "n_track": 100,
+      "dl_track": 1,
+      "dtrack_save": 100
+    }
+  },
+  "integrator": {
+    "dt": 0.45,
+    "n_loop": 1000
+  }
+}
