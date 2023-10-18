@@ -18,17 +18,26 @@
   },
   "particles": {
     "electrons": {
-      "n": 10000,
+      "n": 1000,
       "q": -1.0,
       "m": 1.0,
       "tau": 1.9737e-01,
-      "n_track": 10000,
+      "n_track": 1000,
+      "dl_track": 50,
+      "dtrack_save": 1000
+    },
+    "ions": {
+      "n": 1000,
+      "q": 1.0,
+      "m": 1600.0,
+      "tau": 1.9737e-01,
+      "n_track": 1000,
       "dl_track": 50,
       "dtrack_save": 1000
     }
   },
   "integrator": {
     "dt": 0.45,
-    "n_loop": 2000000
+    "n_loop": 200000
   }
 }
