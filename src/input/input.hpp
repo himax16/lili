@@ -6,13 +6,29 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "mesh.hpp"
 
 namespace lili::input {
-// Input type
-typedef enum { None, Initial, Restart, TestParticle } InputType;
+/**
+ * @brief Enumeration class for input type
+ */
+typedef enum {
+  None,         ///< No input type
+  Initial,      ///< Initial input
+  Restart,      ///< Restart input
+  TestParticle  ///< Test particle input
+} InputType;
+
+/**
+ * @brief Function to convert InputType to string
+ *
+ * @param[in] input_type
+ * InputType to be converted
+ */
+std::string InputTypeToString(InputType input_type);
 
 /**
  * @brief Struct to store particle information from input file

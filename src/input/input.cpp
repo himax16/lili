@@ -4,6 +4,8 @@
  */
 #include "input.hpp"
 
+#include <string>
+
 #include "json.hpp"
 #include "output.hpp"
 
@@ -11,6 +13,27 @@
 using json = nlohmann::json;
 
 namespace lili::input {
+/**
+ * @brief Function to convert InputType to string
+ *
+ * @param[in] input_type
+ * InputType to be converted
+ */
+std::string InputTypeToString(InputType input_type) {
+  switch (input_type) {
+    case InputType::None:
+      return "None";
+    case InputType::Initial:
+      return "Initial";
+    case InputType::Restart:
+      return "Restart";
+    case InputType::TestParticle:
+      return "TestParticle";
+    default:
+      return "None";
+  }
+}
+
 /**
  * @brief Default constructor for Input class
  */
