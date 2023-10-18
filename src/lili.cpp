@@ -3,9 +3,6 @@
  * @brief Main LILI program
  *
  */
-
-// #include <numbers>
-
 #include <chrono>
 #include <cmath>
 #include <filesystem>
@@ -40,7 +37,8 @@ int main(int argc, char* argv[]) {
   // Print input
   std::cout << "Input file   : " << input.input_file() << std::endl;
   std::cout << "Problem name : " << input.problem_name() << std::endl;
-  std::cout << "Input type   : " << input.input_type() << std::endl;
+  std::cout << "Input type   : " << input::InputTypeToString(input.input_type())
+            << std::endl;
 
   // Initialize output folder
   std::string output_folder = "output";
@@ -56,8 +54,25 @@ int main(int argc, char* argv[]) {
 
   // Initialize field
   mesh::Field field(input.mesh());
-  mesh::LoadFieldTo(field, "tpf_09_8000.h5", false);
-  // field.ex += 1.0e-7;
+  switch (input.input_type()) {
+    case input::InputType::Initial:
+      break;
+
+    case input::InputType::Restart:
+      std::cout << "Loading field data from: " << input.restart_file()
+                << std::endl;
+      mesh::LoadFieldTo(field, input.restart_file().c_str(), false);
+      break;
+
+    case input::InputType::TestParticle:
+      std::cout << "Loading field data from: " << input.restart_file()
+                << std::endl;
+      mesh::LoadFieldTo(field, input.restart_file().c_str(), false);
+      break;
+
+    default:
+      break;
+  }
 
   // Print input particle information
   std::cout << "==== Particle information ====" << std::endl;
@@ -116,25 +131,34 @@ int main(int argc, char* argv[]) {
       // Save tracked particles if needed
       if (track_particles[i_kind].ntrack() > 0) {
         if (i_loop % dl_tracks[i_kind] == 0)
-          track_particles[i_kind].SaveTrackedParticles(particles[i_kind]);
+          track_particles[i_kind].SaveTrackedParticles(particles[i_kind],
+                                                       field);
       }
 
       // Move particles
       mover.Move(particles[i_kind], field);
       particle::PeriodicBoundaryParticles(particles[i_kind], input.mesh());
+
+      // Print loop information
+      if (i_loop % 10000 == 0) {
+        std::cout << "Loop: " << i_loop << " / " << n_loop;
+        // Print timing
+        std::cout << "("
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(
+                         std::chrono::high_resolution_clock::now() - start)
+                         .count()
+                  << " ms)" << std::endl;
+      }
     }
   }
 
   // Save and dump tracked particles at the end
   for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
     if (track_particles[i_kind].ntrack() > 0) {
-      track_particles[i_kind].SaveTrackedParticles(particles[i_kind]);
+      track_particles[i_kind].SaveTrackedParticles(particles[i_kind], field);
       track_particles[i_kind].DumpTrackedParticles();
     }
   }
-
-  // // Sleep for 1 second
-  // std::this_thread::sleep_for(std::chrono::seconds(1));
 
   // Print elapsed time
   std ::cout << "Elapsed time: "
