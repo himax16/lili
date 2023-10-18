@@ -26,9 +26,14 @@ void PrintMeshSize(const MeshSize& mesh_size) {
             << mesh_size.lz << ")" << std::endl;
   std::cout << "r0  = (" << mesh_size.x0 << ", " << mesh_size.y0 << ", "
             << mesh_size.z0 << ")" << std::endl;
-  std::cout << "dr  = (" << mesh_size.dx << ", " << mesh_size.dy << ", "
-            << mesh_size.dz << ")" << std::endl;
   std::cout << "==============================" << std::endl;
+}
+
+/**
+ * @brief Function to update MeshSize dimension
+ */
+void UpdateMeshSizeDim(MeshSize& mesh_size) {
+  mesh_size.dim = (mesh_size.nz > 1) ? 3 : ((mesh_size.ny > 1) ? 2 : 1);
 }
 
 /**

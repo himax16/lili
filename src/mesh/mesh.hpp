@@ -33,11 +33,11 @@ typedef struct {
   int nx, ny, nz;
   int ngx, ngy, ngz;
   double lx, ly, lz;
-  double dx, dy, dz;
   double x0, y0, z0;
 } MeshSize;
 
 void PrintMeshSize(const MeshSize& mesh_size);
+void UpdateMeshSizeDim(MeshSize& mesh_size);
 
 /**
  * @brief Mesh class
@@ -434,6 +434,26 @@ class Mesh {
                  yd * ((1.0 - zd) * (*this)(ix + 1, iy + 1, iz) +
                        zd * (*this)(ix + 1, iy + 1, iz + 1)));
   };
+
+  /**
+   * @brief Interpolate the mesh
+   * @param x X-axis coordinate relative to the mesh
+   * @param y Y-axis coordinate relative to the mesh
+   * @param z Z-axis coordinate relative to the mesh
+   * @return Interpolated value
+   * @details
+   * This function will automatically choose the interpolation method based on
+   * the mesh dimension.
+   */
+  T Interpolation(double x, double y, double z) const {
+    if (dim_ == 2) {
+      return BilinearInterpolation(x, y);
+    } else if (dim_ == 3) {
+      return TrilinearInterpolation(x, y, z);
+    } else {
+      return LinearInterpolation(x);
+    }
+  }
 
  private:
   int dim_;                   // Mesh dimension

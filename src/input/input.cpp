@@ -186,11 +186,7 @@ void Input::Parse() {
       mesh_.ngz = 0;
     }
 
-    // Calculate spacing and start
-    mesh_.dx = (double)mesh_.lx / mesh_.nx;
-    mesh_.dy = (double)mesh_.ly / mesh_.ny;
-    mesh_.dz = (double)mesh_.lz / mesh_.nz;
-
+    // Calculate the starting point of the mesh
     mesh_.x0 = 0.;
     mesh_.y0 = 0.;
     mesh_.z0 = 0.;

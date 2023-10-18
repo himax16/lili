@@ -13,57 +13,42 @@ namespace lili::mesh {
 class Field {
  public:
   // Constructor
-  Field()
-      : nx_(1),
-        ny_(1),
-        nz_(1),
-        ngx_(0),
-        ngy_(0),
-        ngz_(0),
-        dx_(1.0),
-        dy_(1.0),
-        dz_(1.0) {
+  Field() : dx_(1.0), dy_(1.0), dz_(1.0) {
+    UpdateMeshSizeDim(size);
     InitializeMesh();
   };
 
   // Size-based initialization
   Field(int nx, int ny, int nz, int ngx, int ngy, int ngz)
-      : nx_(nx),
-        ny_(ny),
-        nz_(nz),
-        ngx_(ngx),
-        ngy_(ngy),
-        ngz_(ngz),
-        dx_(1.0),
-        dy_(1.0),
-        dz_(1.0) {
+      : dx_(1.0), dy_(1.0), dz_(1.0) {
+    size.nx = nx;
+    size.ny = ny;
+    size.nz = nz;
+    size.ngx = ngx;
+    size.ngy = ngy;
+    size.ngz = ngz;
+    size.lx = nx * 1.0;
+    size.ly = ny * 1.0;
+    size.lz = nz * 1.0;
+
+    UpdateMeshSizeDim(size);
     InitializeMesh();
   };
 
-  Field(const MeshSize& domain_size)
-      : nx_(domain_size.nx),
-        ny_(domain_size.ny),
-        nz_(domain_size.nz),
-        ngx_(domain_size.ngx),
-        ngy_(domain_size.ngy),
-        ngz_(domain_size.ngz),
-        dx_(1.0),
-        dy_(1.0),
-        dz_(1.0) {
+  Field(const MeshSize& domain_size) {
+    size = domain_size;
+    dx_ = domain_size.lx / domain_size.nx;
+    dy_ = domain_size.ly / domain_size.ny;
+    dz_ = domain_size.lz / domain_size.nz;
+
+    UpdateMeshSizeDim(size);
     InitializeMesh();
   };
 
   // Copy constructor
   Field(const Field& field)
-      : nx_(field.nx_),
-        ny_(field.ny_),
-        nz_(field.nz_),
-        ngx_(field.ngx_),
-        ngy_(field.ngy_),
-        ngz_(field.ngz_),
-        dx_(field.dx_),
-        dy_(field.dy_),
-        dz_(field.dz_) {
+      : size(field.size), dx_(field.dx_), dy_(field.dy_), dz_(field.dz_) {
+    UpdateMeshSizeDim(size);
     ex = field.ex;
     ey = field.ey;
     ez = field.ez;
@@ -83,21 +68,11 @@ class Field {
   friend void swap(Field& first, Field& second) noexcept {
     using std::swap;
 
-    swap(first.dim_, second.dim_);
-    swap(first.nx_, second.nx_);
-    swap(first.ny_, second.ny_);
-    swap(first.nz_, second.nz_);
-    swap(first.ngx_, second.ngx_);
-    swap(first.ngy_, second.ngy_);
-    swap(first.ngz_, second.ngz_);
-    swap(first.ntx_, second.ntx_);
-    swap(first.nty_, second.nty_);
-    swap(first.ntz_, second.ntz_);
-    swap(first.nt_, second.nt_);
-
     swap(first.dx_, second.dx_);
     swap(first.dy_, second.dy_);
     swap(first.dz_, second.dz_);
+
+    swap(first.size, second.size);
 
     swap(first.ex, second.ex);
     swap(first.ey, second.ey);
@@ -108,61 +83,58 @@ class Field {
   };
 
   // Getters
-  constexpr int dim() const { return dim_; };
-  constexpr int nx() const { return nx_; };
-  constexpr int ny() const { return ny_; };
-  constexpr int nz() const { return nz_; };
-  constexpr int ngx() const { return ngx_; };
-  constexpr int ngy() const { return ngy_; };
-  constexpr int ngz() const { return ngz_; };
-  constexpr int ntx() const { return ntx_; };
-  constexpr int nty() const { return nty_; };
-  constexpr int ntz() const { return ntz_; };
-  constexpr int nt() const { return nt_; };
+  constexpr int dim() const { return size.dim; };
+  constexpr int nx() const { return size.nx; };
+  constexpr int ny() const { return size.ny; };
+  constexpr int nz() const { return size.nz; };
+  constexpr int ngx() const { return size.ngx; };
+  constexpr int ngy() const { return size.ngy; };
+  constexpr int ngz() const { return size.ngz; };
+  constexpr int ntx() const { return size.nx + 2 * size.ngx; };
+  constexpr int nty() const { return size.ny + 2 * size.ngy; };
+  constexpr int ntz() const { return size.nz + 2 * size.ngz; };
+  constexpr int nt() const { return ntx() * nty() * ntz(); };
   constexpr double dx() const { return dx_; };
   constexpr double dy() const { return dy_; };
   constexpr double dz() const { return dz_; };
 
-  void SyncSize() {
-    // Sync sizes
-    nx_ = bx.nx();
-    ny_ = bx.ny();
-    nz_ = bx.nz();
-    ngx_ = bx.ngx();
-    ngy_ = bx.ngy();
-    ngz_ = bx.ngz();
-
-    // Sync total mesh sizes
-    dim_ = bx.dim();
-    ntx_ = bx.ntx();
-    nty_ = bx.nty();
-    ntz_ = bx.ntz();
-    nt_ = bx.nt();
+  void SyncSize(){
+      // Sync mesh sizes
+      // @todo Implement this to check all sizes
   };
 
   void InitializeMesh() {
     // Initialize mesh
-    ex = Mesh<double>(nx_, ny_, nz_, ngx_, ngy_, ngz_);
-    ey = Mesh<double>(nx_, ny_, nz_, ngx_, ngy_, ngz_);
-    ez = Mesh<double>(nx_, ny_, nz_, ngx_, ngy_, ngz_);
-    bx = Mesh<double>(nx_, ny_, nz_, ngx_, ngy_, ngz_);
-    by = Mesh<double>(nx_, ny_, nz_, ngx_, ngy_, ngz_);
-    bz = Mesh<double>(nx_, ny_, nz_, ngx_, ngy_, ngz_);
+    ex = Mesh<double>(size.nx, size.ny, size.nz, size.ngx, size.ngy, size.ngz);
+    ey = Mesh<double>(size.nx, size.ny, size.nz, size.ngx, size.ngy, size.ngz);
+    ez = Mesh<double>(size.nx, size.ny, size.nz, size.ngx, size.ngy, size.ngz);
+    bx = Mesh<double>(size.nx, size.ny, size.nz, size.ngx, size.ngy, size.ngz);
+    by = Mesh<double>(size.nx, size.ny, size.nz, size.ngx, size.ngy, size.ngz);
+    bz = Mesh<double>(size.nx, size.ny, size.nz, size.ngx, size.ngy, size.ngz);
 
     SyncSize();
   };
 
   // Public data members
+  MeshSize size = {.dim = 1,
+                   .nx = 1,
+                   .ny = 1,
+                   .nz = 1,
+                   .ngx = 0,
+                   .ngy = 0,
+                   .ngz = 0,
+                   .lx = 1.0,
+                   .ly = 1.0,
+                   .lz = 1.0,
+                   .x0 = 0.0,
+                   .y0 = 0.0,
+                   .z0 = 0.0};
   Mesh<double> ex, ey, ez;
   Mesh<double> bx, by, bz;
 
  private:
-  int dim_;                   // Mesh dimension
-  int nx_, ny_, nz_;          // Mesh sizes
-  int ngx_, ngy_, ngz_;       // Ghost cells sizes (same for before and after)
-  int ntx_, nty_, ntz_, nt_;  // Total mesh sizes (including ghost cells)
-
-  double dx_, dy_, dz_;  // Mesh spacings
+  // Private data members
+  double dx_, dy_, dz_;  // Mesh spacing
 };
 
 void LoadFieldTo(Field& field, const char* file_name,
