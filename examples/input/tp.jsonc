@@ -4,7 +4,7 @@
 {
   "input_type": "test_particle",
   "problem_name": "tp",
-  "restart_file": "test.h5",
+  "restart_file": "test_field_data.h5",
   "mesh": {
     "dimension": 2,
     "x": {
@@ -12,23 +12,23 @@
       "n": 2400
     },
     "y": {
-      "l": 480,
+      "l": 960,
       "n": 480
     }
   },
   "particles": {
     "electrons": {
-      "n": 100000,
-      "q": 1.0,
+      "n": 10000,
+      "q": -1.0,
       "m": 1.0,
       "tau": 1.9737e-01,
-      "n_track": 100,
-      "dl_track": 1,
-      "dtrack_save": 100
+      "n_track": 10000,
+      "dl_track": 50,
+      "dtrack_save": 1000
     }
   },
   "integrator": {
     "dt": 0.45,
-    "n_loop": 1000
+    "n_loop": 2000000
   }
 }
