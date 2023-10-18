@@ -28,6 +28,15 @@ using namespace lili;
  *  Command line arguments
  */
 int main(int argc, char* argv[]) {
+  // MPI initialization
+  // @todo Move this into header only file using inline
+  int rank, nproc;
+  rank = 0;
+  nproc = 1;
+  if (rank == 0) {
+    std::cout << "MPI initialized with " << nproc << "process" << std::endl;
+  }
+
   // Get start time
   auto start = std::chrono::high_resolution_clock::now();
 
@@ -91,7 +100,8 @@ int main(int argc, char* argv[]) {
   std::vector<int> dl_tracks(n_kind);
   for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
     particles[i_kind] = particle::Particles(input.particles()[i_kind]);
-    particle::DistributeID(particles[i_kind], 0);
+    particle::DistributeID(particles[i_kind],
+                           rank * input.particles()[i_kind].n);
 
     // Distribute positions
     // particle::DistributeLocationUniform(particles[i_kind], 0, input.mesh());
@@ -124,7 +134,10 @@ int main(int argc, char* argv[]) {
   std::cout << "Particle mover dt  : " << mover.dt() << std::endl;
 
   // Time loop
-  int n_loop = input.integrator().n_loop;
+  const int n_loop = input.integrator().n_loop;
+  //@todo Redefine this variable into global constant
+  const int nl_time = 10000;
+  auto loop_time = std::chrono::high_resolution_clock::now();
   for (int i_loop = 0; i_loop < n_loop; ++i_loop) {
     // Loop through all particles
     for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
@@ -138,17 +151,19 @@ int main(int argc, char* argv[]) {
       // Move particles
       mover.Move(particles[i_kind], field);
       particle::PeriodicBoundaryParticles(particles[i_kind], input.mesh());
+    }
 
-      // Print loop information
-      if (i_loop % 10000 == 0) {
-        std::cout << "Loop: " << i_loop << " / " << n_loop;
-        // Print timing
-        std::cout << "("
-                  << std::chrono::duration_cast<std::chrono::milliseconds>(
-                         std::chrono::high_resolution_clock::now() - start)
-                         .count()
-                  << " ms)" << std::endl;
-      }
+    // Print loop information
+    if (i_loop % nl_time == 0) {
+      std::cout << "Iteration: " << i_loop << " / " << n_loop;
+      // Print timing
+      std::cout << " ("
+                << std::chrono::duration_cast<std::chrono::microseconds>(
+                       (std::chrono::high_resolution_clock::now() - loop_time) /
+                       nl_time)
+                       .count()
+                << " us / loop)" << std::endl;
+      loop_time = std::chrono::high_resolution_clock::now();
     }
   }
 
