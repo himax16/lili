@@ -84,7 +84,7 @@ class Mesh {
     InitializeData();
   };
   Mesh(int nx, int ny, int nz)
-      : dim_(3),
+      : dim_(nz > 1 ? 3 : (ny > 1 ? 2 : 1)),
         nx_(nx),
         ny_(ny),
         nz_(nz),
@@ -95,7 +95,7 @@ class Mesh {
     InitializeData();
   };
   Mesh(int nx, int ny, int nz, int ng)
-      : dim_(3),
+      : dim_(nz > 1 ? 3 : (ny > 1 ? 2 : 1)),
         nx_(nx),
         ny_(ny),
         nz_(nz),
@@ -106,7 +106,7 @@ class Mesh {
     InitializeData();
   };
   Mesh(int nx, int ny, int nz, int ngx, int ngy, int ngz)
-      : dim_(3),
+      : dim_(nz > 1 ? 3 : (ny > 1 ? 2 : 1)),
         nx_(nx),
         ny_(ny),
         nz_(nz),
@@ -217,10 +217,7 @@ class Mesh {
 
   // Update total mesh sizes
   void UpdateTotalSizes() {
-    // Update dimension if needed
-    if (dim_ == 0) {
-      dim_ = (nz_ > 1) ? 3 : ((ny_ > 1) ? 2 : 1);
-    }
+    dim_ = (nz_ > 1) ? 3 : ((ny_ > 1) ? 2 : 1);
 
     ntx_ = nx_ + 2 * ngx_;
     nty_ = ny_ + 2 * ngy_;
