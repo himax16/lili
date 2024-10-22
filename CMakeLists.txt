@@ -46,7 +46,7 @@ get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 git_local_changes(GIT_STATUS)
 configure_file("${CMAKE_MODULE_PATH}/config.h.in"
                "${PROJECT_BINARY_DIR}/config.h")
-               
+
 # Define sources
 add_subdirectory(lib)
 add_subdirectory(src)

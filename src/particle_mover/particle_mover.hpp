@@ -28,7 +28,7 @@ class ParticleMover {
       : type_(ParticleMoverType::None),
         dt_(1.0),
         cache_(nullptr),
-        Move_(nullptr){};
+        Move_(nullptr) {};
 
   // Destructor
   ~ParticleMover() {

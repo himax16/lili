@@ -25,7 +25,7 @@ endmacro()
 # Set the MPI library
 macro(set_lili_mpi)
   message(STATUS "Setting MPI")
-  
+
   # Find MPI
   find_package(MPI REQUIRED)
 endmacro()
@@ -33,7 +33,7 @@ endmacro()
 # Set the OpenMP library
 macro(set_lili_openmp)
   message(STATUS "Setting OpenMP")
-  
+
   # Find OpenMP
   find_package(OpenMP REQUIRED)
 endmacro()
@@ -42,7 +42,7 @@ endmacro()
 # Careful that FindHDF5.cmake API is not consistent across versions
 macro(set_lili_hdf5)
   message(STATUS "Setting HDF5")
-  
+
   # Set HDF5 library type
   set(HDF5_USE_STATIC_LIBRARIES ON)
 

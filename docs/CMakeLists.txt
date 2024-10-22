@@ -49,7 +49,7 @@ if(SPHINX_FOUND)
   # - Our doc files have been updated
   # - The Sphinx config has been updated
   add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
-                     COMMAND 
+                     COMMAND
                        ${SPHINX_EXECUTABLE} -b html
                        # Tell Breathe where to find the Doxygen output
                        -Dbreathe_projects.LILI=${DOXYGEN_OUTPUT_DIR}/xml

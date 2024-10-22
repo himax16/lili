@@ -58,7 +58,7 @@ class Mesh {
         ngx_(0),
         ngy_(0),
         ngz_(0),
-        data_(nullptr){};
+        data_(nullptr) {};
 
   // Size-based initialization
   Mesh(int nx)
