@@ -98,9 +98,9 @@ class Field {
   constexpr double dy() const { return dy_; };
   constexpr double dz() const { return dz_; };
 
-  void SyncSize(){
-      // Sync mesh sizes
-      // @todo Implement this to check all sizes
+  void SyncSize() {
+    // Sync mesh sizes
+    // @todo Implement this to check all sizes
   };
 
   void InitializeMesh() {

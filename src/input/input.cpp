@@ -49,7 +49,7 @@ Input::Input() {
  * @param[in] in_file
  * Input file
  */
-Input::Input(const char *in_file) {
+Input::Input(const char* in_file) {
   input_file_ = in_file;
   problem_name_ = "LILI";
   input_type_ = InputType::None;
@@ -60,7 +60,7 @@ Input::Input(const char *in_file) {
  * @param[in] input
  * Input object
  */
-Input::Input(const Input &input) {
+Input::Input(const Input& input) {
   input_file_ = input.input_file_;
   problem_name_ = input.problem_name_;
   restart_file_ = input.restart_file_;
@@ -80,7 +80,7 @@ Input::Input(const Input &input) {
  * @param[in] second
  * Second Input object
  */
-void swap(Input &first, Input &second) {
+void swap(Input& first, Input& second) {
   using std::swap;
 
   swap(first.input_file_, second.input_file_);
@@ -115,7 +115,7 @@ void Input::Parse() {
                     /* callback */ nullptr,
                     /* allow exceptions */ true,
                     /* ignore comments */ true);
-  } catch (json::parse_error &e) {
+  } catch (json::parse_error& e) {
     std::cerr << "Parse error: " << e.what() << std::endl;
     exit(2);
   }
@@ -218,7 +218,7 @@ void Input::Parse() {
   // Parse particles
   if (j.contains("particles")) {
     // Iterate over all particles
-    for (auto &[key, val] : j.at("particles").items()) {
+    for (auto& [key, val] : j.at("particles").items()) {
       InputParticle particle;
       particle.name = key;
 
@@ -256,7 +256,7 @@ void Input::Parse() {
  * @param[in] argv
  * Command line arguments
  */
-Input ParseArguments(int argc, char *argv[]) {
+Input ParseArguments(int argc, char* argv[]) {
   // Variable declaration
   int i_arg = 0;
   bool has_input = false;

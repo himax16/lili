@@ -26,7 +26,7 @@ class TrackParticles {
   }
 
   // Copy constructor
-  TrackParticles(const TrackParticles &other)
+  TrackParticles(const TrackParticles& other)
       : ntrack_(other.ntrack_),
         ndump_(other.ndump_),
         itrack_(other.itrack_),
@@ -49,7 +49,7 @@ class TrackParticles {
   }
 
   // Move constructor
-  TrackParticles(TrackParticles &&other) noexcept : TrackParticles() {
+  TrackParticles(TrackParticles&& other) noexcept : TrackParticles() {
     swap(*this, other);
   };
 
@@ -71,7 +71,7 @@ class TrackParticles {
   };
 
   // Swap data
-  friend void swap(TrackParticles &first, TrackParticles &second) noexcept {
+  friend void swap(TrackParticles& first, TrackParticles& second) noexcept {
     using std::swap;
     swap(first.ntrack_, second.ntrack_);
     swap(first.ndump_, second.ndump_);
@@ -95,7 +95,7 @@ class TrackParticles {
   }
 
   // Operators
-  TrackParticles &operator=(TrackParticles other) {
+  TrackParticles& operator=(TrackParticles other) {
     swap(*this, other);
     return *this;
   }
@@ -104,8 +104,8 @@ class TrackParticles {
   void InitializeTrackParticles();
 
   // Save tracked particles
-  void SaveTrackedParticles(Particles &particles);
-  void SaveTrackedParticles(Particles &particles, mesh::Field &field);
+  void SaveTrackedParticles(Particles& particles);
+  void SaveTrackedParticles(Particles& particles, mesh::Field& field);
 
   // Dump tracked particles
   void DumpTrackedParticles();
@@ -126,7 +126,7 @@ class TrackParticles {
  private:
   int ntrack_, ndump_, itrack_, idump_;
   std::string prefix_;
-  ulong *idtrack_;
+  ulong* idtrack_;
   double *xtrack_, *ytrack_, *ztrack_;
   double *utrack_, *vtrack_, *wtrack_;
   double *extrack_, *eytrack_, *eztrack_;

@@ -42,7 +42,7 @@ void TrackParticles::InitializeTrackParticles() {
  * @param[in] particles
  * Particles object
  */
-void TrackParticles::SaveTrackedParticles(Particles &particles) {
+void TrackParticles::SaveTrackedParticles(Particles& particles) {
   // Copy tracked particles to the current cache
   SelectParticles(particles, track_particles, ParticleStatus::Tracked);
   if (track_particles.npar() != ntrack_) {
@@ -78,8 +78,8 @@ void TrackParticles::SaveTrackedParticles(Particles &particles) {
  * @param[in] field
  * Field object
  */
-void TrackParticles::SaveTrackedParticles(Particles &particles,
-                                          mesh::Field &field) {
+void TrackParticles::SaveTrackedParticles(Particles& particles,
+                                          mesh::Field& field) {
   // Copy tracked particles to the current cache
   SelectParticles(particles, track_particles, ParticleStatus::Tracked);
   if (track_particles.npar() != ntrack_) {
