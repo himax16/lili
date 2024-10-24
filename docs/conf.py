@@ -14,13 +14,11 @@ import os
 import sys
 sys.path.insert(0, os.path.join(os.path.abspath('.'), '../src'))
 
-
 # -- Project information -----------------------------------------------------
 
 project = 'LILI'
 copyright = '2022, Himawan Winarto'
 author = 'Himawan Winarto'
-
 
 # -- General configuration ---------------------------------------------------
 
