@@ -56,9 +56,9 @@ html_theme_options = {
     'display_version': True,
     # 'prev_next_buttons_location': 'bottom',
     'style_external_links': True,
-    # 'vcs_pageview_mode': '',
-    'style_nav_header_background': 'orange',
-    # Toc options
+    'vcs_pageview_mode': 'display_github',
+    # 'style_nav_header_background': 'orange',
+    ## Toc options
     'collapse_navigation': True,
     'sticky_navigation': True,
     'navigation_depth': 4,
@@ -69,5 +69,5 @@ html_theme_options = {
 # Breathe Configuration
 breathe_default_project = 'LILI'
 breathe_projects_source = {
-    'auto': ('../src', ['lili.cpp',])
+    'auto': ('../src', ['lili.cpp', 'lili.h']),
 }
