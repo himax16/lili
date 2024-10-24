@@ -6,6 +6,59 @@
 
 #include "mesh.hpp"
 
+/**
+ * @brief Field class representing a 3D mesh field.
+ *
+ * The Field class provides various constructors for initializing the mesh field
+ * with different parameters, including default, size-based, and domain
+ * size-based initializations. It also includes copy and move constructors, as
+ * well as a destructor.
+ *
+ * The class contains methods for getting mesh dimensions and spacings,
+ * synchronizing mesh sizes, and initializing the mesh. It also provides a swap
+ * function for swapping two Field objects.
+ *
+ * Public Data Members:
+ * - MeshSize size: Structure containing mesh size and domain information.
+ * - Mesh<double> ex, ey, ez: Meshes for electric field components.
+ * - Mesh<double> bx, by, bz: Meshes for magnetic field components.
+ *
+ * Private Data Members:
+ * - double dx_, dy_, dz_: Mesh spacing in x, y, and z directions.
+ *
+ * Methods:
+ * - Field(): Default constructor.
+ * - Field(int nx, int ny, int nz, int ngx, int ngy, int ngz): Size-based
+ * initialization.
+ * - Field(const MeshSize& domain_size): Domain size-based initialization.
+ * - Field(const Field& field): Copy constructor.
+ * - Field(Field&& other) noexcept: Move constructor.
+ * - ~Field(): Destructor.
+ * - friend void swap(Field& first, Field& second) noexcept: Swap function.
+ * - constexpr int dim() const: Get mesh dimension.
+ * - constexpr int nx() const: Get number of cells in x direction.
+ * - constexpr int ny() const: Get number of cells in y direction.
+ * - constexpr int nz() const: Get number of cells in z direction.
+ * - constexpr int ngx() const: Get number of ghost cells in x direction.
+ * - constexpr int ngy() const: Get number of ghost cells in y direction.
+ * - constexpr int ngz() const: Get number of ghost cells in z direction.
+ * - constexpr int ntx() const: Get total number of cells in x direction
+ * (including ghost cells).
+ * - constexpr int nty() const: Get total number of cells in y direction
+ * (including ghost cells).
+ * - constexpr int ntz() const: Get total number of cells in z direction
+ * (including ghost cells).
+ * - constexpr int nt() const: Get total number of cells (including ghost
+ * cells).
+ * - constexpr double dx() const: Get mesh spacing in x direction.
+ * - constexpr double dy() const: Get mesh spacing in y direction.
+ * - constexpr double dz() const: Get mesh spacing in z direction.
+ * - void SyncSize(): Synchronize mesh sizes.
+ * - void InitializeMesh(): Initialize the mesh.
+ *
+ * @file field.hpp
+ * @namespace lili::mesh
+ */
 namespace lili::mesh {
 /**
  * @brief Field class
