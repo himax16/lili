@@ -28,6 +28,9 @@ macro(set_lili_mpi)
 
   # Find MPI
   find_package(MPI REQUIRED)
+
+  # Include MPI
+  include_directories(${MPI_INCLUDE_PATH})
 endmacro()
 
 # Set the OpenMP library
