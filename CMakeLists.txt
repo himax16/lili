@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.15...3.18)
 # Project name and version
 project(LILI
   VERSION
-    0.0
+    0.1
   DESCRIPTION
-    "Multiscale plasma simulator"
+    "Fluid-kinetic plasma simulation code"
   LANGUAGES
     C CXX
 )
@@ -54,7 +54,7 @@ add_subdirectory(docs)
 # add_subdirectory(external)
 
 # Options
-option(BUILD_TESTING "Build tests" ON)
+option(BUILD_TESTING "Build tests" OFF)
 
 # Testing
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
