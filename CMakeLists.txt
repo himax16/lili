@@ -41,6 +41,10 @@ set_lili_hdf5()
 # Compiler flags
 set_lili_compiler_flags()
 
+# ZLib
+## Find the zlib package
+find_package(ZLIB REQUIRED)
+
 # Version configuration
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 git_local_changes(GIT_STATUS)
@@ -52,6 +56,9 @@ add_subdirectory(lib)
 add_subdirectory(src)
 add_subdirectory(docs)
 # add_subdirectory(external)
+
+# Link ZLIB
+target_link_libraries(lili PRIVATE ZLIB::ZLIB)
 
 # Options
 option(BUILD_TESTING "Build tests" OFF)
