@@ -43,3 +43,7 @@ build/
 # Data files except in example
 *.h5
 !example/*.h5
+
+# Spack environment files
+.spack-env/*
+spack.lock
