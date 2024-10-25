@@ -256,7 +256,7 @@ void Input::Parse() {
  * @param[in] argv
  * Command line arguments
  */
-Input ParseArguments(int argc, char* argv[]) {
+Input ParseArguments(int argc, char** argv) {
   // Variable declaration
   int i_arg = 0;
   bool has_input = false;

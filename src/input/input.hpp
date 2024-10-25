@@ -113,6 +113,6 @@ class Input {
 };
 
 // Function declaration
-Input ParseArguments(int argc, char* argv[]);
+Input ParseArguments(int argc, char** argv);
 
 }  // namespace lili::input
