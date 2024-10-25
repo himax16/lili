@@ -12,8 +12,9 @@ spack:
   - hdf5+cxx+fortran
   # For the documentation
   - doxygen
-  - py-breathe
-  - py-sphinx
+  - py-exhale
+  # - py-breathe
+  # - py-sphinx
   - py-sphinx-rtd-theme
   view: true
   concretizer:
