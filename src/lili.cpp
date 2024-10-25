@@ -1,7 +1,6 @@
 /**
  * @file lili.cpp
  * @brief Main LILI program
- *
  */
 #include <chrono>
 #include <cmath>
@@ -19,6 +18,7 @@
 #include "track_particle.hpp"
 
 using namespace lili;
+
 /**
  * @brief Main `LILI` program
  *
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
   rank = 0;
   nproc = 1;
   if (rank == 0) {
-    std::cout << "MPI initialized with " << nproc << "process" << std::endl;
+    std::cout << "MPI initialized with size of: " << nproc << std::endl;
   }
 
   // Get start time
