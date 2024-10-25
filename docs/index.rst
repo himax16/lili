@@ -12,22 +12,24 @@
 Welcome to LILI's documentation!
 ================================
 
+.. note::
+
+   This was built using Exhale version |version|.
+
+Do I want to put the table of content here?
+
+Test linking: :func:`lili::input::Input::input_file`
+
+Contents:
+=========
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+  :maxdepth: 3
+  :caption: Contents:
 
-
+  sphinx/api/lili
 
 Indices and tables
 ==================
 
 * :ref:`genindex`
-
-.. * :ref:`modindex`
-.. * :ref:`search`
-
-Docs
-====
-
-.. autodoxygenindex::
-   :project: auto
