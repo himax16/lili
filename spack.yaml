@@ -16,6 +16,7 @@ spack:
   # - py-breathe
   # - py-sphinx
   - py-sphinx-rtd-theme
+  - py-furo
   view: true
   concretizer:
     unify: true
