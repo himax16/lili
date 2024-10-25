@@ -1,6 +1,70 @@
 # LILI
 
-F**L**uid-K**I**netic P**L**asma S**I**mulator
+F**L**uid-K**I**netic P**L**asma S**I**mulation Code
+
+>[!NOTE]
+> This code is still under early development and the API is subject to change. Current public version is about one milestone behind the development version.
+>
+> Please find check the [roadmap](#roadmap) for more information.
+
+This code serves as a rapid prototyping platform for fluid and kinetic plasma simulations. The code is designed to be modular, allowing for easy implementation of new physics and numerical methods. Codes are well documented and easy to read, making it a great tool for testing purposes.
+
+The code is written in C++ and is designed to be parallelizable using MPI. Most of the work is done on the scaffolding required to implement the physics and numerical methods.
+
+The code is designed to be trivially vectorized and can be easily transformed into a GPU code.
+
+## Installation
+
+We use [**Spack**](https://github.com/spack/spack) to manage the dependencies and CMake to build the code.
+
+To install the code, first clone the repository and then install the dependencies using Spack.
+
+```bash
+git clone git@github.com:himax16/lili.git
+spack env activate lili/.
+spack install
+```
+
+To build the code using CMake:
+
+```bash
+cmake -B lili/build -S lili
+cmake --build lili/build
+```
+
+The executable will be in `lili/build/bin`.
+
+## Roadmap
+
+```mermaid
+%%{
+  init: {
+    'theme': 'neutral'
+  }
+}%%
+gantt
+    title LILI Public Roadmap
+    dateFormat  YYYY-MM-DD
+    todayMarker off
+    axisFormat  %b %Y
+    tickInterval 1month
+
+    section Kinetic Physics
+    Test Particle : milestone, r1, 2024-10-02, 25d
+    Relativistic Particle-in-Cell: r2, after r1, 2024-12-01
+
+    section Fluid Physics
+    Vlasov : r3, after r2, 2025-02-15
+    MHD : r4, after r3, 2025-05-01
+    Multi Fluid : milestone, r5, after r4
+
+    section Future Milestones
+    Kinetic-Vlasov: milestone, r6, after r5
+    Kinetic-MHD : milestone, r7, after r6
+    Kinetic-RMHD : milestone, r8, after r7
+    Collision Fluid Models : milestone, r9, after r8
+    GPU Rewrite : milestone, r10, after r9
+```
 
 ## Key features
 

@@ -3,6 +3,7 @@
 
 # Build directories
 build/
+docs/api/
 
 # Prerequisites
 *.d
@@ -47,3 +48,4 @@ build/
 # Spack environment files
 .spack-env/*
 spack.lock
+loads
