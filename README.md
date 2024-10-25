@@ -51,20 +51,25 @@ gantt
 
     section Kinetic Physics
     Test Particle : milestone, r1, 2024-10-02, 25d
-    Relativistic Particle-in-Cell: r2, after r1, 2024-12-01
+    Relativistic Particle-in-Cell: active, r2, after r1, 2024-12-01
 
     section Fluid Physics
     Vlasov : r3, after r2, 2025-02-15
     MHD : r4, after r3, 2025-05-01
-    Multi Fluid : milestone, r5, after r4
-
-    section Future Milestones
-    Kinetic-Vlasov: milestone, r6, after r5
-    Kinetic-MHD : milestone, r7, after r6
-    Kinetic-RMHD : milestone, r8, after r7
-    Collision Fluid Models : milestone, r9, after r8
-    GPU Rewrite : milestone, r10, after r9
+    Multi Fluid : milestone, 0d
 ```
+
+### Future Major Milestones
+
+* **Hybrid Physics**
+  * Kinetic-Vlasov
+  * Kinetic-MHD
+  * Kinetic-RMHD
+  * Collision Fluid Models
+
+* **_GPU Rewrite_**
+
+* **Multi-Physics Coupling**
 
 ## Key features
 
@@ -77,7 +82,11 @@ gantt
 
 ## Assumptions
 
-1. Speed of light `c = 1`.
+| Physical Quantities | Value |
+| :- | :- |
+| Speed of light | `c = 1` |
+| Electron mass | `m_e = 1` |
+| Electron charge | `e = -1` |
 
 ## Class note
 
