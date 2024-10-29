@@ -11,6 +11,10 @@
 
 #include "mesh.hpp"
 
+/**
+ * @brief
+ * Namespace for LILI input processing routines
+ */
 namespace lili::input {
 /**
  * @brief Enumeration class for input type
@@ -27,29 +31,31 @@ typedef enum {
  *
  * @param[in] input_type
  * InputType to be converted
+ * @return
+ * String representation of the InputType
  */
 std::string InputTypeToString(InputType input_type);
 
 /**
- * @brief Struct to store particle information from input file
+ * @brief Struct to store Particle input information
  */
 typedef struct {
-  int n;
-  int n_track;
-  int dl_track;
-  int dtrack_save;
-  double q;
-  double m;
-  double tau;
-  std::string name;
+  int n;            ///< Total number of particles
+  int n_track;      ///< Total number of particles to track
+  int dl_track;     ///< Number of time steps between tracking output
+  int dtrack_save;  ///< Number of tracking outputs between saving
+  double q;         ///< Particle unit charge \f$q_0\f$
+  double m;         ///< Particle unit mass \f$m_0\f$
+  double tau;       ///< Particle temperature \f$\tau = \frac{k_B T}{m_0 c^2}\f$
+  std::string name;  ///< Particle name
 } InputParticle;
 
 /**
- * @brief Struct to store integrator information from input file
+ * @brief Struct to store Integrator input information
  */
 typedef struct {
-  int n_loop;
-  double dt;
+  int n_loop;  ///< Number of integrator time steps \f$N_{\mathrm{loop}}\f$
+  double dt;   ///< Integrator time step \f$\mathrm{d}t\f$
 } InputIntegrator;
 
 /**
@@ -113,6 +119,15 @@ class Input {
 };
 
 // Function declaration
+/**
+ * @brief Parse command line arguments and return an Input object
+ *
+ * @param[in] argc
+ * Number of command line arguments
+ * @param[in] argv
+ * Command line arguments
+ * @return
+ * Input object with parsed information
+ */
 Input ParseArguments(int argc, char** argv);
-
 }  // namespace lili::input

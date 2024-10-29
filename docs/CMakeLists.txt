@@ -4,16 +4,14 @@ message(STATUS "Enabling documentation")
 # Doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
-  # Configure the Doxygen file
-  get_target_property(LILI_SRC_DIR lili INTERFACE_INCLUDE_DIRECTORIES)
-  file(GLOB_RECURSE LILI_SRC_FILES
-       ${LILI_SRC_DIR}/*.h
-       ${LILI_SRC_DIR}/*.hpp
-       ${LILI_SRC_DIR}/*.cpp)
+  # TODO: Run the Doxygen whenever the source files change. This is a bit
+  # tricky because we need to know the source files status without actually
+  # building the project. Problem with add_custom_command(...) not allowing
+  # different directory for the TARGET.
 
   set(DOXYGEN_INPUT_DIR ${PROJECT_SOURCE_DIR}/src)
   set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/doxygen)
-  set(DOXYGEN_STRIP_FROM_PATH ${PROJECT_SOURCE_DIR}/src)
+  set(DOXYGEN_STRIP_FROM_PATH ${DOXYGEN_INPUT_DIR})
   set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/xml/index.xml)
   set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
   set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
@@ -27,7 +25,6 @@ if(DOXYGEN_FOUND)
 
   # Only regenerate Doxygen when Doxyfile or files change
   add_custom_command(OUTPUT ${DOXYGEN_INDEX_FILE}
-                     DEPENDS ${LILI_SRC_FILES}
                      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
                      MAIN_DEPENDENCY ${DOXYFILE_OUT} ${DOXYFILE_IN}
                      COMMENT "Generating documentation with Doxygen"

@@ -13,12 +13,6 @@
 using json = nlohmann::json;
 
 namespace lili::input {
-/**
- * @brief Function to convert InputType to string
- *
- * @param[in] input_type
- * InputType to be converted
- */
 std::string InputTypeToString(InputType input_type) {
   switch (input_type) {
     case InputType::None:
@@ -36,6 +30,14 @@ std::string InputTypeToString(InputType input_type) {
 
 /**
  * @brief Default constructor for Input class
+ *
+ * @details
+ * Initialize the Input object with default values:
+ * ```cpp
+ * input_file = "";
+ * problem_name = "LILI";
+ * input_type = InputType::None;
+ * ```
  */
 Input::Input() {
   input_file_ = "";
@@ -44,10 +46,17 @@ Input::Input() {
 }
 
 /**
- * @brief Constructor for Input class
+ * @brief Constructor for Input class for a given input file
  *
  * @param[in] in_file
  * Input file
+ * @details
+ * Initialize the Input object with the given input file:
+ * ```cpp
+ * input_file = in_file;
+ * problem_name = "LILI";
+ * input_type = InputType::None;
+ * ```
  */
 Input::Input(const char* in_file) {
   input_file_ = in_file;
@@ -59,6 +68,8 @@ Input::Input(const char* in_file) {
  * @brief Copy constructor for Input class
  * @param[in] input
  * Input object
+ * @param[out] Input object
+ * Copied Input object
  */
 Input::Input(const Input& input) {
   input_file_ = input.input_file_;
@@ -99,6 +110,8 @@ void swap(Input& first, Input& second) {
  *
  * @param[in] in_file
  * Input file
+ * @param[out] Input object
+ * Parsed Input object
  */
 void Input::Parse() {
   // Open input file
@@ -248,14 +261,6 @@ void Input::Parse() {
   }
 }
 
-/**
- * @brief Parse command line arguments
- *
- * @param[in] argc
- * Number of command line arguments
- * @param[in] argv
- * Command line arguments
- */
 Input ParseArguments(int argc, char** argv) {
   // Variable declaration
   int i_arg = 0;
