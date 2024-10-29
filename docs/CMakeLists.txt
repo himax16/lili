@@ -1,5 +1,5 @@
 # Documentation
-option(BUILD_DOC "Creating documentation" ON)
+message(STATUS "Enabling documentation")
 
 # Doxygen
 find_package(Doxygen)
