@@ -13,7 +13,7 @@ spack:
   # For the documentation
   - doxygen
   - py-exhale
-  # - py-breathe
+  - py-breathe
   # - py-sphinx
   - py-sphinx-rtd-theme
   - py-furo
