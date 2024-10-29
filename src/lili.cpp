@@ -20,12 +20,14 @@
 using namespace lili;
 
 /**
- * @brief Main `LILI` program
+ * @brief Main function for `LILI` program
  *
  * @param[in] argc
  *  Number of command line arguments
  * @param[in] argv
  *  Command line arguments
+ * @return
+ *  Integer return code
  */
 int main(int argc, char* argv[]) {
   // MPI initialization
