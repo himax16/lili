@@ -101,7 +101,9 @@ exhale_args = {
     # Suggested optional arguments
     'rootFileTitle': project,
     'createTreeView': True,
-    "treeViewIsBootstrap": True,
+    'treeViewIsBootstrap': False,
+    ## Fix for Furo theme
+    'contentsDirectives': False,
     ## Temporary fix for Exhale
     "pageLevelConfigMeta": ":github_url: https://github.com/himax16/lili",
 }
