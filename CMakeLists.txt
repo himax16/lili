@@ -30,23 +30,19 @@ include(GetGitRevisionDescription)
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
-# C++ standard
+# CMake Setups
+## C++ standard
 set_lili_cxx()
-
-# MPI
+## MPI
 set_lili_mpi()
-
-# OpenMP
+## OpenMP
 set_lili_openmp()
-
-# HDF5
+## HDF5
 set_lili_hdf5()
-
-# Compiler flags
+## Compiler flags
 set_lili_compiler_flags()
-
-# ZLib
-## Find the zlib package
+## ZLib
+### Find the zlib package
 find_package(ZLIB REQUIRED)
 
 # Version configuration
