@@ -14,6 +14,10 @@ if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, default to ${CMAKE_BUILD_TYPE}")
 endif()
 
+# Options
+option(BUILD_DOCS "Build documentation" OFF)
+option(BUILD_TESTING "Build tests" OFF)
+
 # Set CMake helper location
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
@@ -54,14 +58,15 @@ configure_file("${CMAKE_MODULE_PATH}/config.h.in"
 # Define sources
 add_subdirectory(lib)
 add_subdirectory(src)
-add_subdirectory(docs)
 # add_subdirectory(external)
 
 # Link ZLIB
 target_link_libraries(lili PRIVATE ZLIB::ZLIB)
 
-# Options
-option(BUILD_TESTING "Build tests" OFF)
+# Documentation
+if(BUILD_DOCS)
+  add_subdirectory(docs)
+endif()
 
 # Testing
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
