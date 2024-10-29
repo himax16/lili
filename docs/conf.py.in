@@ -102,6 +102,7 @@ exhale_args = {
     'rootFileTitle': project,
     'createTreeView': True,
     'treeViewIsBootstrap': False,
+    'includeTemplateParamOrderList': True,
     ## Fix for Furo theme
     'contentsDirectives': False,
     ## Temporary fix for Exhale
