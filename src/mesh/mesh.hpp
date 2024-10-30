@@ -53,6 +53,7 @@ struct MeshSize {
 
 /**
  * @brief Simple class to store Mesh size information
+ *
  * @details
  * This class is used to store the Mesh size information. All of the members are
  * public.
@@ -76,6 +77,7 @@ class MeshSizeC {
 
 /**
  * @brief Function to print MeshSize information
+ *
  * @param mesh_size Mesh size information
  * @details
  * Print the MeshSize information to the standard output.
@@ -95,6 +97,7 @@ void PrintMeshSize(const MeshSize& mesh_size);
 
 /**
  * @brief Function to recalculate the dimension of the MeshSize
+ *
  * @param mesh_size Mesh size information
  * @details
  * Recalculate the dimension of the MeshSize based on the number of cells in
@@ -111,10 +114,11 @@ void UpdateMeshSizeDim(MeshSize& mesh_size);
 
 /**
  * @brief Mesh class
+ *
  * @tparam T Data type
  * @details
- * Base mesh class with ghost cells and smart access operator. Data is stored
- * in a 1D array with column-major ordering.
+ * Base mesh class with ghost cells and smart access operator.
+ * Data is stored in a 1D array with column-major ordering.
  */
 template <typename T>
 class Mesh {
@@ -301,7 +305,7 @@ class Mesh {
   Mesh(Mesh&& other) noexcept : Mesh() { swap(*this, other); }
 
   /**
-   * @brief Destroy the Mesh object
+   * @brief Destructor for the Mesh class
    */
   ~Mesh() {
     if (data_ != nullptr) {
@@ -309,7 +313,15 @@ class Mesh {
     }
   }
 
-  // Swap function
+  /**
+   * @brief Function to swap the data between two Mesh objects
+   *
+   * @param first First Mesh object
+   * @param second Second Mesh object
+   * @details
+   * This function will swap the data between two Mesh objects in-place using
+   * std::swap.
+   */
   friend void swap(Mesh<T>& first, Mesh<T>& second) noexcept {
     using std::swap;
     swap(first.dim_, second.dim_);
@@ -341,11 +353,24 @@ class Mesh {
   constexpr T* data() const { return data_; };
 
   // Operators
+  /**
+   * @brief Assignment operator for the Mesh class object for another Mesh
+   * class object
+   *
+   * @param other Other Mesh class object
+   * @return Mesh<T>& Reference to the current Mesh object
+   */
   Mesh<T>& operator=(Mesh<T> other) {
     swap(*this, other);
     return *this;
   };
 
+  /**
+   * @brief Assignment operator for the Mesh class object for a scalar value
+   *
+   * @param value Scalar value
+   * @return Mesh<T>& Reference to the current Mesh object
+   */
   Mesh<T>& operator=(T value) {
     for (int i = 0; i < nt_; ++i) {
       data_[i] = value;
@@ -353,6 +378,13 @@ class Mesh {
     return *this;
   };
 
+  /**
+   * @brief Addition assignment operator for the Mesh class object for a scalar
+   * value
+   *
+   * @param value Scalar value
+   * @return Mesh<T>& Reference to the current Mesh object
+   */
   Mesh<T>& operator+=(T value) {
     for (int i = 0; i < nt_; ++i) {
       data_[i] += value;
@@ -360,11 +392,11 @@ class Mesh {
     return *this;
   };
 
-  // Raw access operator
+  // Raw access operator (1D)
   T operator()(int i) const { return data_[i]; };
   T& operator()(int i) { return data_[i]; };
 
-  // Smart access operator
+  // Smart access operator (3D)
   T operator()(int i, int j, int k) const {
     return data_[ngx_ + i + ntx_ * (ngy_ + j + nty_ * (ngz_ + k))];
   };
@@ -372,7 +404,9 @@ class Mesh {
     return data_[ngx_ + i + ntx_ * (ngy_ + j + nty_ * (ngz_ + k))];
   };
 
-  // Update total mesh sizes
+  /**
+   * @brief Recalculate the total mesh sizes based on the current sizes
+   */
   void UpdateTotalSizes() {
     dim_ = (nz_ > 1) ? 3 : ((ny_ > 1) ? 2 : 1);
 
@@ -383,16 +417,27 @@ class Mesh {
     nt_ = ntx_ * nty_ * ntz_;
   };
 
-  // Compare Mesh sizes
+  /**
+   * @brief Comparator to check if the mesh size is the same as the other mesh
+   *
+   * @param other Other Mesh object
+   */
   bool SameSizeAs(const Mesh& other) {
     return (nx_ == other.nx_ && ny_ == other.ny_ && nz_ == other.nz_ &&
             ngx_ == other.ngx_ && ngy_ == other.ngy_ && ngz_ == other.ngz_);
   };
 
-  // Initialize data
+  /**
+   * @brief Initialize the data block for the mesh
+   */
   void InitializeData() {
     // Update total mesh sizes
     UpdateTotalSizes();
+
+    // Check if the data is already allocated
+    if (data_ != nullptr) {
+      delete[] data_;
+    }
 
     // Allocate memory
     data_ = new T[nt_]();
@@ -400,12 +445,13 @@ class Mesh {
 
   /**
    * @brief Resize the mesh and clean up the data
-   * @param nx New X-axis size
-   * @param ny New Y-axis size
-   * @param nz New Z-axis size
-   * @param ngx New X-axis ghost size
-   * @param ngy New Y-axis ghost size
-   * @param ngz New Z-axis ghost size
+   *
+   * @param nx New X-axis size \f$n_x\f$
+   * @param ny New Y-axis size \f$n_y\f$
+   * @param nz New Z-axis size \f$n_z\f$
+   * @param ngx New X-axis ghost size \f$n_{gx}\f$
+   * @param ngy New Y-axis ghost size \f$n_{gy}\f$
+   * @param ngz New Z-axis ghost size \f$n_{gz}\f$
    * @details
    * This function will resize the mesh and clean up the data. If the size is
    * changed, the data will be reallocated.
@@ -453,15 +499,16 @@ class Mesh {
 
   /**
    * @brief Shrink the mesh inplace
-   * @param nx New X-axis size
-   * @param ny New Y-axis size
-   * @param nz New Z-axis size
-   * @param ngx New X-axis ghost size
-   * @param ngy New Y-axis ghost size
-   * @param ngz New Z-axis ghost size
+   *
+   * @param nx New X-axis size \f$n_x\f$
+   * @param ny New Y-axis size \f$n_y\f$
+   * @param nz New Z-axis size \f$n_z\f$
+   * @param ngx New X-axis ghost size \f$n_{gx}\f$
+   * @param ngy New Y-axis ghost size \f$n_{gy}\f$
+   * @param ngz New Z-axis ghost size \f$n_{gz}\f$
    * @details
-   * This function will shrink the mesh inplace. Crash if the new mesh size is
-   * different from the current mesh size.
+   * This function will shrink the mesh inplace.
+   * Crash if the new mesh size is different from the current mesh size.
    */
   void Shrink(int nx, int ny, int nz, int ngx, int ngy, int ngz) {
     // Store the old size
@@ -529,6 +576,78 @@ class Mesh {
           }
         }
         break;
+      case MeshGhostLocation::YPrev:
+        // Make sure the other mesh has the same relevant size
+        if (other.nx() != nx_ || other.nz() != nz_ || other.ny() < ngy_) {
+          std::cerr << "Invalid ghost mesh size..." << std::endl;
+          exit(2);
+        } else {
+          // Cache variable
+          int noff = other.ny();
+          // Copy data
+          for (int i = 0; i < nx_; ++i) {
+            for (int j = -ngy_; j < 0; ++j) {
+              for (int k = 0; k < nz_; ++k) {
+                (*this)(i, j, k) = other(i, noff + j, k);
+              }
+            }
+          }
+        }
+        break;
+      case MeshGhostLocation::YNext:
+        // Make sure the other mesh has the same relevant size
+        if (other.nx() != nx_ || other.nz() != nz_ || other.ny() < ngy_) {
+          std::cerr << "Invalid ghost mesh size..." << std::endl;
+          exit(2);
+        } else {
+          // Cache variable
+          int noff = -ny_;
+          // Copy data
+          for (int i = 0; i < nx_; ++i) {
+            for (int j = ny_; j < (ny_ + ngy_); ++j) {
+              for (int k = 0; k < nz_; ++k) {
+                (*this)(i, j, k) = other(i, noff + j, k);
+              }
+            }
+          }
+        }
+        break;
+      case MeshGhostLocation::ZPrev:
+        // Make sure the other mesh has the same relevant size
+        if (other.nx() != nx_ || other.ny() != ny_ || other.nz() < ngz_) {
+          std::cerr << "Invalid ghost mesh size..." << std::endl;
+          exit(2);
+        } else {
+          // Cache variable
+          int noff = other.nz();
+          // Copy data
+          for (int i = 0; i < nx_; ++i) {
+            for (int j = 0; j < ny_; ++j) {
+              for (int k = -ngz_; k < 0; ++k) {
+                (*this)(i, j, k) = other(i, j, noff + k);
+              }
+            }
+          }
+        }
+        break;
+      case MeshGhostLocation::ZNext:
+        // Make sure the other mesh has the same relevant size
+        if (other.nx() != nx_ || other.ny() != ny_ || other.nz() < ngz_) {
+          std::cerr << "Invalid ghost mesh size..." << std::endl;
+          exit(2);
+        } else {
+          // Cache variable
+          int noff = -nz_;
+          // Copy data
+          for (int i = 0; i < nx_; ++i) {
+            for (int j = 0; j < ny_; ++j) {
+              for (int k = nz_; k < (nz_ + ngz_); ++k) {
+                (*this)(i, j, k) = other(i, j, noff + k);
+              }
+            }
+          }
+        }
+        break;
       default:
         std::cerr << "Invalid ghost location..." << std::endl;
         break;
@@ -537,7 +656,9 @@ class Mesh {
 
   /**
    * @brief Linear interpolation
-   * @param x X-axis coordinate relative to the mesh
+   *
+   * @param x Data point location relative to the mesh \f$x^\prime\f$
+   * @return Interpolated value at \f$x^\prime\f$
    */
   T LinearInterpolation(double x) const {
     // Cache variables
@@ -550,8 +671,10 @@ class Mesh {
 
   /**
    * @brief Bilenar interpolation
-   * @param x X-axis coordinate relative to the mesh
-   * @param y Y-axis coordinate relative to the mesh
+   *
+   * @param x Data point location relative to the mesh \f$x^\prime\f$
+   * @param y Data point location relative to the mesh \f$y^\prime\f$
+   * @return Interpolated value at \f$(x^\prime, y^\prime)\f$
    */
   T BilinearInterpolation(double x, double y) const {
     // Cache variables
@@ -570,9 +693,11 @@ class Mesh {
 
   /**
    * @brief Trilinear interpolation
-   * @param x X-axis coordinate relative to the mesh
-   * @param y Y-axis coordinate relative to the mesh
-   * @param z Z-axis coordinate relative to the mesh
+   *
+   * @param x Data point location relative to the mesh \f$x^\prime\f$
+   * @param y Data point location relative to the mesh \f$y^\prime\f$
+   * @param z Data point location relative to the mesh \f$z^\prime\f$
+   * @return Interpolated value at \f$(x^\prime, y^\prime, z^\prime)\f$
    */
   T TrilinearInterpolation(double x, double y, double z) const {
     // Cache variables
@@ -596,14 +721,16 @@ class Mesh {
   };
 
   /**
-   * @brief Interpolate the mesh
-   * @param x X-axis coordinate relative to the mesh
-   * @param y Y-axis coordinate relative to the mesh
-   * @param z Z-axis coordinate relative to the mesh
-   * @return Interpolated value
+   * @brief Interpolation function
+   *
+   * @param x Data point location relative to the mesh \f$x^\prime\f$
+   * @param y Data point location relative to the mesh \f$y^\prime\f$
+   * @param z Data point location relative to the mesh \f$z^\prime\f$
+   * @return Interpolated value at \f$(x^\prime, y^\prime, z^\prime)\f$
    * @details
    * This function will automatically choose the interpolation method based on
-   * the mesh dimension.
+   * the mesh dimension. Ignore the extra arguments if the mesh is in lower
+   * dimension.
    */
   T Interpolation(double x, double y, double z) const {
     if (dim_ == 2) {
