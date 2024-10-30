@@ -6,74 +6,84 @@
 
 #include "mesh.hpp"
 
-/**
- * @brief Field class representing a 3D mesh field.
- *
- * The Field class provides various constructors for initializing the mesh field
- * with different parameters, including default, size-based, and domain
- * size-based initializations. It also includes copy and move constructors, as
- * well as a destructor.
- *
- * The class contains methods for getting mesh dimensions and spacings,
- * synchronizing mesh sizes, and initializing the mesh. It also provides a swap
- * function for swapping two Field objects.
- *
- * Public Data Members:
- * - MeshSize size: Structure containing mesh size and domain information.
- * - Mesh<double> ex, ey, ez: Meshes for electric field components.
- * - Mesh<double> bx, by, bz: Meshes for magnetic field components.
- *
- * Private Data Members:
- * - double dx_, dy_, dz_: Mesh spacing in x, y, and z directions.
- *
- * Methods:
- * - Field(): Default constructor.
- * - Field(int nx, int ny, int nz, int ngx, int ngy, int ngz): Size-based
- * initialization.
- * - Field(const MeshSize& domain_size): Domain size-based initialization.
- * - Field(const Field& field): Copy constructor.
- * - Field(Field&& other) noexcept: Move constructor.
- * - ~Field(): Destructor.
- * - friend void swap(Field& first, Field& second) noexcept: Swap function.
- * - constexpr int dim() const: Get mesh dimension.
- * - constexpr int nx() const: Get number of cells in x direction.
- * - constexpr int ny() const: Get number of cells in y direction.
- * - constexpr int nz() const: Get number of cells in z direction.
- * - constexpr int ngx() const: Get number of ghost cells in x direction.
- * - constexpr int ngy() const: Get number of ghost cells in y direction.
- * - constexpr int ngz() const: Get number of ghost cells in z direction.
- * - constexpr int ntx() const: Get total number of cells in x direction
- * (including ghost cells).
- * - constexpr int nty() const: Get total number of cells in y direction
- * (including ghost cells).
- * - constexpr int ntz() const: Get total number of cells in z direction
- * (including ghost cells).
- * - constexpr int nt() const: Get total number of cells (including ghost
- * cells).
- * - constexpr double dx() const: Get mesh spacing in x direction.
- * - constexpr double dy() const: Get mesh spacing in y direction.
- * - constexpr double dz() const: Get mesh spacing in z direction.
- * - void SyncSize(): Synchronize mesh sizes.
- * - void InitializeMesh(): Initialize the mesh.
- *
- * @file field.hpp
- * @namespace lili::mesh
- */
 namespace lili::mesh {
 /**
- * @brief Field class
+ * @brief Field class for electromagnetic field
+ *
+ * @details
+ * This class is used to store the electromagnetic field data. The field data is
+ * stored in the Mesh class objects.
+ *
+ * Currently we store 3D electromagnetic fields for these variables:
+ * - Electric field: \f$\mathbf{E} = (E_x, E_y, E_z)\f$
+ * - Magnetic field: \f$\mathbf{B} = (B_x, B_y, B_z)\f$
+ *
+ * The relative spacing between the field points are stored as
+ * \f$\mathrm{d}\mathbf{r}_{\mathbf{Q}}\f$ as a multiple of the mesh spacing
+ * \f$\mathrm{d}\mathbf{r}\f$.
+ *
+ * For the Yee grid we have:
+ * - \f$E_x\f$ at \f$(0.5, 0, 0)\f$
+ * - \f$E_y\f$ at \f$(0, 0.5, 0)\f$
+ * - \f$E_z\f$ at \f$(0, 0, 0.5)\f$
+ * - \f$B_x\f$ at \f$(0, 0.5, 0.5)\f$
+ * - \f$B_y\f$ at \f$(0.5, 0, 0.5)\f$
+ * - \f$B_z\f$ at \f$(0.5, 0.5, 0)\f$
+ *
+ * @note In the next release, current will also be stored.
  */
 class Field {
  public:
   // Constructor
-  Field() : dx_(1.0), dy_(1.0), dz_(1.0) {
+  Field()
+      : dx_(1.0),
+        dy_(1.0),
+        dz_(1.0),
+        dexx_(0.5),
+        dexy_(0.0),
+        dexz_(0.0),
+        deyx_(0.0),
+        deyy_(0.5),
+        deyz_(0.0),
+        dezx_(0.0),
+        dezy_(0.0),
+        dezz_(0.5),
+        dbxx_(0.0),
+        dbxy_(0.5),
+        dbxz_(0.5),
+        dbyx_(0.5),
+        dbyy_(0.0),
+        dbyz_(0.5),
+        dbzx_(0.5),
+        dbzy_(0.5),
+        dbzz_(0.0) {
     UpdateMeshSizeDim(size);
     InitializeMesh();
-  };
+  }
 
   // Size-based initialization
   Field(int nx, int ny, int nz, int ngx, int ngy, int ngz)
-      : dx_(1.0), dy_(1.0), dz_(1.0) {
+      : dx_(1.0),
+        dy_(1.0),
+        dz_(1.0),
+        dexx_(0.5),
+        dexy_(0.0),
+        dexz_(0.0),
+        deyx_(0.0),
+        deyy_(0.5),
+        deyz_(0.0),
+        dezx_(0.0),
+        dezy_(0.0),
+        dezz_(0.5),
+        dbxx_(0.0),
+        dbxy_(0.5),
+        dbxz_(0.5),
+        dbyx_(0.5),
+        dbyy_(0.0),
+        dbyz_(0.5),
+        dbzx_(0.5),
+        dbzy_(0.5),
+        dbzz_(0.0) {
     size.nx = nx;
     size.ny = ny;
     size.nz = nz;
@@ -86,7 +96,7 @@ class Field {
 
     UpdateMeshSizeDim(size);
     InitializeMesh();
-  };
+  }
 
   Field(const MeshSize& domain_size) {
     size = domain_size;
@@ -96,7 +106,7 @@ class Field {
 
     UpdateMeshSizeDim(size);
     InitializeMesh();
-  };
+  }
 
   // Copy constructor
   Field(const Field& field)
@@ -109,7 +119,7 @@ class Field {
     by = field.by;
     bz = field.bz;
     SyncSize();
-  };
+  }
 
   // Move constructor
   Field(Field&& other) noexcept : Field() { swap(*this, other); };
@@ -136,6 +146,7 @@ class Field {
   };
 
   // Getters
+  /// @cond GETTERS
   constexpr int dim() const { return size.dim; };
   constexpr int nx() const { return size.nx; };
   constexpr int ny() const { return size.ny; };
@@ -150,6 +161,7 @@ class Field {
   constexpr double dx() const { return dx_; };
   constexpr double dy() const { return dy_; };
   constexpr double dz() const { return dz_; };
+  /// @endcond
 
   void SyncSize() {
     // Sync mesh sizes
@@ -169,25 +181,29 @@ class Field {
   };
 
   // Public data members
-  MeshSize size = {.dim = 1,
-                   .nx = 1,
-                   .ny = 1,
-                   .nz = 1,
-                   .ngx = 0,
-                   .ngy = 0,
-                   .ngz = 0,
-                   .lx = 1.0,
-                   .ly = 1.0,
-                   .lz = 1.0,
-                   .x0 = 0.0,
-                   .y0 = 0.0,
-                   .z0 = 0.0};
+  MeshSize size = {
+      1,    // dim
+      1,    // nx
+      1,    // ny
+      1,    // nz
+      0,    // ngx
+      0,    // ngy
+      0,    // ngz
+      1.0,  // lx
+      1.0,  // ly
+      1.0,  // lz
+      0.0,  // x0
+      0.0,  // y0
+      0.0   // z0
+  };
   Mesh<double> ex, ey, ez;
   Mesh<double> bx, by, bz;
 
  private:
   // Private data members
   double dx_, dy_, dz_;  // Mesh spacing
+  double dexx_, dexy_, dexz_, deyx_, deyy_, deyz_, dezx_, dezy_, dezz_;
+  double dbxx_, dbxy_, dbxz_, dbyx_, dbyy_, dbyz_, dbzx_, dbzy_, dbzz_;
 };
 
 void LoadFieldTo(Field& field, const char* file_name,
