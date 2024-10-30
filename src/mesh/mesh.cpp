@@ -12,9 +12,6 @@
 #include "hdf5.h"
 
 namespace lili::mesh {
-/**
- * @brief Function to print MeshSize information
- */
 void PrintMeshSize(const MeshSize& mesh_size) {
   std::cout << "====== Mesh information ======" << std::endl;
   std::cout << "dim = " << mesh_size.dim << std::endl;
@@ -29,21 +26,10 @@ void PrintMeshSize(const MeshSize& mesh_size) {
   std::cout << "==============================" << std::endl;
 }
 
-/**
- * @brief Function to update MeshSize dimension
- */
 void UpdateMeshSizeDim(MeshSize& mesh_size) {
   mesh_size.dim = (mesh_size.nz > 1) ? 3 : ((mesh_size.ny > 1) ? 2 : 1);
 }
 
-/**
- * @brief Function to save Mesh data to a file, not efficient for multiple calls
- *
- * @param mesh Mesh data
- * @param file_name HDF5 file name
- * @param data_name HDF5 dataset name
- * @param include_ghost Include ghost cells in the saved data
- */
 void SaveMesh(Mesh<double>& mesh, const char* file_name, const char* data_name,
               bool include_ghost) {
   // Check if file exists
@@ -119,13 +105,6 @@ void SaveMesh(Mesh<double>& mesh, const char* file_name, const char* data_name,
   delete[] data;
 }
 
-/**
- * @brief Function to load Mesh data from a file
- * @param mesh Mesh data
- * @param file_name HDF5 file name
- * @param data_name HDF5 dataset name
- * @param include_ghost Include ghost cells in the saved data
- */
 void LoadMeshTo(Mesh<double>& mesh, const char* file_name,
                 const char* data_name, bool include_ghost) {
   // Check if file exists

@@ -1,6 +1,6 @@
 /**
  * @file mesh.hpp
- * @brief Header only library for the Mesh related classes
+ * @brief Header file for the Mesh related classes
  */
 #pragma once
 
@@ -9,42 +9,89 @@
 #include <iostream>
 
 #ifndef __LILIM_DEFAULT_NGHOST
+/**
+ * @brief Default number of ghost cells
+ */
 #define __LILIM_DEFAULT_NGHOST 2
 #endif
 
+/**
+ * @brief
+ * Namespace for LILI mesh related routines
+ */
 namespace lili::mesh {
 /**
- * @brief Enumeration class for the ghost cell locations
+ * @brief Enumeration for the ghost cell locations
  */
 typedef enum {
-  XPrev, /**< Previous X-axis ghost */
-  XNext, /**< Next X-axis ghost */
-  YPrev, /**< Previous Y-axis ghost */
-  YNext, /**< Next Y-axis ghost */
-  ZPrev, /**< Previous Z-axis ghost */
-  ZNext  /**< Next Z-axis ghost */
+  XPrev,  ///< Previous X-axis ghost
+  XNext,  ///< Next X-axis ghost
+  YPrev,  ///< Previous Y-axis ghost
+  YNext,  ///< Next Y-axis ghost
+  ZPrev,  ///< Previous Z-axis ghost
+  ZNext   ///< Next Z-axis ghost
 } MeshGhostLocation;
 
 /**
- * @brief Mesh size struct
+ * @brief Struct to store Mesh size information
  */
 typedef struct {
-  int dim;
-  int nx, ny, nz;
-  int ngx, ngy, ngz;
-  double lx, ly, lz;
-  double x0, y0, z0;
+  int dim;    ///< Dimension of the mesh
+  int nx;     ///< Number of cells in the X-axis
+  int ny;     ///< Number of cells in the Y-axis
+  int nz;     ///< Number of cells in the Z-axis
+  int ngx;    ///< Number of ghost cells in the X-axis
+  int ngy;    ///< Number of ghost cells in the Y-axis
+  int ngz;    ///< Number of ghost cells in the Z-axis
+  double lx;  ///< Length of the mesh in the X-axis
+  double ly;  ///< Length of the mesh in the Y-axis
+  double lz;  ///< Length of the mesh in the Z-axis
+  double x0;  ///< Starting point of the mesh in the X-axis
+  double y0;  ///< Starting point of the mesh in the Y-axis
+  double z0;  ///< Starting point of the mesh in the Z-axis
 } MeshSize;
 
+/**
+ * @brief Function to print MeshSize information
+ * @param mesh_size Mesh size information
+ * @details
+ * Print the MeshSize information to the standard output.
+ *
+ * Example:
+ * ```cpp
+ * ====== Mesh information ======
+ * dim = 3
+ * n   = (100, 100, 100)
+ * ng  = (2, 2, 2)
+ * l   = (1.0, 1.0, 1.0)
+ * r0  = (0.0, 0.0, 0.0)
+ * ==============================
+ * ```
+ */
 void PrintMeshSize(const MeshSize& mesh_size);
+
+/**
+ * @brief Function to recalculate the dimension of the MeshSize
+ * @param mesh_size Mesh size information
+ * @details
+ * Recalculate the dimension of the MeshSize based on the number of cells in
+ * each axis.
+ * \f[
+ * \text{dim} = \begin{cases}
+ * 3 & \text{if } n_z > 1 \\
+ * 2 & \text{if } n_y > 1 \\
+ * 1 & \text{otherwise}
+ * \end{cases}
+ * \f]
+ */
 void UpdateMeshSizeDim(MeshSize& mesh_size);
 
 /**
  * @brief Mesh class
  * @tparam T Data type
  * @details
- * Mesh class with ghost cells and smart access operator. Data is stored in a
- * 1D array with column-major ordering.
+ * Base mesh class with ghost cells and smart access operator. Data is stored
+ * in a 1D array with column-major ordering.
  */
 template <typename T>
 class Mesh {
@@ -461,8 +508,32 @@ class Mesh {
   T* data_;  // Pointer to the data block
 };
 
+/**
+ * @brief Function to save Mesh data to a single file.
+ *
+ * @warning This function is not efficient for multiple calls. Use
+ * lili::output::MeshStream instead.
+ *
+ * @param[in] mesh Mesh data
+ * @param[in] file_name HDF5 file name
+ * @param[in] data_name HDF5 dataset name
+ * @param[in] include_ghost Save ghost cells in the data
+ * @details
+ * This function will save the Mesh data to a single HDF5 file. The data will be
+ * saved in a dataset with the given name. If the file exists, the dataset will
+ * be overwritten.
+ */
 void SaveMesh(Mesh<double>& mesh, const char* file_name, const char* data_name,
               bool include_ghost = false);
+
+/**
+ * @brief Function to load Mesh data from a file
+ *
+ * @param mesh Mesh data
+ * @param file_name HDF5 file name
+ * @param data_name HDF5 dataset name
+ * @param include_ghost Load ghost cells in the data
+ */
 void LoadMeshTo(Mesh<double>& mesh, const char* file_name,
                 const char* data_name, bool include_ghost = false);
 }  // namespace lili::mesh

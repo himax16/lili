@@ -17,7 +17,7 @@
  */
 namespace lili::input {
 /**
- * @brief Enumeration class for input type
+ * @brief Enumeration for input type
  */
 typedef enum {
   None,         ///< No input type
