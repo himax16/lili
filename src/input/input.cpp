@@ -66,10 +66,8 @@ Input::Input(const char* in_file) {
 
 /**
  * @brief Copy constructor for Input class
- * @param[in] input
- * Input object
- * @param[out] Input object
- * Copied Input object
+ *
+ * @param input Other Input object
  */
 Input::Input(const Input& input) {
   input_file_ = input.input_file_;
@@ -106,12 +104,7 @@ void swap(Input& first, Input& second) {
 }
 
 /**
- * @brief Parse input file
- *
- * @param[in] in_file
- * Input file
- * @param[out] Input object
- * Parsed Input object
+ * @brief Parse input file in the object and store the data
  */
 void Input::Parse() {
   // Open input file
