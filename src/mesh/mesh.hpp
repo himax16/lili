@@ -21,16 +21,16 @@
  */
 namespace lili::mesh {
 /**
- * @brief Enumeration for the ghost cell locations
+ * @brief Enumeration class for the ghost cell locations
  */
-typedef enum {
-  XPrev,  ///< Previous X-axis ghost
-  XNext,  ///< Next X-axis ghost
-  YPrev,  ///< Previous Y-axis ghost
-  YNext,  ///< Next Y-axis ghost
-  ZPrev,  ///< Previous Z-axis ghost
-  ZNext   ///< Next Z-axis ghost
-} MeshGhostLocation;
+enum class MeshGhostLocation : uint8_t {
+  XPrev = 0,  ///< Previous X-axis ghost
+  XNext = 1,  ///< Next X-axis ghost
+  YPrev = 2,  ///< Previous Y-axis ghost
+  YNext = 3,  ///< Next Y-axis ghost
+  ZPrev = 4,  ///< Previous Z-axis ghost
+  ZNext = 5,  ///< Next Z-axis ghost
+};
 
 /**
  * @brief Struct to store Mesh size information
@@ -374,10 +374,16 @@ class Mesh {
       exit(2);
     }
   };
-  // Ghost size utilities
+
+  /**
+   * @brief Copy data from other Mesh to the current Mesh ghost cells
+   *
+   * @param other Other mesh
+   * @param gl Ghost location
+   */
   void CopyToGhost(const Mesh& other, MeshGhostLocation gl) {
     switch (gl) {
-      case XPrev:
+      case MeshGhostLocation::XPrev:
         // Make sure the other mesh has the same relevant size
         if (other.ny() != ny_ || other.nz() != nz_ || other.nx() < ngx_) {
           std::cerr << "Invalid ghost mesh size..." << std::endl;
@@ -395,7 +401,7 @@ class Mesh {
           }
         }
         break;
-      case XNext:
+      case MeshGhostLocation::XNext:
         // Make sure the other mesh has the same relevant size
         if (other.ny() != ny_ || other.nz() != nz_ || other.nx() < ngx_) {
           std::cerr << "Invalid ghost mesh size..." << std::endl;
