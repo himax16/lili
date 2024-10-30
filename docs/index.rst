@@ -9,8 +9,14 @@
 
    The full license is in the file LICENSE, distributed with this software.
 
-Welcome to LILI's documentation!
-================================
+LILI's documentation
+====================
+
+**LILI** (*FLuid-KInetic PLasma SImulation Code*) serves as a rapid prototyping platform for fluid and kinetic plasma simulations. The code is designed to be modular, allowing for easy implementation of new physics and numerical methods. Codes are well documented and easy to read, making it a great tool for testing purposes.
+
+The code is written in C++ and is designed to be parallelizable using MPI. Most of the work is done on the scaffolding required to implement the physics and numerical methods.
+
+The code is designed to be trivially vectorized and can be easily transformed into a GPU code.
 
 .. note::
 
@@ -25,9 +31,12 @@ Contents:
 
 .. toctree::
   :maxdepth: 3
-  :caption: Contents:
+  :caption: Contents
 
+  quickstart
+  documentation
   sphinx/api/lili
+  Doxygen documentation <doxygen/index.html>
 
 Indices and tables
 ==================
