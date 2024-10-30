@@ -5,6 +5,11 @@ REPO_NAME="lili-docs"
 
 BUILD_DOCS_DIRECTORY="build/docs/sphinx"
 DOXYGEN_DIRECTORY="build/docs/doxygen/html"
+
+# Copy doxygen files to the root directory
+cp -r $DOXYGEN_DIRECTORY $BUILD_DOCS_DIRECTORY/doxygen
+
+# Change directory to the build docs directory
 cd $BUILD_DOCS_DIRECTORY
 
 # Remove any existing git information
@@ -16,8 +21,7 @@ touch .nojekyll
 # Add CNAME file to the directory
 echo "lili.hima.id" > CNAME
 
-# Copy doxygen files to the root directory
-cp -r $DOXYGEN_DIRECTORY ./doxygen
+
 
 # Initialize a new git repository
 git init
