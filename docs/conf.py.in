@@ -24,20 +24,23 @@ version = '0.1.0'
 primary_domain = 'cpp'
 highlight_language = 'cpp'
 cpp_index_common_prefix = [
-    'lili::', 'lili::input::', 'lili::output::',
-    'lili::particle::', 'lili::mesh::',
+    'lili::',
+    'lili::input::',
+    'lili::output::',
+    'lili::mesh::',
+    'lili::particle::',
 ]
 
 # -- General configuration ---------------------------------------------------
-
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.todo",
+    'sphinx.ext.todo',
     'sphinx.ext.mathjax',
     'breathe',
     'exhale',
+    'sphinx_copybutton',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
