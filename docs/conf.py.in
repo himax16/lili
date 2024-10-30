@@ -58,6 +58,9 @@ html_static_path = []
 # a list of builtin themes.
 # html_theme = 'sphinx_rtd_theme'
 
+# Hide View button
+html_show_sourcelink = False
+
 # # Add HTML theme options for the RTD theme
 # html_theme_options = {
 #     # 'analytics_id': 'G-XXXXXXXXXX',  #  Provided by Google in your dashboard
