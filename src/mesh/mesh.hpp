@@ -35,7 +35,7 @@ enum class MeshGhostLocation : uint8_t {
 /**
  * @brief Struct to store Mesh size information
  */
-typedef struct {
+struct MeshSize {
   int dim;    ///< Dimension of the mesh
   int nx;     ///< Number of cells in the X-axis
   int ny;     ///< Number of cells in the Y-axis
@@ -49,7 +49,30 @@ typedef struct {
   double x0;  ///< Starting point of the mesh in the X-axis
   double y0;  ///< Starting point of the mesh in the Y-axis
   double z0;  ///< Starting point of the mesh in the Z-axis
-} MeshSize;
+};
+
+/**
+ * @brief Simple class to store Mesh size information
+ * @details
+ * This class is used to store the Mesh size information. All of the members are
+ * public.
+ */
+class MeshSizeC {
+ public:
+  int dim;    ///< Dimension of the mesh
+  int nx;     ///< Number of cells in the X-axis
+  int ny;     ///< Number of cells in the Y-axis
+  int nz;     ///< Number of cells in the Z-axis
+  int ngx;    ///< Number of ghost cells in the X-axis
+  int ngy;    ///< Number of ghost cells in the Y-axis
+  int ngz;    ///< Number of ghost cells in the Z-axis
+  double lx;  ///< Length of the mesh in the X-axis
+  double ly;  ///< Length of the mesh in the Y-axis
+  double lz;  ///< Length of the mesh in the Z-axis
+  double x0;  ///< Starting point of the mesh in the X-axis
+  double y0;  ///< Starting point of the mesh in the Y-axis
+  double z0;  ///< Starting point of the mesh in the Z-axis
+};
 
 /**
  * @brief Function to print MeshSize information
@@ -96,7 +119,12 @@ void UpdateMeshSizeDim(MeshSize& mesh_size);
 template <typename T>
 class Mesh {
  public:
-  // Default constructor
+  /**
+   * @brief Default constructor for the Mesh class
+   * @details
+   * This constructor will initialize the Mesh class with zero sizes.
+   * The data will not be initialized.
+   */
   Mesh()
       : dim_(0),
         nx_(0),
@@ -105,9 +133,17 @@ class Mesh {
         ngx_(0),
         ngy_(0),
         ngz_(0),
-        data_(nullptr) {};
+        data_(nullptr) {}
 
   // Size-based initialization
+  /**
+   * @brief 1D Mesh constructor
+   *
+   * @param nx Number of cells in the X-axis \f$n_x\f$.
+   * @details
+   * This constructor will initialize 1D Mesh class with zero ghost cells.
+   * Initialize the data with the given size.
+   */
   Mesh(int nx)
       : dim_(1),
         nx_(nx),
@@ -118,7 +154,17 @@ class Mesh {
         ngz_(0),
         data_(nullptr) {
     InitializeData();
-  };
+  }
+
+  /**
+   * @brief 2D Mesh constructor
+   *
+   * @param nx Number of cells in the X-axis \f$n_x\f$.
+   * @param ny Number of cells in the Y-axis \f$n_y\f$.
+   * @details
+   * This constructor will initialize 2D Mesh class with zero ghost cells.
+   * Initialize the data with the given size.
+   */
   Mesh(int nx, int ny)
       : dim_(2),
         nx_(nx),
@@ -129,7 +175,18 @@ class Mesh {
         ngz_(0),
         data_(nullptr) {
     InitializeData();
-  };
+  }
+
+  /**
+   * @brief 3D Mesh constructor
+   *
+   * @param nx Number of cells in the X-axis \f$n_x\f$.
+   * @param ny Number of cells in the Y-axis \f$n_y\f$.
+   * @param nz Number of cells in the Z-axis \f$n_z\f$.
+   * @details
+   * This constructor will initialize 3D Mesh class with zero ghost cells.
+   * Initialize the data with the given size.
+   */
   Mesh(int nx, int ny, int nz)
       : dim_(nz > 1 ? 3 : (ny > 1 ? 2 : 1)),
         nx_(nx),
@@ -140,7 +197,20 @@ class Mesh {
         ngz_(0),
         data_(nullptr) {
     InitializeData();
-  };
+  }
+
+  /**
+   * @brief 3D Mesh constructor with ghost cells
+   *
+   * @param nx Number of cells in the X-axis \f$n_x\f$.
+   * @param ny Number of cells in the Y-axis \f$n_y\f$.
+   * @param nz Number of cells in the Z-axis \f$n_z\f$.
+   * @param ng Number of ghost cells \f$n_g\f$ in all axis.
+   * @details
+   * This constructor will initialize 3D Mesh class with the same number of
+   * ghost cells in all axis.
+   * Initialize the data with the given size.
+   */
   Mesh(int nx, int ny, int nz, int ng)
       : dim_(nz > 1 ? 3 : (ny > 1 ? 2 : 1)),
         nx_(nx),
@@ -151,7 +221,22 @@ class Mesh {
         ngz_(ng),
         data_(nullptr) {
     InitializeData();
-  };
+  }
+
+  /**
+   * @brief 3D Mesh constructor with custom ghost cells
+   *
+   * @param nx Number of cells in the X-axis \f$n_x\f$.
+   * @param ny Number of cells in the Y-axis \f$n_y\f$.
+   * @param nz Number of cells in the Z-axis \f$n_z\f$.
+   * @param ngx Number of ghost cells \f$n_{gx}\f$ in the X-axis.
+   * @param ngy Number of ghost cells \f$n_{gy}\f$ in the Y-axis.
+   * @param ngz Number of ghost cells \f$n_{gz}\f$ in the Z-axis.
+   * @details
+   * This constructor will initialize 3D Mesh class with custom number of ghost
+   * cells in each axis.
+   * Initialize the data with the given size.
+   */
   Mesh(int nx, int ny, int nz, int ngx, int ngy, int ngz)
       : dim_(nz > 1 ? 3 : (ny > 1 ? 2 : 1)),
         nx_(nx),
@@ -162,7 +247,17 @@ class Mesh {
         ngz_(ngz),
         data_(nullptr) {
     InitializeData();
-  };
+  }
+
+  /**
+   * @brief Mesh constructor using MeshSize struct
+   *
+   * @param domain_size MeshSize struct containing the mesh size information
+   * @details
+   * This constructor will initialize the Mesh class with the given MeshSize
+   * struct.
+   * Initialize the data with the given size.
+   */
   Mesh(const MeshSize& domain_size)
       : dim_(domain_size.dim),
         nx_(domain_size.nx),
@@ -173,9 +268,15 @@ class Mesh {
         ngz_(domain_size.ngz),
         data_(nullptr) {
     InitializeData();
-  };
+  }
 
-  // Copy constructor
+  /**
+   * @brief Copy constructor for the Mesh class
+   *
+   * @param other Other Mesh class object
+   * @details
+   * This constructor will copy the data from the other object of Mesh class.
+   */
   Mesh(const Mesh& other)
       : dim_(other.dim_),
         nx_(other.nx_),
@@ -187,17 +288,26 @@ class Mesh {
         data_(nullptr) {
     InitializeData();
     std::copy(other.data_, other.data_ + other.nt(), data_);
-  };
+  }
 
-  // Move constructor
-  Mesh(Mesh&& other) noexcept : Mesh() { swap(*this, other); };
+  /**
+   * @brief Move constructor for the Mesh class
+   *
+   * @param other Pointer to the other Mesh class object
+   * @details
+   * This constructor will move the data from the other object of Mesh class.
+   * The other object will be reset to the default state.
+   */
+  Mesh(Mesh&& other) noexcept : Mesh() { swap(*this, other); }
 
-  // Destructor
+  /**
+   * @brief Destroy the Mesh object
+   */
   ~Mesh() {
     if (data_ != nullptr) {
       delete[] data_;
     }
-  };
+  }
 
   // Swap function
   friend void swap(Mesh<T>& first, Mesh<T>& second) noexcept {
