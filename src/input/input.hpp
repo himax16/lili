@@ -80,12 +80,15 @@ class Input {
   friend void swap(Input& first, Input& second);
 
   // Operators
+  /// @cond OPERATORS
   Input& operator=(Input other) {
     swap(*this, other);
     return *this;
   }
+  /// @endcond
 
   // Getters
+  /// @cond GETTERS
   std::string input_file() const { return input_file_; }
   std::string problem_name() const { return problem_name_; }
   std::string restart_file() const { return restart_file_; }
@@ -93,8 +96,10 @@ class Input {
   lili::mesh::MeshSize mesh() const { return mesh_; }
   std::vector<InputParticle> particles() const { return particles_; }
   InputIntegrator integrator() const { return integrator_; }
+  /// @endcond
 
   // Setters
+  /// @cond SETTERS
   std::string& input_file() { return input_file_; }
   std::string& problem_name() { return problem_name_; }
   std::string& restart_file() { return restart_file_; }
@@ -102,6 +107,7 @@ class Input {
   lili::mesh::MeshSize& mesh() { return mesh_; }
   std::vector<InputParticle>& particles() { return particles_; }
   InputIntegrator& integrator() { return integrator_; }
+  /// @endcond
 
   // Function to parse input file
   void Parse();

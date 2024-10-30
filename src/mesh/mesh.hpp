@@ -339,6 +339,7 @@ class Mesh {
   }
 
   // Getters
+  /// @cond GETTERS
   constexpr int dim() const { return dim_; };
   constexpr int nx() const { return nx_; };
   constexpr int ny() const { return ny_; };
@@ -351,8 +352,10 @@ class Mesh {
   constexpr int ntz() const { return ntz_; };
   constexpr int nt() const { return nt_; };
   constexpr T* data() const { return data_; };
+  /// @endcond
 
   // Operators
+  /// @cond OPERATORS
   /**
    * @brief Assignment operator for the Mesh class object for another Mesh
    * class object
@@ -403,6 +406,7 @@ class Mesh {
   T& operator()(int i, int j, int k) {
     return data_[ngx_ + i + ntx_ * (ngy_ + j + nty_ * (ngz_ + k))];
   };
+  /// @endcond
 
   /**
    * @brief Recalculate the total mesh sizes based on the current sizes
