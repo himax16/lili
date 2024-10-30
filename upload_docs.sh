@@ -13,6 +13,9 @@ rm -rf .git
 # Add .nojekyll file to the directory
 touch .nojekyll
 
+# Add CNAME file to the directory
+echo "lili.hima.id" > CNAME
+
 # Copy doxygen files to the root directory
 cp -r $DOXYGEN_DIRECTORY ./doxygen
 
