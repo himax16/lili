@@ -12,9 +12,11 @@ spack:
   - hdf5+cxx+fortran
   # For the documentation
   - doxygen
-  - py-exhale
-  - py-breathe
   # - py-sphinx
+  - py-breathe
+  - py-exhale
+  # - py-myst-parser
+  # Hack to use py-furo, will need to wait until py-exhale is updated to v0.37
   - py-sphinx-rtd-theme
   - py-furo
   view: true
