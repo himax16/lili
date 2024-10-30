@@ -26,11 +26,14 @@ if(DOXYGEN_FOUND)
   # Only regenerate Doxygen when Doxyfile or files change
   add_custom_command(OUTPUT ${DOXYGEN_INDEX_FILE}
                      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
-                     MAIN_DEPENDENCY ${DOXYFILE_OUT} ${DOXYFILE_IN}
+                    #  MAIN_DEPENDENCY ${DOXYFILE_OUT} ${DOXYFILE_IN}
                      COMMENT "Generating documentation with Doxygen"
                      VERBATIM)
 
-  add_custom_target(Doxygen_LILI ALL DEPENDS ${DOXYGEN_INDEX_FILE})
+  add_custom_target(
+    Doxygen_LILI ALL
+    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
+  )
 else(DOXYGEN_FOUND)
   message(FATAL_ERROR "Missing Doxygen")
 endif(DOXYGEN_FOUND)
