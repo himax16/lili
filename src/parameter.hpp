@@ -5,6 +5,6 @@
  */
 
 namespace lili {
-extern int rank, nproc;  ///< MPI rank and size
-extern const int nl_time;  ///< Number of loops between time printout
+extern int rank;   ///< MPI rank
+extern int nproc;  ///< Number of MPI processes
 }  // namespace lili

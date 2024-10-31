@@ -21,9 +21,13 @@
 
 /**
  * @brief Base namespace for LILI program
+ *
+ * @details
+ * The base namespace for the LILI program also contains all of the global
+ * variables and functions.
  */
 namespace lili {
-int rank, nproc;  ///< MPI rank and size
+int rank, nproc;
 }  // namespace lili
 
 /**
@@ -84,6 +88,13 @@ int main(int argc, char* argv[]) {
       break;
   }
 
+  // Get the particle information
+  int n_kind = input.particles().size();
+  std::vector<int> n_particles;
+  for (lili::input::InputParticle particle : input.particles()) {
+    n_particles.push_back(particle.n);
+  }
+
   // Print particle information if available
   lout << "==== Particle information ====" << std::endl;
   for (lili::input::InputParticle particle : input.particles()) {
@@ -95,7 +106,6 @@ int main(int argc, char* argv[]) {
   }
 
   // Initialize particles
-  int n_kind = input.particles().size();
   std::vector<lili::particle::Particles> particles(n_kind);
   std::vector<lili::particle::TrackParticles> track_particles(n_kind);
   std::vector<int> dl_tracks(n_kind);
@@ -138,7 +148,7 @@ int main(int argc, char* argv[]) {
 
   // == Main loop =============================================================
   const int n_loop = input.integrator().n_loop;
-  const int nl_time = n_loop < 10000 ? n_loop / 5 : 10000;
+  const int nl_time = n_loop < 10000 ? n_loop : 10000;
 
   auto loop_time = std::chrono::high_resolution_clock::now();
 
