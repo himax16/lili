@@ -4,31 +4,46 @@
  */
 #pragma once
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
 #include "input.hpp"
+#include "parameter.hpp"
 
 /**
  * @brief Namespace for LILI task related routines
  */
 namespace lili::task {
-// Global variables
-/**
- * @brief Simulation task list
- */
-extern std::vector<Task> task_list;
 
 /**
- * @brief Class to store simulation task information
+ * @brief Enumeration for task type
+ */
+enum class TaskType {
+  Base,
+  CreateOutput,
+  InitParticles,
+};
+
+/**
+ * @brief Base class to store simulation task information
  */
 class Task {
  public:
   // Constructor
-  Task(std::string name) : name_(name) {}
+  Task() : type_(TaskType::Base), name_("") {}
+  Task(TaskType type) : type_(type), name_("") {}
+  Task(std::string name) : type_(TaskType::Base), name_(name) {}
 
   // Getters
   /// @cond GETTERS
+  /**
+   * @brief Get the type of the task
+   *
+   * @return TaskType Type of the task
+   */
+  TaskType type() const { return type_; }
+
   /**
    * @brief Get the name of the task
    *
@@ -55,17 +70,72 @@ class Task {
   /// @endcond
 
   /**
-   * @brief Execute the task defined by the class
+   * @brief Increase the run counter by one
    */
-  void Execute() {
+  int IncrementRun() { return i_run_++; }
+
+  /**
+   * @brief Default task execution function
+   */
+  virtual void Execute() {
+    std::cout << "BaseTask: " << name_ << std::endl;
     // Increment the run counter
-    i_run_++;
+    IncrementRun();
   }
 
  private:
-  int i_run_;
-  std::string name_;
+  TaskType type_;     ///< Type of the task
+  int i_run_ = 0;     ///< Number of times the task has been run
+  std::string name_;  ///< Name of the task
 };
+
+/**
+ * @brief Task class to create output folder
+ */
+class TaskCreateOutput : public Task {
+ public:
+  // Constructor
+  TaskCreateOutput() : Task(TaskType::CreateOutput) {
+    set_name("CreateOutput");
+  }
+  TaskCreateOutput(std::string output_folder) : Task(TaskType::CreateOutput) {
+    lili::output_folder = output_folder;
+    set_name("CreateOutput");
+  }
+
+  /**
+   * @brief Create simulation output folder
+   */
+  void Execute() override {
+    std::string output_folder = lili::output_folder;
+    if (!std::filesystem::is_directory(output_folder)) {
+      std::filesystem::create_directory(output_folder);
+      std::cout << "Created output folder: " << output_folder << std::endl;
+    } else {
+      std::cout << "Output folder        : " << output_folder << std::endl;
+    }
+
+    // Increment the run counter
+    IncrementRun();
+  }
+};
+
+// Global variables
+/**
+ * @brief Simulation initialization task list
+ */
+extern std::vector<std::unique_ptr<Task>> init_task_list;
+/**
+ * @brief Simulation loop task list
+ */
+extern std::vector<std::unique_ptr<Task>> loop_task_list;
+
+/**
+ * @brief Helper function to execute the task object based on its type
+ *
+ * @param task Task object
+ */
+void ExecuteTask(Task* task);
 
 /**
  * @brief Function to parse the task list from the input file

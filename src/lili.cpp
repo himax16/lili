@@ -17,6 +17,7 @@
 #include "particle.hpp"
 #include "particle_initialization.hpp"
 #include "particle_mover.hpp"
+#include "task.hpp"
 #include "track_particle.hpp"
 
 /**
@@ -28,6 +29,7 @@
  */
 namespace lili {
 int rank, nproc;
+std::string output_folder = "output";
 }  // namespace lili
 
 /**
@@ -48,24 +50,30 @@ int main(int argc, char* argv[]) {
 
   // Get start time
   auto start = std::chrono::high_resolution_clock::now();
-
   // == Read input ============================================================
   // Parse inputs
   lili::input::Input input = lili::input::ParseArguments(argc, argv, lout);
   // Print the input and input mesh information
   input.Print(lout);
 
+  MPI_Barrier(MPI_COMM_WORLD);
   // == Initialization =========================================================
-  // Initialize output folder
-  std::string output_folder = "output";
-  if (lili::rank == 0) {
-    if (!std::filesystem::is_directory(output_folder)) {
-      std::filesystem::create_directory(output_folder);
-      lout << "Created output folder: " << output_folder << std::endl;
-    } else {
-      lout << "Output folder        : " << output_folder << std::endl;
-    }
+  // Parse the tasks from input
+  lili::task::ParseTaskList(input);
+
+  // Execute the initialization tasks
+  for (auto& task : lili::task::init_task_list) {
+    lili::task::ExecuteTask(task.get());
   }
+  // Print the execution number of the task
+  for (auto& task : lili::task::init_task_list) {
+    lout << "Task: " << task->name() << " executed " << task->i_run()
+         << " times" << std::endl;
+  }
+  std::cout << "Rank " << lili::rank
+            << " init: " << lili::task::init_task_list.size() << std::endl;
+
+  std::string output_folder = lili::output_folder;
   MPI_Barrier(MPI_COMM_WORLD);
 
   // Initialize fields

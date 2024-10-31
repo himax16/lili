@@ -5,6 +5,7 @@ add_library(task STATIC task.hpp task.cpp)
 target_include_directories(task PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Link internal libraries
+target_link_libraries(task PUBLIC parameter)
 target_link_libraries(task PUBLIC input)
 
 # Link external libraries
