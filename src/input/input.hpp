@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "mesh.hpp"
+#include "output.hpp"
 
 /**
  * @brief
@@ -128,12 +129,11 @@ class Input {
 /**
  * @brief Parse command line arguments and return an Input object
  *
- * @param[in] argc
- * Number of command line arguments
- * @param[in] argv
- * Command line arguments
+ * @param argc Number of command line arguments
+ * @param argv Command line arguments
+ * @param lout Custom LiliCout class for output
  * @return
  * Input object with parsed information
  */
-Input ParseArguments(int argc, char** argv);
+Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout);
 }  // namespace lili::input

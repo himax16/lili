@@ -8,8 +8,58 @@
 
 #include "config.h"
 
+/**
+ * @brief Namespace for output related functions
+ */
 namespace lili::output {
+/**
+ * @brief Custom `std::cout` class to enable/disable printing output
+ */
+class LiliCout {
+ public:
+  LiliCout() : enabled(true) {}
+  LiliCout(bool enabled) : enabled(enabled) {}
+
+  /**
+   * @brief Extraction operator for LiliCout class similar to `std::cout`
+   *
+   * @tparam T Type of the input
+   * @param t Input to be printed
+   * @return LiliCout& Reference to the LiliCout object
+   */
+  template <typename T>
+  LiliCout& operator<<(const T& t) {
+    if (enabled) std::cout << t;
+    return *this;
+  }
+
+  /**
+   * @brief Extraction operator for LiliCout class similar to `std::cout`
+   *
+   * @param f Function pointer to `std::ostream&`
+   * @return LiliCout& Reference to the LiliCout object
+   */
+  LiliCout& operator<<(std::ostream& (*f)(std::ostream&)) {
+    if (enabled) std::cout << f;
+    return *this;
+  }
+
+  /**
+   * @brief Flag to enable/disable printing output
+   */
+  bool enabled;
+};
+
 // Function declaration
+/**
+ * @brief Print current `LILI` version with the current git SHA1 and status.
+ */
 void PrintVersion();
+void PrintVersion(LiliCout& out);
+
+/**
+ * @brief Print the help message for the project
+ */
 void PrintHelp();
+void PrintHelp(LiliCout& out);
 }  // namespace lili::output

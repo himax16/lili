@@ -7,7 +7,6 @@
 #include <string>
 
 #include "json.hpp"
-#include "output.hpp"
 
 // Simplify namespace
 using json = nlohmann::json;
@@ -254,7 +253,7 @@ void Input::Parse() {
   }
 }
 
-Input ParseArguments(int argc, char** argv) {
+Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout) {
   // Variable declaration
   int i_arg = 0;
   bool has_input = false;
@@ -268,11 +267,11 @@ Input ParseArguments(int argc, char** argv) {
           // Long option
           if (strcmp(argv[i_arg], "--help") == 0) {
             // Print help
-            lili::output::PrintHelp();
+            lili::output::PrintHelp(lout);
             exit(0);
           } else if (strcmp(argv[i_arg], "--version") == 0) {
             // Print version
-            lili::output::PrintVersion();
+            lili::output::PrintVersion(lout);
             exit(0);
           } else if (strcmp(argv[i_arg], "--input") == 0) {
             if (has_input) {
@@ -307,11 +306,11 @@ Input ParseArguments(int argc, char** argv) {
           break;
         case 'h':
           // Print help
-          lili::output::PrintHelp();
+          lili::output::PrintHelp(lout);
           exit(0);
         case 'v':
           // Print version
-          lili::output::PrintVersion();
+          lili::output::PrintVersion(lout);
           exit(0);
         default:
           // Throw error for unrecognized option

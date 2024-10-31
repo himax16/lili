@@ -12,10 +12,19 @@
 #include "hdf5.h"
 #include "input.hpp"
 #include "mesh.hpp"
+#include "output.hpp"
+#include "parameter.hpp"
 #include "particle.hpp"
 #include "particle_initialization.hpp"
 #include "particle_mover.hpp"
 #include "track_particle.hpp"
+
+/**
+ * @brief Namespace for LILI program
+ */
+namespace lili {
+int rank, nproc;  ///< MPI rank and size
+}  // namespace lili
 
 /**
  * @brief Main function for `LILI` program
@@ -23,32 +32,34 @@
 int main(int argc, char* argv[]) {
   // MPI initialization
   // @todo Move this into header only file using inline
-  int rank, nproc;
-  rank = 0;
-  nproc = 1;
-  if (rank == 0) {
-    std::cout << "MPI initialized with size of: " << nproc << std::endl;
-  }
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &lili::rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &lili::nproc);
+
+  // Create LiliCout object for output
+  lili::output::LiliCout lout;
+  if (lili::rank != 0) lout.enabled = false;
+  lout << "MPI initialized with size of: " << lili::nproc << std::endl;
 
   // Get start time
   auto start = std::chrono::high_resolution_clock::now();
 
   // Parse inputs
-  lili::input::Input input = lili::input::ParseArguments(argc, argv);
+  lili::input::Input input = lili::input::ParseArguments(argc, argv, lout);
 
   // Print input
-  std::cout << "Input file   : " << input.input_file() << std::endl;
-  std::cout << "Problem name : " << input.problem_name() << std::endl;
-  std::cout << "Input type   : "
-            << lili::input::InputTypeToString(input.input_type()) << std::endl;
+  lout << "Input file   : " << input.input_file() << std::endl;
+  lout << "Problem name : " << input.problem_name() << std::endl;
+  lout << "Input type   : "
+       << lili::input::InputTypeToString(input.input_type()) << std::endl;
 
   // Initialize output folder
   std::string output_folder = "output";
   if (!std::filesystem::is_directory(output_folder)) {
     std::filesystem::create_directory(output_folder);
-    std::cout << "Created output folder: " << output_folder << std::endl;
+    lout << "Created output folder: " << output_folder << std::endl;
   } else {
-    std::cout << "Output folder: " << output_folder << std::endl;
+    lout << "Output folder: " << output_folder << std::endl;
   }
 
   // Print input mesh information
@@ -61,14 +72,12 @@ int main(int argc, char* argv[]) {
       break;
 
     case lili::input::InputType::Restart:
-      std::cout << "Loading field data from: " << input.restart_file()
-                << std::endl;
+      lout << "Loading field data from: " << input.restart_file() << std::endl;
       lili::mesh::LoadFieldTo(field, input.restart_file().c_str(), false);
       break;
 
     case lili::input::InputType::TestParticle:
-      std::cout << "Loading field data from: " << input.restart_file()
-                << std::endl;
+      lout << "Loading field data from: " << input.restart_file() << std::endl;
       lili::mesh::LoadFieldTo(field, input.restart_file().c_str(), false);
       break;
 
@@ -77,13 +86,13 @@ int main(int argc, char* argv[]) {
   }
 
   // Print input particle information
-  std::cout << "==== Particle information ====" << std::endl;
+  lout << "==== Particle information ====" << std::endl;
   for (lili::input::InputParticle particle : input.particles()) {
-    std::cout << "* " << particle.name << std::endl;
-    std::cout << "  n   = " << particle.n << std::endl;
-    std::cout << "  m   = " << particle.m << std::endl;
-    std::cout << "  q   = " << particle.q << std::endl;
-    std::cout << "  tau = " << particle.tau << std::endl;
+    lout << "* " << particle.name << std::endl;
+    lout << "  n   = " << particle.n << std::endl;
+    lout << "  m   = " << particle.m << std::endl;
+    lout << "  q   = " << particle.q << std::endl;
+    lout << "  tau = " << particle.tau << std::endl;
   }
 
   // Initialize particles
@@ -94,7 +103,7 @@ int main(int argc, char* argv[]) {
   for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
     particles[i_kind] = lili::particle::Particles(input.particles()[i_kind]);
     lili::particle::DistributeID(particles[i_kind],
-                                 rank * input.particles()[i_kind].n);
+                                 lili::rank * input.particles()[i_kind].n);
 
     // Distribute positions
     // particle::DistributeLocationUniform(particles[i_kind], 0, input.mesh());
@@ -125,8 +134,8 @@ int main(int argc, char* argv[]) {
   // Initialize particle mover
   lili::particle ::ParticleMover mover;
   mover.InitializeMover(input.integrator());
-  std::cout << "Particle mover type: " << mover.type() << std::endl;
-  std::cout << "Particle mover dt  : " << mover.dt() << std::endl;
+  lout << "Particle mover type: " << mover.type() << std::endl;
+  lout << "Particle mover dt  : " << mover.dt() << std::endl;
 
   // Time loop
   const int n_loop = input.integrator().n_loop;
@@ -151,14 +160,14 @@ int main(int argc, char* argv[]) {
 
     // Print loop information
     if (i_loop % nl_time == 0) {
-      std::cout << "Iteration: " << i_loop << " / " << n_loop;
+      lout << "Iteration: " << i_loop << " / " << n_loop;
       // Print timing
-      std::cout << " ("
-                << std::chrono::duration_cast<std::chrono::microseconds>(
-                       (std::chrono::high_resolution_clock::now() - loop_time) /
-                       nl_time)
-                       .count()
-                << " us / loop)" << std::endl;
+      lout << " ("
+           << std::chrono::duration_cast<std::chrono::microseconds>(
+                  (std::chrono::high_resolution_clock::now() - loop_time) /
+                  nl_time)
+                  .count()
+           << " us / loop)" << std::endl;
       loop_time = std::chrono::high_resolution_clock::now();
     }
   }
@@ -177,6 +186,9 @@ int main(int argc, char* argv[]) {
                     std::chrono::high_resolution_clock::now() - start)
                     .count()
              << " ms" << std::endl;
+
+  // MPI finalize
+  MPI_Finalize();
 
   return 0;
 }
