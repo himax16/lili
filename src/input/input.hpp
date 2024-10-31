@@ -173,7 +173,7 @@ class Input {
     lout << "Input type   : " << lili::input::InputTypeToString(input_type_)
          << std::endl;
     lout << "Mesh size    : " << std::endl;
-    lili::mesh::PrintMeshSize(mesh_);
+    lili::mesh::PrintMeshSize(mesh_, lout);
   }
 
  private:

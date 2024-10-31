@@ -6,7 +6,8 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <iostream>
+
+#include "output.hpp"
 
 #ifndef __LILIM_DEFAULT_NGHOST
 /**
@@ -93,7 +94,7 @@ class MeshSizeC {
  * ==============================
  * ```
  */
-void PrintMeshSize(const MeshSize& mesh_size);
+void PrintMeshSize(const MeshSize& mesh_size, lili::output::LiliCout& lout);
 
 /**
  * @brief Function to recalculate the dimension of the MeshSize

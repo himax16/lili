@@ -48,19 +48,21 @@ int main(int argc, char* argv[]) {
   // == Read input ============================================================
   // Parse inputs
   lili::input::Input input = lili::input::ParseArguments(argc, argv, lout);
-
   // Print the input and input mesh information
   input.Print(lout);
 
   // == Initialization =========================================================
   // Initialize output folder
   std::string output_folder = "output";
-  if (!std::filesystem::is_directory(output_folder)) {
-    std::filesystem::create_directory(output_folder);
-    lout << "Created output folder: " << output_folder << std::endl;
-  } else {
-    lout << "Output folder: " << output_folder << std::endl;
+  if (lili::rank == 0) {
+    if (!std::filesystem::is_directory(output_folder)) {
+      std::filesystem::create_directory(output_folder);
+      lout << "Created output folder: " << output_folder << std::endl;
+    } else {
+      lout << "Output folder        : " << output_folder << std::endl;
+    }
   }
+  MPI_Barrier(MPI_COMM_WORLD);
 
   // Initialize field
   lili::mesh::Field field(input.mesh());
@@ -82,7 +84,7 @@ int main(int argc, char* argv[]) {
       break;
   }
 
-  // Print input particle information
+  // Print particle information if available
   lout << "==== Particle information ====" << std::endl;
   for (lili::input::InputParticle particle : input.particles()) {
     lout << "* " << particle.name << std::endl;
@@ -147,6 +149,7 @@ int main(int argc, char* argv[]) {
               .count()
        << " ms" << std::endl;
   MPI_Barrier(MPI_COMM_WORLD);
+
   for (int i_loop = 0; i_loop < n_loop; ++i_loop) {
     // Loop through all particles
     for (int i_kind = 0; i_kind < n_kind; ++i_kind) {

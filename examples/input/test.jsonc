@@ -29,5 +29,12 @@
   "integrator": {
     "dt": 0.45,
     "n_loop": 1000000
+  },
+  "loop": {
+    "n": 1000000,
+    "tasks": [
+      "move_particles",
+      "calculate_cfl"
+    ]
   }
 }
