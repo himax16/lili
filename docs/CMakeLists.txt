@@ -10,8 +10,9 @@ if(DOXYGEN_FOUND)
   # different directory for the TARGET.
 
   set(DOXYGEN_INPUT_DIR ${PROJECT_SOURCE_DIR}/src)
+  set(DOXYGEN_INPUT_CONFIG_H ${PROJECT_BINARY_DIR}/config.h)
   set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/doxygen)
-  set(DOXYGEN_STRIP_FROM_PATH ${DOXYGEN_INPUT_DIR})
+  set(DOXYGEN_STRIP_FROM_PATH ${PROJECT_SOURCE_DIR})
   set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/xml/index.xml)
   set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
   set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
@@ -26,7 +27,7 @@ if(DOXYGEN_FOUND)
   # Only regenerate Doxygen when Doxyfile or files change
   add_custom_command(OUTPUT ${DOXYGEN_INDEX_FILE}
                      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
-                    #  MAIN_DEPENDENCY ${DOXYFILE_OUT} ${DOXYFILE_IN}
+                     MAIN_DEPENDENCY ${DOXYFILE_IN}
                      COMMENT "Generating documentation with Doxygen"
                      VERBATIM)
 

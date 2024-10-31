@@ -1,6 +1,33 @@
+/**
+ * @file config.h
+ *
+ * @brief Project configuration file containing definitions
+ *
+ * @details
+ * This file is generated during CMake configuration and contains definitions
+ * for the project name, version, Git hash, and Git status.
+ *
+ * The file will be generated in the build directory.
+ */
 #pragma once
 
+/**
+ * @def PROJECT_NAME
+ * @brief The name of the project
+ */
 #define PROJECT_NAME      "@PROJECT_NAME@"
+/**
+ * @def PROJECT_VER
+ * @brief The version of the project
+ */
 #define PROJECT_VER       "@PROJECT_VERSION@"
+/**
+ * @def PROJECT_GITHASH
+ * @brief The Git hash of the compiled binary
+ */
 #define PROJECT_GITHASH   "@GIT_SHA1@"
+/**
+ * @def PROJECT_GITSTATUS
+ * @brief The Git status of the compiled binary
+ */
 #define PROJECT_GITSTATUS "@GIT_STATUS@"
