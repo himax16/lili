@@ -80,6 +80,7 @@ class MeshSizeC {
  * @brief Function to print MeshSize information
  *
  * @param mesh_size Mesh size information
+ * @param lout Custom LiliCout class for output
  * @details
  * Print the MeshSize information to the standard output.
  *
