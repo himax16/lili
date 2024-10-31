@@ -4,6 +4,8 @@
  */
 #include "output.hpp"
 
+#include <mpi.h>
+
 namespace lili::output {
 void PrintVersion() {
   // Report version
@@ -36,4 +38,6 @@ void PrintHelp(LiliCout& out) {
   out << "  -i, --input    Input file" << std::endl;
   out << "  -v, --version  Output version information" << std::endl;
 }
+
+void LiliExit(int status) { MPI_Abort(MPI_COMM_WORLD, status); }
 }  // namespace lili::output

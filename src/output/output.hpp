@@ -62,4 +62,14 @@ void PrintVersion(LiliCout& out);
  */
 void PrintHelp();
 void PrintHelp(LiliCout& out);
+
+/**
+ * @brief Custom wrapper for exit function to handle MPI finalize
+ * @param status Exit status
+ * @details
+ * This function will finalize MPI before exiting the program.
+ *
+ * @todo Add a custom exit for compiling without MPI.
+ */
+void LiliExit(int status);
 }  // namespace lili::output

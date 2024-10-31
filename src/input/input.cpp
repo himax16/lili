@@ -110,7 +110,7 @@ void Input::Parse() {
   std::ifstream ifs(input_file_.c_str());
   if (!ifs.is_open()) {
     std::cerr << "Cannot open input file: " << input_file_ << std::endl;
-    exit(2);
+    lili::output::LiliExit(2);
   }
 
   // Parse the JSON file ignoring comment
@@ -122,7 +122,7 @@ void Input::Parse() {
                     /* ignore comments */ true);
   } catch (json::parse_error& e) {
     std::cerr << "Parse error: " << e.what() << std::endl;
-    exit(2);
+    lili::output::LiliExit(2);
   }
 
   // Close input file
@@ -131,7 +131,7 @@ void Input::Parse() {
   // Check the type of input file
   if (!j.contains("input_type")) {
     std::cerr << "No input type in " << input_file_ << std::endl;
-    exit(2);
+    lili::output::LiliExit(2);
   } else {
     std::string input_type_str = j.at("input_type").get<std::string>();
     if (strcmp(input_type_str.c_str(), "initial") == 0) {
@@ -143,7 +143,7 @@ void Input::Parse() {
     } else {
       std::cerr << "Unrecognized input type in " << input_type_str << std::endl;
       std::cerr << "Available input type: [initial | restart]" << std::endl;
-      exit(2);
+      lili::output::LiliExit(2);
     }
   }
 
@@ -160,7 +160,7 @@ void Input::Parse() {
       input_type_ == InputType::TestParticle) {
     if (!j.contains("restart_file")) {
       std::cerr << "No restart file in " << input_file_ << std::endl;
-      exit(2);
+      lili::output::LiliExit(2);
     } else {
       restart_file_ = j.at("restart_file").get<std::string>();
     }
@@ -174,7 +174,7 @@ void Input::Parse() {
     mesh_.dim = j_mesh.at("dimension").get<int>();
     if (mesh_.dim < 1 || mesh_.dim > 3) {
       std::cerr << "Invalid mesh dimension in " << input_file_ << std::endl;
-      exit(2);
+      lili::output::LiliExit(2);
     }
 
     // Parse mesh size
@@ -268,16 +268,16 @@ Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout) {
           if (strcmp(argv[i_arg], "--help") == 0) {
             // Print help
             lili::output::PrintHelp(lout);
-            exit(0);
+            lili::output::LiliExit(0);
           } else if (strcmp(argv[i_arg], "--version") == 0) {
             // Print version
             lili::output::PrintVersion(lout);
-            exit(0);
+            lili::output::LiliExit(0);
           } else if (strcmp(argv[i_arg], "--input") == 0) {
             if (has_input) {
               // Throw error for multiple input file
               std::cerr << "There are multiple input file" << std::endl;
-              exit(1);
+              lili::output::LiliExit(1);
             }
             // Parse input file
             input.input_file() = argv[++i_arg];
@@ -286,18 +286,17 @@ Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout) {
           } else if (strcmp(argv[i_arg], "--") == 0) {
             // End of options
             ++i_arg;
-            break;
           } else {
             // Throw error for unrecognized option
             std::cerr << "Unrecognized option: " << argv[i_arg] << std::endl;
-            exit(1);
+            lili::output::LiliExit(1);
           }
           break;
         case 'i':
           if (has_input) {
             // Throw error for multiple input file
             std::cerr << "There are multiple input file" << std::endl;
-            exit(1);
+            lili::output::LiliExit(1);
           }
           // Parse input file
           input.input_file() = argv[++i_arg];
@@ -307,15 +306,17 @@ Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout) {
         case 'h':
           // Print help
           lili::output::PrintHelp(lout);
-          exit(0);
+          lili::output::LiliExit(0);
+          break;
         case 'v':
           // Print version
           lili::output::PrintVersion(lout);
-          exit(0);
+          lili::output::LiliExit(0);
+          break;
         default:
           // Throw error for unrecognized option
           std::cerr << "Unrecognized option: " << argv[i_arg] << std::endl;
-          exit(1);
+          lili::output::LiliExit(1);
       }
     } else if (!has_input) {
       // Parse input file
@@ -325,7 +326,7 @@ Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout) {
     } else {
       // Throw error for multiple input file
       std::cerr << "There are multiple input file" << std::endl;
-      exit(1);
+      lili::output::LiliExit(1);
     }
   }
 
@@ -335,7 +336,7 @@ Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout) {
     std::cerr << "No input file" << std::endl;
     // Print help
     lili::output::PrintHelp();
-    exit(1);
+    lili::output::LiliExit(1);
   }
 
   return input;
