@@ -65,19 +65,60 @@ typedef struct {
 class Input {
  public:
   // Constructor
+  /**
+   * @brief Default constructor for the Input class
+   *
+   * @details
+   * Initialize the Input object with default values:
+   * ```cpp
+   * input_file = "";
+   * problem_name = "LILI";
+   * input_type = InputType::None;
+   * ```
+   */
   Input();
+
+  /**
+   * @brief Constructor for Input class for a given input file
+   *
+   * @param[in] in_file
+   * Input file
+   * @details
+   * Initialize the Input object with the given input file:
+   * ```cpp
+   * input_file = in_file;
+   * problem_name = "LILI";
+   * input_type = InputType::None;
+   * ```
+   */
   Input(const char* in_file);
 
-  // Copy constructor
+  /**
+   * @brief Copy constructor for the Input class
+   *
+   * @param input Other Input object
+   */
   Input(const Input& input);
 
-  // Move constructor
+  /**
+   * @brief Move constructor for the Input class
+   *
+   * @param input Pointer to the other Input object
+   */
   Input(Input&& input) noexcept : Input() { swap(*this, input); };
 
   // Destructor
   ~Input() = default;
 
-  // Swap data
+  /**
+   * @brief Function to swap the data between two Input objects
+   *
+   * @param first First Input object
+   * @param second Second Input object
+   * @details
+   * This function will swap the data between two Input objects in-place using
+   * `std::swap`.
+   */
   friend void swap(Input& first, Input& second);
 
   // Operators
@@ -110,8 +151,30 @@ class Input {
   InputIntegrator& integrator() { return integrator_; }
   /// @endcond
 
-  // Function to parse input file
+  /**
+   * @brief Parse input file in the object and store the data
+   *
+   * @details
+   * This function will parse the input file based on the filename stored in the
+   * object. The parsed data will be stored in the object.
+   *
+   * The input file should be in JSON format.
+   */
   void Parse();
+
+  /**
+   * @brief Print the input information
+   *
+   * @param lout Custom LiliCout class for output
+   */
+  void Print(lili::output::LiliCout& lout) {
+    lout << "Input file   : " << input_file_ << std::endl;
+    lout << "Problem name : " << problem_name_ << std::endl;
+    lout << "Input type   : " << lili::input::InputTypeToString(input_type_)
+         << std::endl;
+    lout << "Mesh size    : " << std::endl;
+    lili::mesh::PrintMeshSize(mesh_);
+  }
 
  private:
   std::string input_file_;

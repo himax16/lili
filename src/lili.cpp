@@ -20,7 +20,7 @@
 #include "track_particle.hpp"
 
 /**
- * @brief Namespace for LILI program
+ * @brief Base namespace for LILI program
  */
 namespace lili {
 int rank, nproc;  ///< MPI rank and size
@@ -47,11 +47,8 @@ int main(int argc, char* argv[]) {
   // Parse inputs
   lili::input::Input input = lili::input::ParseArguments(argc, argv, lout);
 
-  // Print input
-  lout << "Input file   : " << input.input_file() << std::endl;
-  lout << "Problem name : " << input.problem_name() << std::endl;
-  lout << "Input type   : "
-       << lili::input::InputTypeToString(input.input_type()) << std::endl;
+  // Print the input and input mesh information
+  input.Print(lout);
 
   // Initialize output folder
   std::string output_folder = "output";
@@ -61,9 +58,6 @@ int main(int argc, char* argv[]) {
   } else {
     lout << "Output folder: " << output_folder << std::endl;
   }
-
-  // Print input mesh information
-  lili::mesh::PrintMeshSize(input.mesh());
 
   // Initialize field
   lili::mesh::Field field(input.mesh());

@@ -27,47 +27,18 @@ std::string InputTypeToString(InputType input_type) {
   }
 }
 
-/**
- * @brief Default constructor for Input class
- *
- * @details
- * Initialize the Input object with default values:
- * ```cpp
- * input_file = "";
- * problem_name = "LILI";
- * input_type = InputType::None;
- * ```
- */
 Input::Input() {
   input_file_ = "";
   problem_name_ = "LILI";
   input_type_ = InputType::None;
 }
 
-/**
- * @brief Constructor for Input class for a given input file
- *
- * @param[in] in_file
- * Input file
- * @details
- * Initialize the Input object with the given input file:
- * ```cpp
- * input_file = in_file;
- * problem_name = "LILI";
- * input_type = InputType::None;
- * ```
- */
 Input::Input(const char* in_file) {
   input_file_ = in_file;
   problem_name_ = "LILI";
   input_type_ = InputType::None;
 }
 
-/**
- * @brief Copy constructor for Input class
- *
- * @param input Other Input object
- */
 Input::Input(const Input& input) {
   input_file_ = input.input_file_;
   problem_name_ = input.problem_name_;
@@ -80,14 +51,6 @@ Input::Input(const Input& input) {
   integrator_ = input.integrator_;
 }
 
-/**
- * @brief Swap data from Input class
- *
- * @param[in] first
- * First Input object
- * @param[in] second
- * Second Input object
- */
 void swap(Input& first, Input& second) {
   using std::swap;
 
@@ -102,9 +65,6 @@ void swap(Input& first, Input& second) {
   swap(first.integrator_, second.integrator_);
 }
 
-/**
- * @brief Parse input file in the object and store the data
- */
 void Input::Parse() {
   // Open input file
   std::ifstream ifs(input_file_.c_str());

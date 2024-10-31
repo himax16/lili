@@ -277,7 +277,7 @@ class Mesh {
   /**
    * @brief Copy constructor for the Mesh class
    *
-   * @param other Other Mesh class object
+   * @param other Other Mesh object
    * @details
    * This constructor will copy the data from the other object of Mesh class.
    */
@@ -297,7 +297,7 @@ class Mesh {
   /**
    * @brief Move constructor for the Mesh class
    *
-   * @param other Pointer to the other Mesh class object
+   * @param other Pointer to the other Mesh object
    * @details
    * This constructor will move the data from the other object of Mesh class.
    * The other object will be reset to the default state.
