@@ -14,6 +14,7 @@ add_subdirectory(task)
 # Add parameter.hpp to an interface library
 add_library(parameter INTERFACE)
 target_include_directories(parameter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(parameter INTERFACE output)
 
 # Add the main program
 add_executable(lili lili.cpp)

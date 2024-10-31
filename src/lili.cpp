@@ -30,6 +30,7 @@
 namespace lili {
 int rank, nproc;
 std::string output_folder = "output";
+output::LiliCout lout;
 }  // namespace lili
 
 /**
@@ -43,18 +44,17 @@ int main(int argc, char* argv[]) {
   MPI_Comm_rank(MPI_COMM_WORLD, &lili::rank);
   MPI_Comm_size(MPI_COMM_WORLD, &lili::nproc);
 
-  // Create LiliCout object for output
-  lili::output::LiliCout lout;
-  if (lili::rank != 0) lout.enabled = false;
-  lout << "MPI initialized with size of: " << lili::nproc << std::endl;
+  if (lili::rank != 0) lili::lout.enabled = false;
+  lili::lout << "MPI initialized with size of: " << lili::nproc << std::endl;
 
   // Get start time
   auto start = std::chrono::high_resolution_clock::now();
   // == Read input ============================================================
   // Parse inputs
-  lili::input::Input input = lili::input::ParseArguments(argc, argv, lout);
+  lili::input::Input input =
+      lili::input::ParseArguments(argc, argv, lili::lout);
   // Print the input and input mesh information
-  input.Print(lout);
+  input.Print(lili::lout);
 
   MPI_Barrier(MPI_COMM_WORLD);
   // == Initialization =========================================================
@@ -67,8 +67,8 @@ int main(int argc, char* argv[]) {
   }
   // Print the execution number of the task
   for (auto& task : lili::task::init_task_list) {
-    lout << "Task: " << task->name() << " executed " << task->i_run()
-         << " times" << std::endl;
+    lili::lout << "Task: " << task->name() << " executed " << task->i_run()
+               << " times" << std::endl;
   }
   std::cout << "Rank " << lili::rank
             << " init: " << lili::task::init_task_list.size() << std::endl;
@@ -83,12 +83,14 @@ int main(int argc, char* argv[]) {
       break;
 
     case lili::input::InputType::Restart:
-      lout << "Loading fields data from: " << input.restart_file() << std::endl;
+      lili::lout << "Loading fields data from: " << input.restart_file()
+                 << std::endl;
       lili::mesh::LoadFieldTo(fields, input.restart_file().c_str(), false);
       break;
 
     case lili::input::InputType::TestParticle:
-      lout << "Loading fields data from: " << input.restart_file() << std::endl;
+      lili::lout << "Loading fields data from: " << input.restart_file()
+                 << std::endl;
       lili::mesh::LoadFieldTo(fields, input.restart_file().c_str(), false);
       break;
 
@@ -104,13 +106,13 @@ int main(int argc, char* argv[]) {
   }
 
   // Print particle information if available
-  lout << "==== Particle information ====" << std::endl;
+  lili::lout << "==== Particle information ====" << std::endl;
   for (lili::input::InputParticle particle : input.particles()) {
-    lout << "* " << particle.name << std::endl;
-    lout << "  n   = " << particle.n << std::endl;
-    lout << "  m   = " << particle.m << std::endl;
-    lout << "  q   = " << particle.q << std::endl;
-    lout << "  tau = " << particle.tau << std::endl;
+    lili::lout << "* " << particle.name << std::endl;
+    lili::lout << "  n   = " << particle.n << std::endl;
+    lili::lout << "  m   = " << particle.m << std::endl;
+    lili::lout << "  q   = " << particle.q << std::endl;
+    lili::lout << "  tau = " << particle.tau << std::endl;
   }
 
   // Initialize particles
@@ -151,8 +153,8 @@ int main(int argc, char* argv[]) {
   // Initialize particle mover
   lili::particle ::ParticleMover mover;
   mover.InitializeMover(input.integrator());
-  lout << "Particle mover type: " << mover.type() << std::endl;
-  lout << "Particle mover dt  : " << mover.dt() << std::endl;
+  lili::lout << "Particle mover type: " << mover.type() << std::endl;
+  lili::lout << "Particle mover dt  : " << mover.dt() << std::endl;
 
   // == Main loop =============================================================
   const int n_loop = input.integrator().n_loop;
@@ -161,11 +163,11 @@ int main(int argc, char* argv[]) {
   auto loop_time = std::chrono::high_resolution_clock::now();
 
   // Print time before the main loop
-  lout << "Initialization time: "
-       << std::chrono::duration_cast<std::chrono::milliseconds>(loop_time -
-                                                                start)
-              .count()
-       << " ms" << std::endl;
+  lili::lout << "Initialization time: "
+             << std::chrono::duration_cast<std::chrono::milliseconds>(
+                    loop_time - start)
+                    .count()
+             << " ms" << std::endl;
   MPI_Barrier(MPI_COMM_WORLD);
 
   for (int i_loop = 0; i_loop < n_loop; ++i_loop) {
@@ -186,14 +188,15 @@ int main(int argc, char* argv[]) {
 
     // Print loop information
     if (i_loop % nl_time == 0) {
-      lout << "Iteration: " << i_loop << " / " << n_loop;
+      lili::lout << "Iteration: " << i_loop << " / " << n_loop;
       // Print timing
-      lout << " ("
-           << std::chrono::duration_cast<std::chrono::microseconds>(
-                  (std::chrono::high_resolution_clock::now() - loop_time) /
-                  nl_time)
-                  .count()
-           << " us / loop)" << std::endl;
+      lili::lout << " ("
+                 << std::chrono::duration_cast<std::chrono::microseconds>(
+                        (std::chrono::high_resolution_clock::now() -
+                         loop_time) /
+                        nl_time)
+                        .count()
+                 << " us / loop)" << std::endl;
       loop_time = std::chrono::high_resolution_clock::now();
     }
   }
