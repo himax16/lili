@@ -9,7 +9,7 @@
 
    The full license is in the file LICENSE, distributed with this software.
 
-LILI's documentation
+LILI Documentation
 ====================
 
 **LILI** (*FLuid-KInetic PLasma SImulation Code*) serves as a rapid prototyping platform for fluid and kinetic plasma simulations. The code is designed to be modular, allowing for easy implementation of new physics and numerical methods. Codes are well documented and easy to read, making it a great tool for testing purposes.
@@ -20,7 +20,7 @@ The code is designed to be trivially vectorized and can be easily transformed in
 
 .. note::
 
-   This was built using Exhale version |version|.
+  This code is still in its early stages of development and will be updated frequently.
 
 Do I want to put the table of content here?
 
@@ -46,7 +46,6 @@ Contents:
 
   documentation
   LILI API <sphinx/api/lili>
-  Doxygen documentation <doxygen/index.html>
 
 Indices and tables
 ==================

@@ -15,10 +15,10 @@ sys.path.insert(0, '@DOXYGEN_STRIP_FROM_PATH@')
 
 # -- Project information -----------------------------------------------------
 
-project = 'LILI'
+project = '@PROJECT_NAME@'
 copyright = '2022-2024, Himawan Winarto'
 author = 'Himawan Winarto'
-version = '0.1.0'
+version = '@CMAKE_PROJECT_VERSION@'
 
 # Tell Sphinx for the primary language for the content
 primary_domain = 'cpp'
@@ -50,6 +50,9 @@ templates_path = []
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+# Title
+html_title = '@PROJECT_NAME@'
 
 # -- Options for HTML output -------------------------------------------------
 # Add any paths that contain custom static files (such as style sheets) here,
