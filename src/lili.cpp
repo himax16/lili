@@ -30,6 +30,7 @@ int rank, nproc;  ///< MPI rank and size
  * @brief Main function for `LILI` program
  */
 int main(int argc, char* argv[]) {
+  // == Pre-initialization =====================================================
   // MPI initialization
   // @todo Move this into header only file using inline
   MPI_Init(&argc, &argv);
@@ -44,12 +45,14 @@ int main(int argc, char* argv[]) {
   // Get start time
   auto start = std::chrono::high_resolution_clock::now();
 
+  // == Read input ============================================================
   // Parse inputs
   lili::input::Input input = lili::input::ParseArguments(argc, argv, lout);
 
   // Print the input and input mesh information
   input.Print(lout);
 
+  // == Initialization =========================================================
   // Initialize output folder
   std::string output_folder = "output";
   if (!std::filesystem::is_directory(output_folder)) {
@@ -131,11 +134,19 @@ int main(int argc, char* argv[]) {
   lout << "Particle mover type: " << mover.type() << std::endl;
   lout << "Particle mover dt  : " << mover.dt() << std::endl;
 
-  // Time loop
+  // == Main loop =============================================================
   const int n_loop = input.integrator().n_loop;
-  //@todo Redefine this variable into global constant
-  const int nl_time = 10000;
+  const int nl_time = n_loop < 10000 ? n_loop / 5 : 10000;
+
   auto loop_time = std::chrono::high_resolution_clock::now();
+
+  // Print time before the main loop
+  lout << "Initialization time: "
+       << std::chrono::duration_cast<std::chrono::milliseconds>(loop_time -
+                                                                start)
+              .count()
+       << " ms" << std::endl;
+  MPI_Barrier(MPI_COMM_WORLD);
   for (int i_loop = 0; i_loop < n_loop; ++i_loop) {
     // Loop through all particles
     for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
