@@ -171,8 +171,10 @@ class TaskInitParticles : public Task {
   TaskInitParticles() : Task(TaskType::InitParticles) {
     set_name("InitParticles");
   }
-  TaskInitParticles(std::string name) : Task(TaskType::InitParticles) {
-    set_name(name);
+  TaskInitParticles(input::Input input) : Task(TaskType::InitParticles) {
+    set_name("InitParticles");
+
+    n_kind_ = input.particles().size();
   }
 
   /**
@@ -185,5 +187,6 @@ class TaskInitParticles : public Task {
 
  private:
   int n_kind_;  ///< Number of particle kinds
+  std::vector<input::InputParticle> input_particles_;  ///< Input particles
 };
 }  // namespace lili::task

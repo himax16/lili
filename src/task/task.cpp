@@ -5,10 +5,18 @@
 
 #include "task.hpp"
 
+namespace lili {
+// Initialize the
+}
 namespace lili::task {
-// Initialize the task lists
+// Initialize global variables
 std::vector<std::unique_ptr<Task>> init_task_list;
 std::vector<std::unique_ptr<Task>> loop_task_list;
+std::map<SimVarType,
+         std::variant<std::unique_ptr<mesh::Fields>,
+                      std::unique_ptr<std::vector<particle::Particles>>,
+                      std::unique_ptr<std::vector<particle::TrackParticles>>>>
+    sim_vars;
 
 void ExecuteTask(Task* task) {
   // Try to cast the task to the derived class

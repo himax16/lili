@@ -5,11 +5,16 @@
 #pragma once
 
 #include <filesystem>
+#include <map>
 #include <string>
+#include <variant>
 #include <vector>
 
+#include "fields.hpp"
 #include "input.hpp"
 #include "parameter.hpp"
+#include "particle.hpp"
+#include "track_particle.hpp"
 
 /**
  * @brief Namespace for LILI task related routines
@@ -20,9 +25,18 @@ namespace lili::task {
  * @brief Enumeration for task type
  */
 enum class TaskType {
-  Base,
-  CreateOutput,
-  InitParticles,
+  Base,           ///< Base task
+  CreateOutput,   ///< Task to create output folder
+  InitParticles,  ///< Task to initialize particles
+};
+
+/**
+ * @brief Enumeration for simulation variable type
+ */
+enum class SimVarType {
+  EMFields,              ///< Electromagnetic Field object
+  ParticlesVector,       ///< Vector of Particles object
+  TrackParticlesVector,  ///< Vector of TrackParticles object
 };
 
 /**
@@ -78,7 +92,14 @@ class Task {
    * @brief Default task execution function
    */
   virtual void Execute() {
-    std::cout << "BaseTask: " << name_ << std::endl;
+    // Increment the run counter
+    IncrementRun();
+  }
+
+  /**
+   * @brief Default task for cleaning up
+   */
+  virtual void CleanUp() {
     // Increment the run counter
     IncrementRun();
   }
@@ -125,10 +146,21 @@ class TaskCreateOutput : public Task {
  * @brief Simulation initialization task list
  */
 extern std::vector<std::unique_ptr<Task>> init_task_list;
+
 /**
  * @brief Simulation loop task list
  */
 extern std::vector<std::unique_ptr<Task>> loop_task_list;
+
+/**
+ * @brief Map to store pointer to simulation variables
+ */
+extern std::map<
+    task::SimVarType,
+    std::variant<std::unique_ptr<mesh::Fields>,
+                 std::unique_ptr<std::vector<particle::Particles>>,
+                 std::unique_ptr<std::vector<particle::TrackParticles>>>>
+    sim_vars;
 
 /**
  * @brief Helper function to execute the task object based on its type
