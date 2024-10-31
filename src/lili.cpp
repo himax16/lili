@@ -17,17 +17,8 @@
 #include "particle_mover.hpp"
 #include "track_particle.hpp"
 
-using namespace lili;
-
 /**
  * @brief Main function for `LILI` program
- *
- * @param[in] argc
- *  Number of command line arguments
- * @param[in] argv
- *  Command line arguments
- * @return
- *  Integer return code
  */
 int main(int argc, char* argv[]) {
   // MPI initialization
@@ -43,13 +34,13 @@ int main(int argc, char* argv[]) {
   auto start = std::chrono::high_resolution_clock::now();
 
   // Parse inputs
-  input::Input input = input::ParseArguments(argc, argv);
+  lili::input::Input input = lili::input::ParseArguments(argc, argv);
 
   // Print input
   std::cout << "Input file   : " << input.input_file() << std::endl;
   std::cout << "Problem name : " << input.problem_name() << std::endl;
-  std::cout << "Input type   : " << input::InputTypeToString(input.input_type())
-            << std::endl;
+  std::cout << "Input type   : "
+            << lili::input::InputTypeToString(input.input_type()) << std::endl;
 
   // Initialize output folder
   std::string output_folder = "output";
@@ -61,24 +52,24 @@ int main(int argc, char* argv[]) {
   }
 
   // Print input mesh information
-  mesh::PrintMeshSize(input.mesh());
+  lili::mesh::PrintMeshSize(input.mesh());
 
   // Initialize field
-  mesh::Field field(input.mesh());
+  lili::mesh::Field field(input.mesh());
   switch (input.input_type()) {
-    case input::InputType::Initial:
+    case lili::input::InputType::Initial:
       break;
 
-    case input::InputType::Restart:
+    case lili::input::InputType::Restart:
       std::cout << "Loading field data from: " << input.restart_file()
                 << std::endl;
-      mesh::LoadFieldTo(field, input.restart_file().c_str(), false);
+      lili::mesh::LoadFieldTo(field, input.restart_file().c_str(), false);
       break;
 
-    case input::InputType::TestParticle:
+    case lili::input::InputType::TestParticle:
       std::cout << "Loading field data from: " << input.restart_file()
                 << std::endl;
-      mesh::LoadFieldTo(field, input.restart_file().c_str(), false);
+      lili::mesh::LoadFieldTo(field, input.restart_file().c_str(), false);
       break;
 
     default:
@@ -87,7 +78,7 @@ int main(int argc, char* argv[]) {
 
   // Print input particle information
   std::cout << "==== Particle information ====" << std::endl;
-  for (input::InputParticle particle : input.particles()) {
+  for (lili::input::InputParticle particle : input.particles()) {
     std::cout << "* " << particle.name << std::endl;
     std::cout << "  n   = " << particle.n << std::endl;
     std::cout << "  m   = " << particle.m << std::endl;
@@ -97,40 +88,42 @@ int main(int argc, char* argv[]) {
 
   // Initialize particles
   int n_kind = input.particles().size();
-  std::vector<particle::Particles> particles(n_kind);
-  std::vector<particle::TrackParticles> track_particles(n_kind);
+  std::vector<lili::particle::Particles> particles(n_kind);
+  std::vector<lili::particle::TrackParticles> track_particles(n_kind);
   std::vector<int> dl_tracks(n_kind);
   for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
-    particles[i_kind] = particle::Particles(input.particles()[i_kind]);
-    particle::DistributeID(particles[i_kind],
-                           rank * input.particles()[i_kind].n);
+    particles[i_kind] = lili::particle::Particles(input.particles()[i_kind]);
+    lili::particle::DistributeID(particles[i_kind],
+                                 rank * input.particles()[i_kind].n);
 
     // Distribute positions
     // particle::DistributeLocationUniform(particles[i_kind], 0, input.mesh());
 
     // Distribute velocities
-    particle::GammaTable gamma_table =
-        particle::GTMaxwellian3D(input.particles()[i_kind].tau);
-    particle::DistributeVelocityUniform(particles[i_kind], 0, gamma_table);
+    lili::particle::GammaTable gamma_table =
+        lili::particle::GTMaxwellian3D(input.particles()[i_kind].tau);
+    lili::particle::DistributeVelocityUniform(particles[i_kind], 0,
+                                              gamma_table);
     // particle::AddBulkVelocity(particles[i_kind], 0.4, 0.0, 0.0);
 
     // Add tracking
     int n_track = input.particles()[i_kind].n_track;
     dl_tracks[i_kind] = input.particles()[i_kind].dl_track;
     n_track = std::min(n_track, particles[i_kind].npar());
-    track_particles[i_kind] = particle::TrackParticles(
+    track_particles[i_kind] = lili::particle::TrackParticles(
         n_track, input.particles()[i_kind].dtrack_save);
     track_particles[i_kind].SetPrefix(std::filesystem::path(output_folder) /
                                       ("tp_" + input.particles()[i_kind].name));
 
     // Assign some particle to be tracked
     for (int i_track = 0; i_track < n_track; ++i_track) {
-      particles[i_kind].status(i_track) = particle::ParticleStatus::Tracked;
+      particles[i_kind].status(i_track) =
+          lili::particle::ParticleStatus::Tracked;
     }
   }
 
   // Initialize particle mover
-  particle ::ParticleMover mover;
+  lili::particle ::ParticleMover mover;
   mover.InitializeMover(input.integrator());
   std::cout << "Particle mover type: " << mover.type() << std::endl;
   std::cout << "Particle mover dt  : " << mover.dt() << std::endl;
@@ -152,7 +145,8 @@ int main(int argc, char* argv[]) {
 
       // Move particles
       mover.Move(particles[i_kind], field);
-      particle::PeriodicBoundaryParticles(particles[i_kind], input.mesh());
+      lili::particle::PeriodicBoundaryParticles(particles[i_kind],
+                                                input.mesh());
     }
 
     // Print loop information
