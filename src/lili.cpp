@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <thread>
 
-#include "field.hpp"
+#include "fields.hpp"
 #include "hdf5.h"
 #include "input.hpp"
 #include "mesh.hpp"
@@ -68,20 +68,20 @@ int main(int argc, char* argv[]) {
   }
   MPI_Barrier(MPI_COMM_WORLD);
 
-  // Initialize field
-  lili::mesh::Field field(input.mesh());
+  // Initialize fields
+  lili::mesh::Fields fields(input.mesh());
   switch (input.input_type()) {
     case lili::input::InputType::Initial:
       break;
 
     case lili::input::InputType::Restart:
-      lout << "Loading field data from: " << input.restart_file() << std::endl;
-      lili::mesh::LoadFieldTo(field, input.restart_file().c_str(), false);
+      lout << "Loading fields data from: " << input.restart_file() << std::endl;
+      lili::mesh::LoadFieldTo(fields, input.restart_file().c_str(), false);
       break;
 
     case lili::input::InputType::TestParticle:
-      lout << "Loading field data from: " << input.restart_file() << std::endl;
-      lili::mesh::LoadFieldTo(field, input.restart_file().c_str(), false);
+      lout << "Loading fields data from: " << input.restart_file() << std::endl;
+      lili::mesh::LoadFieldTo(fields, input.restart_file().c_str(), false);
       break;
 
     default:
@@ -167,11 +167,11 @@ int main(int argc, char* argv[]) {
       if (track_particles[i_kind].ntrack() > 0) {
         if (i_loop % dl_tracks[i_kind] == 0)
           track_particles[i_kind].SaveTrackedParticles(particles[i_kind],
-                                                       field);
+                                                       fields);
       }
 
       // Move particles
-      mover.Move(particles[i_kind], field);
+      mover.Move(particles[i_kind], fields);
       lili::particle::PeriodicBoundaryParticles(particles[i_kind],
                                                 input.mesh());
     }
@@ -193,7 +193,7 @@ int main(int argc, char* argv[]) {
   // Save and dump tracked particles at the end
   for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
     if (track_particles[i_kind].ntrack() > 0) {
-      track_particles[i_kind].SaveTrackedParticles(particles[i_kind], field);
+      track_particles[i_kind].SaveTrackedParticles(particles[i_kind], fields);
       track_particles[i_kind].DumpTrackedParticles();
     }
   }

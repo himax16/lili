@@ -39,6 +39,7 @@ Contents:
   :caption: Contents
 
   physics
+  implementation
 
 .. toctree::
   :maxdepth: 3

@@ -1,6 +1,6 @@
 /**
- * @file field.hpp
- * @brief Header only library for the field related routines
+ * @file fields.hpp
+ * @brief Header only library for the fields related routines
  */
 #pragma once
 
@@ -8,17 +8,17 @@
 
 namespace lili::mesh {
 /**
- * @brief Field class for electromagnetic field
+ * @brief Fields class for electromagnetic fields
  *
  * @details
- * This class is used to store the electromagnetic field data. The field data is
- * stored in the Mesh class objects.
+ * This class is used to store the electromagnetic fields data. The fields data
+ * is stored in the Mesh class objects.
  *
  * Currently we store 3D electromagnetic fields for these variables:
- * - Electric field: \f$\mathbf{E} = (E_x, E_y, E_z)\f$
- * - Magnetic field: \f$\mathbf{B} = (B_x, B_y, B_z)\f$
+ * - Electric fields: \f$\mathbf{E} = (E_x, E_y, E_z)\f$
+ * - Magnetic fields: \f$\mathbf{B} = (B_x, B_y, B_z)\f$
  *
- * The relative spacing between the field points are stored as
+ * The relative spacing between the fields points are stored as
  * \f$\mathrm{d}\mathbf{r}_{\mathbf{Q}}\f$ as a multiple of the mesh spacing
  * \f$\mathrm{d}\mathbf{r}\f$.
  *
@@ -32,10 +32,10 @@ namespace lili::mesh {
  *
  * @note In the next release, current will also be stored.
  */
-class Field {
+class Fields {
  public:
   // Constructor
-  Field()
+  Fields()
       : dx_(1.0),
         dy_(1.0),
         dz_(1.0),
@@ -62,7 +62,7 @@ class Field {
   }
 
   // Size-based initialization
-  Field(int nx, int ny, int nz, int ngx, int ngy, int ngz)
+  Fields(int nx, int ny, int nz, int ngx, int ngy, int ngz)
       : dx_(1.0),
         dy_(1.0),
         dz_(1.0),
@@ -98,7 +98,7 @@ class Field {
     InitializeMesh();
   }
 
-  Field(const MeshSize& domain_size) {
+  Fields(const MeshSize& domain_size) {
     size = domain_size;
     dx_ = domain_size.lx / domain_size.nx;
     dy_ = domain_size.ly / domain_size.ny;
@@ -109,26 +109,26 @@ class Field {
   }
 
   // Copy constructor
-  Field(const Field& field)
-      : size(field.size), dx_(field.dx_), dy_(field.dy_), dz_(field.dz_) {
+  Fields(const Fields& fields)
+      : size(fields.size), dx_(fields.dx_), dy_(fields.dy_), dz_(fields.dz_) {
     UpdateMeshSizeDim(size);
-    ex = field.ex;
-    ey = field.ey;
-    ez = field.ez;
-    bx = field.bx;
-    by = field.by;
-    bz = field.bz;
+    ex = fields.ex;
+    ey = fields.ey;
+    ez = fields.ez;
+    bx = fields.bx;
+    by = fields.by;
+    bz = fields.bz;
     SyncSize();
   }
 
   // Move constructor
-  Field(Field&& other) noexcept : Field() { swap(*this, other); };
+  Fields(Fields&& other) noexcept : Fields() { swap(*this, other); };
 
   // Destructor
-  ~Field() = default;
+  ~Fields() = default;
 
   // Swap function
-  friend void swap(Field& first, Field& second) noexcept {
+  friend void swap(Fields& first, Fields& second) noexcept {
     using std::swap;
 
     swap(first.dx_, second.dx_);
@@ -206,7 +206,7 @@ class Field {
   double dbxx_, dbxy_, dbxz_, dbyx_, dbyy_, dbyz_, dbzx_, dbzy_, dbzz_;
 };
 
-void LoadFieldTo(Field& field, const char* file_name,
+void LoadFieldTo(Fields& fields, const char* file_name,
                  bool include_ghost = false);
 
 }  // namespace lili::mesh

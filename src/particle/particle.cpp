@@ -149,10 +149,6 @@ Particles::~Particles() {
   delete[] w_;
 }
 
-/**
- * @brief Function to resize the particle data
- * @param new_npar_max New maximum number of particles
- */
 void Particles::resize(int new_npar_max) {
   ulong* new_id = new ulong[new_npar_max]();
   ParticleStatus* new_status = new ParticleStatus[new_npar_max]();
@@ -193,21 +189,12 @@ void Particles::resize(int new_npar_max) {
   npar_max_ = new_npar_max;
 }
 
-/**
- * @brief Function to add offset to particle IDs
- * @param offset Offset to add
- */
 void Particles::AddID(int offset) {
   for (int i = 0; i < npar_; ++i) {
     id_[i] += offset;
   }
 }
 
-/**
- * @brief Function to swap two particles in the data
- * @param i Index of the first particle
- * @param j Index of the second particle
- */
 void Particles::pswap(const int i, const int j) {
   int tmp_uint32 = id_[i];
   id_[i] = id_[j];
@@ -242,9 +229,6 @@ void Particles::pswap(const int i, const int j) {
   w_[j] = tmp_double;
 }
 
-/**
- * @brief Function to clean up out particles
- */
 void Particles::CleanOut() {
   // Keep two indices
   int i = 0;
@@ -290,7 +274,7 @@ void SaveParticles(Particles& particles, const char* file_name) {
   hsize_t dims[1] = {static_cast<hsize_t>(particles.npar())};
   hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
 
-  // Create dataset for each integer field
+  // Create dataset for each integer fields
   for (int i = 0; i < __LILIP_DCOUNT_ULONG; ++i) {
     hid_t dataset_id =
         H5Dcreate(file_id, __LILIP_DNAME_UINT32[i], H5T_NATIVE_UINT32,
@@ -304,7 +288,7 @@ void SaveParticles(Particles& particles, const char* file_name) {
     H5Dclose(dataset_id);
   }
 
-  // Create dataset for each double field
+  // Create dataset for each double fields
   for (int i = 0; i < __LILIP_DCOUNT_DOUBLE; ++i) {
     hid_t dataset_id =
         H5Dcreate(file_id, __LILIP_DNAME_DOUBLE[i], H5T_NATIVE_DOUBLE,

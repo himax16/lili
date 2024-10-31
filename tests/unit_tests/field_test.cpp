@@ -1,53 +1,52 @@
 /**
  * @file field_test.cpp
- * @brief Unit tests for the Field class
+ * @brief Unit tests for the Fields class
  */
-
-#include "field.hpp"
 
 #include <gtest/gtest.h>
 
+#include "fields.hpp"
 #include "mesh.hpp"
 
 TESET(FieldTest, FieldDefaultInit) {
-  lili::mesh::Field field;
+  lili::mesh::Fields fields;
 
-  EXPECT_EQ(field.size.dim(), 1);
-  EXPECT_EQ(field.size.nx(), 1);
-  EXPECT_EQ(field.size.ny(), 1);
-  EXPECT_EQ(field.size.nz(), 1);
-  EXPECT_EQ(field.size.ngx(), 0);
-  EXPECT_EQ(field.size.ngy(), 0);
-  EXPECT_EQ(field.size.ngz(), 0);
-  EXPECT_EQ(field.size.lx(), 1.0);
-  EXPECT_EQ(field.size.ly(), 1.0);
-  EXPECT_EQ(field.size.lz(), 1.0);
-  EXPECT_EQ(field.size.x0(), 0.0);
-  EXPECT_EQ(field.size.y0(), 0.0);
-  EXPECT_EQ(field.size.z0(), 0.0);
-  EXPECT_EQ(field.dx(), 1.0);
-  EXPECT_EQ(field.dy(), 1.0);
-  EXPECT_EQ(field.dz(), 1.0);
+  EXPECT_EQ(fields.size.dim(), 1);
+  EXPECT_EQ(fields.size.nx(), 1);
+  EXPECT_EQ(fields.size.ny(), 1);
+  EXPECT_EQ(fields.size.nz(), 1);
+  EXPECT_EQ(fields.size.ngx(), 0);
+  EXPECT_EQ(fields.size.ngy(), 0);
+  EXPECT_EQ(fields.size.ngz(), 0);
+  EXPECT_EQ(fields.size.lx(), 1.0);
+  EXPECT_EQ(fields.size.ly(), 1.0);
+  EXPECT_EQ(fields.size.lz(), 1.0);
+  EXPECT_EQ(fields.size.x0(), 0.0);
+  EXPECT_EQ(fields.size.y0(), 0.0);
+  EXPECT_EQ(fields.size.z0(), 0.0);
+  EXPECT_EQ(fields.dx(), 1.0);
+  EXPECT_EQ(fields.dy(), 1.0);
+  EXPECT_EQ(fields.dz(), 1.0);
 }
 
 TEST(FieldTest, FieldInit) {
-  lili::mesh::Field field(10, 10, 10);
-  EXPECT_EQ(field.ex.size(), 10 * 10 * 10);
-  EXPECT_EQ(field.ey.size(), 10 * 10 * 10);
-  EXPECT_EQ(field.ez.size(), 10 * 10 * 10);
-  EXPECT_EQ(field.bx.size(), 10 * 10 * 10);
-  EXPECT_EQ(field.by.size(), 10 * 10 * 10);
-  EXPECT_EQ(field.bz.size(), 10 * 10 * 10);
-  EXPECT_EQ(field.size.dim, 1);
-  EXPECT_EQ(field.size.nx, 10);
-  EXPECT_EQ(field.size.ny, 10);
+  lili::mesh::Fields fields(10, 10, 10);
+  EXPECT_EQ(fields.ex.size(), 10 * 10 * 10);
+  EXPECT_EQ(fields.ey.size(), 10 * 10 * 10);
+  EXPECT_EQ(fields.ez.size(), 10 * 10 * 10);
+  EXPECT_EQ(fields.bx.size(), 10 * 10 * 10);
+  EXPECT_EQ(fields.by.size(), 10 * 10 * 10);
+  EXPECT_EQ(fields.bz.size(), 10 * 10 * 10);
+  EXPECT_EQ(fields.size.dim, 1);
+  EXPECT_EQ(fields.size.nx, 10);
+  EXPECT_EQ(fields.size.ny, 10);
 }
 
 TEST(FieldTest, FieldCopy) {
-  lili::mesh::Field field(10, 10, 10);
-  field.ex = 5.0;
-  field.ex(5, 5, 0) = 1.2;
-  lili::mesh::Field field2(field);
-  EXPECT_EQ(field.ex(5, 5, 0), field2.ex(5, 5, 0));
-  EXPECT_EQ(field.ex(1, 5, 0), field2.ex(1, 5, 0));
+  lili::mesh::Fields fields(10, 10, 10);
+  fields.ex = 5.0;
+  fields.ex(5, 5, 0) = 1.2;
+  lili::mesh::Fields field2(fields);
+  EXPECT_EQ(fields.ex(5, 5, 0), field2.ex(5, 5, 0));
+  EXPECT_EQ(fields.ex(1, 5, 0), field2.ex(1, 5, 0));
 }

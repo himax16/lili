@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "field.hpp"
+#include "fields.hpp"
 #include "particle.hpp"
 
 namespace lili::particle {
@@ -105,7 +105,7 @@ class TrackParticles {
 
   // Save tracked particles
   void SaveTrackedParticles(Particles& particles);
-  void SaveTrackedParticles(Particles& particles, mesh::Field& field);
+  void SaveTrackedParticles(Particles& particles, mesh::Fields& fields);
 
   // Dump tracked particles
   void DumpTrackedParticles();

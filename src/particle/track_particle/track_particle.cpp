@@ -9,7 +9,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "field.hpp"
+#include "fields.hpp"
 #include "hdf5.h"
 #include "mesh.hpp"
 
@@ -38,7 +38,7 @@ void TrackParticles::InitializeTrackParticles() {
 }
 
 /**
- * @brief Save tracked particles with no field information
+ * @brief Save tracked particles with no fields information
  * @param[in] particles
  * Particles object
  */
@@ -72,14 +72,14 @@ void TrackParticles::SaveTrackedParticles(Particles& particles) {
 }
 
 /**
- * @brief Save tracked particles with field information
+ * @brief Save tracked particles with fields information
  * @param[in] particles
  * Particles object
- * @param[in] field
- * Field object
+ * @param[in] fields
+ * Fields object
  */
 void TrackParticles::SaveTrackedParticles(Particles& particles,
-                                          mesh::Field& field) {
+                                          mesh::Fields& fields) {
   // Copy tracked particles to the current cache
   SelectParticles(particles, track_particles, ParticleStatus::Tracked);
   if (track_particles.npar() != ntrack_) {
@@ -104,23 +104,23 @@ void TrackParticles::SaveTrackedParticles(Particles& particles,
     wtrack_[itrack_ * ntrack_ + i_track] = track_particles.w(i_track);
 
     // Move the particle location to the mesh coordinate
-    xloc = (xloc - field.size.x0) / field.size.lx * field.size.nx;
-    yloc = (yloc - field.size.y0) / field.size.ly * field.size.ny;
-    zloc = (zloc - field.size.z0) / field.size.lz * field.size.nz;
+    xloc = (xloc - fields.size.x0) / fields.size.lx * fields.size.nx;
+    yloc = (yloc - fields.size.y0) / fields.size.ly * fields.size.ny;
+    zloc = (zloc - fields.size.z0) / fields.size.lz * fields.size.nz;
 
     // Store the fields
     extrack_[itrack_ * ntrack_ + i_track] =
-        field.ex.Interpolation(xloc, yloc, zloc);
+        fields.ex.Interpolation(xloc, yloc, zloc);
     eytrack_[itrack_ * ntrack_ + i_track] =
-        field.ey.Interpolation(xloc, yloc, zloc);
+        fields.ey.Interpolation(xloc, yloc, zloc);
     eztrack_[itrack_ * ntrack_ + i_track] =
-        field.ez.Interpolation(xloc, yloc, zloc);
+        fields.ez.Interpolation(xloc, yloc, zloc);
     bxtrack_[itrack_ * ntrack_ + i_track] =
-        field.bx.Interpolation(xloc, yloc, zloc);
+        fields.bx.Interpolation(xloc, yloc, zloc);
     bytrack_[itrack_ * ntrack_ + i_track] =
-        field.by.Interpolation(xloc, yloc, zloc);
+        fields.by.Interpolation(xloc, yloc, zloc);
     bztrack_[itrack_ * ntrack_ + i_track] =
-        field.bz.Interpolation(xloc, yloc, zloc);
+        fields.bz.Interpolation(xloc, yloc, zloc);
   }
 
   // Increment the tracking index

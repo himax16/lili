@@ -10,104 +10,115 @@
 #include "input.hpp"
 
 #ifndef __LILIP_DEFAULT_BSIZE
+/**
+ * @brief Default buffer size for the Particles class
+ */
 #define __LILIP_DEFAULT_BSIZE 1000000
 #endif
 
 #ifndef __LILIP_DEFAULT_GSIZE
+/**
+ * @brief Default grow factor for the Particles class
+ */
 #define __LILIP_DEFAULT_GSIZE 2
 #endif
-
+/**
+ * @brief Number of unsigned long data in the Particles class
+ */
 #define __LILIP_DCOUNT_ULONG 2
+/**
+ * @brief Number of double data in the Particles class
+ */
 #define __LILIP_DCOUNT_DOUBLE 6
 
+/**
+ * @brief Namespace for LILI particle related routines
+ */
 namespace lili::particle {
+
+// Global variables
+/**
+ * @brief Default names for the unsigned long data
+ */
 extern const char* __LILIP_DNAME_UINT32[];
+/**
+ * @brief Default names for the double data
+ */
 extern const char* __LILIP_DNAME_DOUBLE[];
+/**
+ * @brief Default names for the status names
+ */
 extern const char* __LILIP_SNAME[];
 
 /**
  * @brief Enumeration class for the particle status
+ *
+ * @details
+ * This enumeration class is useful to flag the particle and can be extended
+ * further. Currently it tracks whether the particle is tracked or not and
+ * whether it has crossed the boundary or not.
  */
-typedef enum {
-  Out,     /**< Irrelevant status */
-  In,      /**< Particle is in the simulation domain */
-  Tracked, /**< Particle is tracked */
-  X0,      /**< Particle crossed the negative X boundary */
-  X1,      /**< Particle crossed the positive X boundary */
-  Y0,      /**< Particle crossed the negative Y boundary */
-  Y1,      /**< Particle crossed the positive Y boundary */
-  Z0,      /**< Particle crossed the negative Z boundary */
-  Z1,      /**< Particle crossed the positive Z boundary */
-  X0Y0,    /**< Particle crossed the negative X and Y boundaries */
-  X0Y1,    /**< Particle crossed the negative X and positive Y boundaries */
-  X1Y0,    /**< Particle crossed the positive X and negative Y boundaries */
-  X1Y1,    /**< Particle crossed the positive X and Y boundaries */
-  X0Z0,    /**< Particle crossed the negative X and Z boundaries */
-  X0Z1,    /**< Particle crossed the negative X and positive Z boundaries */
-  X1Z0,    /**< Particle crossed the positive X and negative Z boundaries */
-  X1Z1,    /**< Particle crossed the positive X and Z boundaries */
-  Y0Z0,    /**< Particle crossed the negative Y and Z boundaries */
-  Y0Z1,    /**< Particle crossed the negative Y and positive Z boundaries */
-  Y1Z0,    /**< Particle crossed the positive Y and negative Z boundaries */
-  Y1Z1,    /**< Particle crossed the positive Y and Z boundaries */
-  X0Y0Z0,  /**< Particle crossed the negative X, Y and Z boundaries */
-  X0Y0Z1,  /**< Particle crossed the negative X, Y and positive Z boundaries */
-  X0Y1Z0,  /**< Particle crossed the negative X, positive Y and negative Z
-              boundaries */
-  X0Y1Z1,  /**< Particle crossed the negative X, positive Y and Z boundaries */
-  X1Y0Z0,  /**< Particle crossed the positive X, negative Y and negative Z
-              boundaries */
-  X1Y0Z1,  /**< Particle crossed the positive X, negative Y and Z boundaries */
-  X1Y1Z0,  /**< Particle crossed the positive X, Y and negative Z boundaries */
-  X1Y1Z1,  /**< Particle crossed the positive X, Y and Z boundaries */
-  TX0,     /**< Particle crossed the negative X boundary and is tracked */
-  TX1,     /**< Particle crossed the positive X boundary and is tracked */
-  TY0,     /**< Particle crossed the negative Y boundary and is tracked */
-  TY1,     /**< Particle crossed the positive Y boundary and is tracked */
-  TZ0,     /**< Particle crossed the negative Z boundary and is tracked */
-  TZ1,     /**< Particle crossed the positive Z boundary and is tracked */
-  TX0Y0,   /**< Particle crossed the negative X and Y boundaries and is
-              tracked */
-  TX0Y1,   /**< Particle crossed the negative X and positive Y boundaries and
-              is tracked */
-  TX1Y0,   /**< Particle crossed the positive X and negative Y boundaries and
-              is tracked */
-  TX1Y1,   /**< Particle crossed the positive X and Y boundaries and is
-              tracked */
-  TX0Z0,   /**< Particle crossed the negative X and Z boundaries and is
-              tracked */
-  TX0Z1,   /**< Particle crossed the negative X and positive Z boundaries and
-              is tracked */
-  TX1Z0,   /**< Particle crossed the positive X and negative Z boundaries and
-              is tracked */
-  TX1Z1,   /**< Particle crossed the positive X and Z boundaries and is
-                tracked */
-  TY0Z0,   /**< Particle crossed the negative Y and Z boundaries and is
-              tracked */
-  TY0Z1,   /**< Particle crossed the negative Y and positive Z boundaries and
-              is tracked */
-  TY1Z0,   /**< Particle crossed the positive Y and negative Z boundaries and
-              is tracked */
-  TY1Z1,   /**< Particle crossed the positive Y and Z boundaries and is
-              tracked */
-  TX0Y0Z0, /**< Particle crossed the negative X, Y and Z boundaries and is
-              tracked */
-  TX0Y0Z1, /**< Particle crossed the negative X, Y and positive Z boundaries
-              and is tracked */
-  TX0Y1Z0, /**< Particle crossed the negative X, positive Y and negative Z
-              boundaries and is tracked */
-  TX0Y1Z1, /**< Particle crossed the negative X, positive Y and Z boundaries
-              and is tracked */
-  TX1Y0Z0, /**< Particle crossed the positive X, negative Y and negative Z
-              boundaries and is tracked */
-  TX1Y0Z1, /**< Particle crossed the positive X, negative Y and Z boundaries
-              and is tracked */
-  TX1Y1Z0, /**< Particle crossed the positive X, Y and negative Z boundaries
-              and is tracked */
-  TX1Y1Z1  /**< Particle crossed the positive X, Y and Z boundaries and is
-               tracked */
-} ParticleStatus;
+enum class ParticleStatus {
+  Out,      ///< Out of domain, to be removed
+  In,       ///< Inside the domain
+  Tracked,  ///< Tracked, inside the domain
+  X0,       ///< Crossed the -X boundary
+  X1,       ///< Crossed the +X boundary
+  Y0,       ///< Crossed the -Y boundary
+  Y1,       ///< Crossed the +Y boundary
+  Z0,       ///< Crossed the -Z boundary
+  Z1,       ///< Crossed the +Z boundary
+  X0Y0,     ///< Crossed the -X and -Y boundary
+  X0Y1,     ///< Crossed the -X and +Y boundary
+  X1Y0,     ///< Crossed the +X and -Y boundary
+  X1Y1,     ///< Crossed the +X and +Y boundary
+  X0Z0,     ///< Crossed the -X and -Z boundary
+  X0Z1,     ///< Crossed the -X and +Z boundary
+  X1Z0,     ///< Crossed the +X and -Z boundary
+  X1Z1,     ///< Crossed the +X and +Z boundary
+  Y0Z0,     ///< Crossed the -Y and -Z boundary
+  Y0Z1,     ///< Crossed the -Y and +Z boundary
+  Y1Z0,     ///< Crossed the +Y and -Z boundary
+  Y1Z1,     ///< Crossed the +Y and +Z boundary
+  X0Y0Z0,   ///< Crossed the -X, -Y, and -Z boundary
+  X0Y0Z1,   ///< Crossed the -X, -Y, and +Z boundary
+  X0Y1Z0,   ///< Crossed the -X, +Y, and -Z boundary
+  X0Y1Z1,   ///< Crossed the -X, +Y, and +Z boundary
+  X1Y0Z0,   ///< Crossed the +X, -Y, and -Z boundary
+  X1Y0Z1,   ///< Crossed the +X, -Y, and +Z boundary
+  X1Y1Z0,   ///< Crossed the +X, +Y, and -Z boundary
+  X1Y1Z1,   ///< Crossed the +X, +Y, and +Z boundary
+  TX0,      ///< Tracked, crossed the -X boundary
+  TX1,      ///< Tracked, crossed the +X boundary
+  TY0,      ///< Tracked, crossed the -Y boundary
+  TY1,      ///< Tracked, crossed the +Y boundary
+  TZ0,      ///< Tracked, crossed the -Z boundary
+  TZ1,      ///< Tracked, crossed the +Z boundary
+  TX0Y0,    ///< Tracked, crossed the -X and -Y boundary
+  TX0Y1,    ///< Tracked, crossed the -X and +Y boundary
+  TX1Y0,    ///< Tracked, crossed the +X and -Y boundary
+  TX1Y1,    ///< Tracked, crossed the +X and +Y boundary
+  TX0Z0,    ///< Tracked, crossed the -X and -Z boundary
+  TX0Z1,    ///< Tracked, crossed the -X and +Z boundary
+  TX1Z0,    ///< Tracked, crossed the +X and -Z boundary
+  TX1Z1,    ///< Tracked, crossed the +X and +Z boundary
+  TY0Z0,    ///< Tracked, crossed the -Y and -Z boundary
+  TY0Z1,    ///< Tracked, crossed the -Y and +Z boundary
+  TY1Z0,    ///< Tracked, crossed the +Y and -Z boundary
+  TY1Z1,    ///< Tracked, crossed the +Y and +Z boundary
+  TX0Y0Z0,  ///< Tracked, crossed the -X, -Y, and -Z boundary
+  TX0Y0Z1,  ///< Tracked, crossed the -X, -Y, and +Z boundary
+  TX0Y1Z0,  ///< Tracked, crossed the -X, +Y, and -Z boundary
+  TX0Y1Z1,  ///< Tracked, crossed the -X, +Y, and +Z boundary
+  TX1Y0Z0,  ///< Tracked, crossed the +X, -Y, and -Z boundary
+  TX1Y0Z1,  ///< Tracked, crossed the +X, -Y, and +Z boundary
+  TX1Y1Z0,  ///< Tracked, crossed the +X, +Y, and -Z boundary
+  TX1Y1Z1   ///< Tracked, crossed the +X, +Y, and +Z boundary
+};
 
+/**
+ * @brief Class to store particles data of a single species
+ */
 class Particles {
  public:
   // Constructor
@@ -125,7 +136,15 @@ class Particles {
   // Destructor
   ~Particles();
 
-  // Swap data
+  /**
+   * @brief Function to swap the data between two Particles objects
+   *
+   * @param first First Particles object
+   * @param second Second Particles object
+   * @details
+   * This function will swap the data between two Particles objects in-place
+   * using std::swap.
+   */
   friend void swap(Particles& first, Particles& second) noexcept {
     using std::swap;
     swap(first.npar_, second.npar_);
@@ -146,12 +165,15 @@ class Particles {
   }
 
   // Operators
+  /// @cond OPERATORS
   Particles& operator=(Particles other) {
     swap(*this, other);
     return *this;
   }
+  /// @endcond
 
   // Getters
+  /// @cond GETTERS
   constexpr int npar() const { return npar_; };
   constexpr int npar_max() const { return npar_max_; };
 
@@ -175,8 +197,10 @@ class Particles {
   constexpr double u(int i) const { return u_[i]; };
   constexpr double v(int i) const { return v_[i]; };
   constexpr double w(int i) const { return w_[i]; };
+  /// @endcond
 
   // Setters
+  /// @cond SETTERS
   constexpr int& npar() { return npar_; };
 
   constexpr double& q() { return q_; };
@@ -190,8 +214,21 @@ class Particles {
   constexpr double& u(int i) { return u_[i]; };
   constexpr double& v(int i) { return v_[i]; };
   constexpr double& w(int i) { return w_[i]; };
+  /// @endcond
 
   // Data pointers for HDF5
+  /**
+   * @brief Helper function to iterate over ulong data arrays for HDF5 output
+   *
+   * @param i Index of the data array
+   * @return constexpr ulong* Pointer to the data array
+   * @details
+   * Currently the index `i` represents the following data arrays:
+   * | `i` | Data array | Description |
+   * | :-: | :-: | :- |
+   * | 0 | `id` | Particle ID |
+   * | 1 | `status` | Particle status |
+   */
   constexpr ulong* data_uint32(int i) {
     switch (i) {
       case 0:
@@ -203,6 +240,22 @@ class Particles {
     }
   };
 
+  /**
+   * @brief Helper function to iterate over double data arrays for HDF5 output
+   *
+   * @param i Index of the data array
+   * @return constexpr double* Pointer to the data array
+   * @details
+   * Currently the index `i` represents the following data arrays:
+   * | `i` | Data array | Description |
+   * | :-: | :-: | :- |
+   * | 0 | `x` | Particle \f$x_i\f$ coordinate |
+   * | 1 | `y` | Particle \f$y_i\f$ coordinate |
+   * | 2 | `z` | Particle \f$z_i\f$ coordinate |
+   * | 3 | `u` | Particle \f$v_{x, i}\f$ velocity |
+   * | 4 | `v` | Particle \f$v_{y, i}\f$ velocity |
+   * | 5 | `w` | Particle \f$v_{z, i}\f$ velocity |
+   */
   constexpr double* data_double(int i) {
     switch (i) {
       case 0:
@@ -222,16 +275,32 @@ class Particles {
     }
   };
 
-  // Resize particles
+  /**
+   * @brief Resize the size of data arrays
+   *
+   * @param new_npar_max New maximum number of particles
+   */
   void resize(int new_npar_max);
 
-  // Add offset to particle IDs
+  /**
+   * @brief Add an integer offset to the particle ID
+   *
+   * @param offset Offset to be added
+   */
   void AddID(int offset);
 
-  // Swap two swap two particles
+  /**
+   * @brief Swap two particles data
+   *
+   * @param i Index of the first particle
+   * @param j Index of the second particle
+   */
   void pswap(const int i, const int j);
 
-  // Clean up out particles
+  /**
+   * @brief Function to clean up particles that are outside of the domain with
+   * ParticleStatus::Out status.
+   */
   void CleanOut();
 
  private:

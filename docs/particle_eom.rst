@@ -8,7 +8,7 @@ For a charged particle with mass :math:`m` and charge :math:`q` in the presence 
     \frac{\mathrm{d} \mathbf{r}}{\mathrm{d} t} &= \mathbf{v},\\
     \frac{\mathrm{d} \mathbf{v}}{\mathrm{d} t} &= \frac{q}{m} \left( \mathbf{E} + \frac{\mathbf{v}}{c} \times \mathbf{B} \right).
 
-Here we have defined the particle's position :math:`\mathbf{r}` and velocity :math:`\mathbf{v}`. The electric field is :math:`\mathbf{E}` and the magnetic field is :math:`\mathbf{B}` are measured at the particle's position.
+Here we have defined the particle's position :math:`\mathbf{r}` and velocity :math:`\mathbf{v}`. The electric fields is :math:`\mathbf{E}` and the magnetic fields is :math:`\mathbf{B}` are measured at the particle's position.
 
 The equation of motion can be solved using a variety of numerical methods. The most common method is the **Boris pusher**, which is a second-order accurate method for solving the equation of motion.
 

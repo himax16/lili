@@ -36,11 +36,11 @@ void ParticleMover::InitializeMover(const input::InputIntegrator& input) {
  *
  * @param[in] particles
  * Particles object
- * @param[in] field
- * Field object
+ * @param[in] fields
+ * Fields object
  */
 void ParticleMover::MoveBoris2D(Particles& particles,
-                                const mesh::Field& field) {
+                                const mesh::Fields& fields) {
   // Initialize variables
   const int npar = particles.npar();
   const double qmhdt = particles.q() * dt_ / (2.0 * particles.m());
@@ -59,22 +59,22 @@ void ParticleMover::MoveBoris2D(Particles& particles,
   double um, vm, wm, up, vp, wp;
   double temp;
 
-  const double crx = field.size.nx / field.size.lx;
-  const double cry = field.size.ny / field.size.ly;
+  const double crx = fields.size.nx / fields.size.lx;
+  const double cry = fields.size.ny / fields.size.ly;
 
   // Loop over the particles
   for (int i = 0; i < npar; ++i) {
     // Get the particle position
-    rx = (x[i] - field.size.x0) * crx;
-    ry = (y[i] - field.size.y0) * cry;
+    rx = (x[i] - fields.size.x0) * crx;
+    ry = (y[i] - fields.size.y0) * cry;
 
-    ex = qmhdt * field.ex.BilinearInterpolation(rx, ry);
-    ey = qmhdt * field.ey.BilinearInterpolation(rx, ry);
-    ez = qmhdt * field.ez.BilinearInterpolation(rx, ry);
+    ex = qmhdt * fields.ex.BilinearInterpolation(rx, ry);
+    ey = qmhdt * fields.ey.BilinearInterpolation(rx, ry);
+    ez = qmhdt * fields.ez.BilinearInterpolation(rx, ry);
 
-    bx = qmhdt * field.bx.BilinearInterpolation(rx, ry);
-    by = qmhdt * field.by.BilinearInterpolation(rx, ry);
-    bz = qmhdt * field.bz.BilinearInterpolation(rx, ry);
+    bx = qmhdt * fields.bx.BilinearInterpolation(rx, ry);
+    by = qmhdt * fields.by.BilinearInterpolation(rx, ry);
+    bz = qmhdt * fields.bz.BilinearInterpolation(rx, ry);
 
     // First half acceleration
     um = u[i] + ex;
