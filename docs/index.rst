@@ -30,12 +30,22 @@ Contents:
 =========
 
 .. toctree::
-  :maxdepth: 3
+   :maxdepth: 2
+
+   quickstart
+
+.. toctree::
+  :maxdepth: 4
   :caption: Contents
 
-  quickstart
+  physics
+
+.. toctree::
+  :maxdepth: 3
+  :caption: Code documentation
+
   documentation
-  sphinx/api/lili
+  LILI API <sphinx/api/lili>
   Doxygen documentation <doxygen/index.html>
 
 Indices and tables
