@@ -35,7 +35,6 @@
  * @brief Namespace for LILI particle related routines
  */
 namespace lili::particle {
-
 // Global variables
 /**
  * @brief Default names for the unsigned long data

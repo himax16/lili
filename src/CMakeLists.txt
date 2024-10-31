@@ -9,10 +9,11 @@ add_subdirectory(fields)
 add_subdirectory(particle)
 add_subdirectory(particle_initialization)
 add_subdirectory(particle_mover)
+add_subdirectory(task)
 
-# # Add parameter.hpp to an interface library
-# add_library(parameter INTERFACE)
-# target_include_directories(parameter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+# Add parameter.hpp to an interface library
+add_library(parameter INTERFACE)
+target_include_directories(parameter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Add the main program
 add_executable(lili lili.cpp)
@@ -26,6 +27,7 @@ target_link_libraries(lili PUBLIC particle)
 target_link_libraries(lili PUBLIC track_particle)
 target_link_libraries(lili PUBLIC particle_initialization)
 target_link_libraries(lili PUBLIC particle_mover)
+target_link_libraries(lili PUBLIC task)
 target_link_libraries(lili PUBLIC MPI::MPI_C)
 target_link_libraries(lili PUBLIC hdf5::hdf5)
 target_link_libraries(lili PUBLIC stdc++fs)
