@@ -7,6 +7,7 @@
 #include "fields.hpp"
 #include "input.hpp"
 #include "particle.hpp"
+#include "task.hpp"
 
 namespace lili::particle {
 /**
@@ -78,5 +79,28 @@ class ParticleMover {
   };
   void MoveBoris2D(Particles& particles, const mesh::Fields& fields);
 };
-
 }  // namespace lili::particle
+
+namespace lili::task {
+/**
+ * @brief Task class to move particles a full time step
+ */
+class TaskMoveParticlesFull : public Task {
+ public:
+  // Constructor
+  TaskMoveParticlesFull() : Task(TaskType::MoveParticlesFull) {
+    set_name("MoveParticlesFull");
+  }
+
+ private:
+  particle::ParticleMover mover_;  ///< Particle mover object
+  /**
+   * @brief Pointer to the simulation Particles vector
+   */
+  std::vector<particle::Particles>* particles_ptr_;
+  /**
+   * @brief Pointer to the simulation Fields vector
+   */
+  std::vector<mesh::Fields>* fields_ptr_;
+};
+}  // namespace lili::task
