@@ -46,7 +46,7 @@
     "n_loop": 1000000,
     "tasks": {
       "move_particles": {
-        "type": "full_boris"
+        "type": "full"
       },
       "boundary_particles": {
         "type": "periodic"

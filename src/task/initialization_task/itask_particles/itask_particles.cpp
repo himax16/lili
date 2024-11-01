@@ -187,11 +187,6 @@ void TaskInitParticles::Execute() {
   // Get the number of particle species
   n_kind_ = input_particles_.size();
 
-  // Print particle information if available
-  for (auto& species : input_particles_) {
-    species.Print();
-  }
-
   // Initialize particles and tracked particles
   std::vector<particle::Particles> particles(n_kind_);
   std::vector<particle::TrackParticles> track_particles(n_kind_);

@@ -13,17 +13,16 @@
 
 namespace lili::mesh {
 void PrintMeshSize(const MeshSize& mesh_size, lili::output::LiliCout& lout) {
-  lout << "====== Mesh information ======" << std::endl;
-  lout << "dim = " << mesh_size.dim << std::endl;
-  lout << "n   = (" << mesh_size.nx << ", " << mesh_size.ny << ", "
+  lout << "=========== Mesh information ===========" << std::endl;
+  lout << "dim           = " << mesh_size.dim << std::endl;
+  lout << "n             = (" << mesh_size.nx << ", " << mesh_size.ny << ", "
        << mesh_size.nz << ")" << std::endl;
-  lout << "ng  = (" << mesh_size.ngx << ", " << mesh_size.ngy << ", "
+  lout << "ng            = (" << mesh_size.ngx << ", " << mesh_size.ngy << ", "
        << mesh_size.ngz << ")" << std::endl;
-  lout << "l   = (" << mesh_size.lx << ", " << mesh_size.ly << ", "
+  lout << "l             = (" << mesh_size.lx << ", " << mesh_size.ly << ", "
        << mesh_size.lz << ")" << std::endl;
-  lout << "r0  = (" << mesh_size.x0 << ", " << mesh_size.y0 << ", "
+  lout << "r0            = (" << mesh_size.x0 << ", " << mesh_size.y0 << ", "
        << mesh_size.z0 << ")" << std::endl;
-  lout << "==============================" << std::endl;
 }
 
 void UpdateMeshSizeDim(MeshSize& mesh_size) {

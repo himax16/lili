@@ -43,12 +43,17 @@ int main(int argc, char* argv[]) {
   MPI_Comm_rank(MPI_COMM_WORLD, &lili::rank);
   MPI_Comm_size(MPI_COMM_WORLD, &lili::nproc);
 
+  // Setup the output stream
   if (lili::rank != 0) lili::lout.enabled = false;
-  lili::lout << "MPI initialized with size of: " << lili::nproc << std::endl;
+
+  lili::lout << "############ Initialization ############" << std::endl;
+  lili::lout << "MPI size      : " << lili::nproc << std::endl;
 
   // Get start time
   auto start = std::chrono::high_resolution_clock::now();
-  // == Read input ============================================================
+
+  // == Read input =============================================================
+
   // Parse inputs
   lili::input::Input input =
       lili::input::ParseArguments(argc, argv, lili::lout);
@@ -56,7 +61,9 @@ int main(int argc, char* argv[]) {
   input.Print(lili::lout);
 
   MPI_Barrier(MPI_COMM_WORLD);
+
   // == Initialization =========================================================
+
   // Parse the tasks from input
   lili::task::ParseTaskList(input);
 
@@ -64,10 +71,9 @@ int main(int argc, char* argv[]) {
   for (auto& task : lili::task::init_task_list) {
     lili::task::ExecuteTask(task.get());
   }
-  // Print the execution number of the task
-  for (auto& task : lili::task::init_task_list) {
-    lili::lout << "Task: " << task->name() << " executed " << task->i_run()
-               << " times" << std::endl;
+  // Initialize the loop tasks
+  for (auto& task : lili::task::loop_task_list) {
+    lili::task::InitializeTask(task.get());
   }
 
   // Get the variable from the simulation variables
@@ -121,17 +127,13 @@ int main(int argc, char* argv[]) {
   track_particles = track_particles;
 
   // Print Field information
-  lili::lout << "Field information:" << std::endl;
-  lili::lout << "  Mesh size: " << std::endl;
   lili::mesh::PrintMeshSize(fields.size, lili::lout);
-
-  MPI_Abort(MPI_COMM_WORLD, 0);
 
   lili::output_folder = lili::output_folder;
   MPI_Barrier(MPI_COMM_WORLD);
 
-  // == Main loop
-  // =============================================================
+  // == Main loop =============================================================
+
   const int n_loop = input.loop().n_loop;
   const int nl_time = n_loop < 10000 ? n_loop : 10000;
 
@@ -145,6 +147,7 @@ int main(int argc, char* argv[]) {
              << " ms" << std::endl;
   MPI_Barrier(MPI_COMM_WORLD);
 
+  lili::lout << "################# Loop #################" << std::endl;
   for (int i_loop = 0; i_loop < n_loop; ++i_loop) {
     // // Loop through all particles
     // for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
@@ -161,6 +164,11 @@ int main(int argc, char* argv[]) {
     //                                             input.mesh());
     // }
 
+    // Loop through all loop tasks
+    for (auto& task : lili::task::loop_task_list) {
+      lili::task::ExecuteTask(task.get());
+    }
+
     // Print loop information
     if (i_loop % nl_time == 0) {
       lili::lout << "Iteration: " << i_loop << " / " << n_loop;
@@ -176,13 +184,14 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  // // Save and dump tracked particles at the end
-  // for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
-  //   if (track_particles[i_kind].n_track() > 0) {
-  //     track_particles[i_kind].SaveTrackedParticles(particles[i_kind],
-  //     fields); track_particles[i_kind].DumpTrackedParticles();
-  //   }
-  // }
+  // == Clean Up ===============================================================
+
+  lili::lout << "############### Clean Up ###############" << std::endl;
+
+  // Clean up the loop tasks
+  for (auto& task : lili::task::loop_task_list) {
+    lili::task::CleanUpTask(task.get());
+  }
 
   // Print elapsed time
   std ::cout << "Elapsed time: "

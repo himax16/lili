@@ -92,7 +92,6 @@ class MeshSizeC {
  * ng  = (2, 2, 2)
  * l   = (1.0, 1.0, 1.0)
  * r0  = (0.0, 0.0, 0.0)
- * ==============================
  * ```
  */
 void PrintMeshSize(const MeshSize& mesh_size, lili::output::LiliCout& lout);

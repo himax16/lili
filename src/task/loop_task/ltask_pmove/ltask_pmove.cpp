@@ -128,6 +128,9 @@ void TaskMoveParticlesFull::Execute() {
   for (auto& particles : *particles_ptr_) {
     // Move particles
     (mover_.Move)(particles, *fields_ptr_);
+
+    // Temporary boundary
+    particle::PeriodicBoundaryParticles(particles, fields_ptr_->size);
   }
 
   // Increment the run counter

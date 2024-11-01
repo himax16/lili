@@ -137,10 +137,8 @@ class TaskCreateOutput : public Task {
     std::string output_folder = lili::output_folder;
     if (!std::filesystem::is_directory(output_folder)) {
       std::filesystem::create_directory(output_folder);
-      std::cout << "Created output folder: " << output_folder << std::endl;
-    } else {
-      std::cout << "Output folder        : " << output_folder << std::endl;
     }
+    std::cout << "Output folder : " << output_folder << std::endl;
 
     // Increment the run counter
     IncrementRun();

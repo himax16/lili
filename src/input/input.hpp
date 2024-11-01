@@ -249,12 +249,23 @@ class Input {
    * @param lout Custom LiliCout class for output
    */
   void Print(lili::output::LiliCout& lout) {
-    lout << "Input file   : " << input_file_ << std::endl;
-    lout << "Problem name : " << problem_name_ << std::endl;
-    lout << "Input type   : " << lili::input::InputTypeToString(input_type_)
+    lout << "Input file    : " << input_file_ << std::endl;
+    lout << "Problem name  : " << problem_name_ << std::endl;
+    lout << "Input type    : " << lili::input::InputTypeToString(input_type_)
          << std::endl;
-    lout << "Mesh size    : " << std::endl;
     lili::mesh::PrintMeshSize(mesh_, lout);
+    lout << "========= Particle information =========" << std::endl;
+    for (auto& p : particles_) {
+      p.Print();
+    }
+    lout << "=========== Loop information ===========" << std::endl;
+    lout << "  n_loop      : " << loop_.n_loop << std::endl;
+    lout << "  dt          : " << loop_.dt << std::endl;
+    lout << "  Tasks       : " << std::endl;
+    for (auto& t : loop_.tasks) {
+      lout << "    Name      : " << t.name << std::endl;
+      lout << "      Type    : " << t.type << std::endl;
+    }
   }
 
  private:

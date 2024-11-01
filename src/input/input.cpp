@@ -29,15 +29,14 @@ std::string InputTypeToString(InputType input_type) {
 }
 
 void InputParticles::Print() {
-  lili::lout << "==============================" << std::endl;
   lili::lout << "Name          : " << name << std::endl;
-  lili::lout << "n             : " << n << std::endl;
-  lili::lout << "q             : " << q << std::endl;
-  lili::lout << "m             : " << m << std::endl;
-  lili::lout << "n_track       : " << n_track << std::endl;
-  lili::lout << "dl_track      : " << dl_track << std::endl;
-  lili::lout << "dtrack_save   : " << dtrack_save << std::endl;
-  lili::lout << "Pos. dist.    : ";
+  lili::lout << "  n           : " << n << std::endl;
+  lili::lout << "  q           : " << q << std::endl;
+  lili::lout << "  m           : " << m << std::endl;
+  lili::lout << "  n_track     : " << n_track << std::endl;
+  lili::lout << "  dl_track    : " << dl_track << std::endl;
+  lili::lout << "  dtrack_save : " << dtrack_save << std::endl;
+  lili::lout << "  Pos. dist.  : ";
   switch (pos_dist) {
     case PPosDist::Stationary:
       lili::lout << "Stationary" << std::endl;
@@ -49,12 +48,12 @@ void InputParticles::Print() {
       lili::lout << "Unknown" << std::endl;
       break;
   }
-  lili::lout << "  param       : ";
+  lili::lout << "    param     : ";
   for (auto& p : pos_dist_param) {
     lili::lout << p << " ";
   }
   lili::lout << std::endl;
-  lili::lout << "Vel. dist.    : ";
+  lili::lout << "  Vel. dist.  : ";
   switch (vel_dist) {
     case PVelDist::Maxwellian:
       lili::lout << "Maxwellian" << std::endl;
@@ -63,17 +62,16 @@ void InputParticles::Print() {
       lili::lout << "Unknown" << std::endl;
       break;
   }
-  lili::lout << "  param       : ";
+  lili::lout << "    param     : ";
   for (auto& p : vel_dist_param) {
     lili::lout << p << " ";
   }
   lili::lout << std::endl;
-  lili::lout << "  offset      : ";
+  lili::lout << "    offset    : ";
   for (auto& p : vel_offset) {
     lili::lout << p << " ";
   }
   lili::lout << std::endl;
-  lili::lout << "==============================" << std::endl;
 }
 
 Input::Input() {
@@ -335,7 +333,13 @@ void Input::Parse() {
 
       // Iterate over all tasks and print them
       for (auto& [key, val] : j_tasks.items()) {
-            }
+        InputLoopTask task;
+        task.name = key;
+        task.type = val.value("type", "none");
+
+        // Add task to the list
+        loop_.tasks.push_back(task);
+      }
     }
   }
 }
