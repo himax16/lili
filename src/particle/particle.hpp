@@ -310,11 +310,42 @@ class Particles {
 };
 
 void SaveParticles(Particles& particles, const char* file_name);
+
+/**
+ * @brief Function to load particle data from HDF5 file
+ *
+ * @param file_name Name of the file to load from
+ * @return Particles Particles object
+ */
 Particles LoadParticles(const char* file_name);
 
+/**
+ * @brief Function to select particles based on its status
+ *
+ * @param input Input particles
+ * @param output Output particles
+ * @param status Status to select
+ * @param remove Whether to remove the selected particles from the input
+ * particles
+ */
 void SelectParticles(Particles& input, Particles& output, ParticleStatus status,
                      bool remove = false);
+
+/**
+ * @brief Function to label particles that are out of bounds
+ *
+ * @param particles Particles object
+ * @param mesh_size MeshSize object containing the domain size
+ */
 void LabelBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size);
+
+/**
+ * @brief Function to move particle positions assuming periodic boundaries
+ * in all directions without any communication
+ *
+ * @param particles Particles object
+ * @param mesh_size Mesh size
+ */
 void PeriodicBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size);
 
 }  // namespace lili::particle

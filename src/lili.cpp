@@ -20,11 +20,6 @@
 #include "track_particle.hpp"
 
 /**
- * @brief Rate at which the loop prints the iteration information
- */
-#define __LILI_LPRINT_RATE 10000
-
-/**
  * @brief Base namespace for LILI program
  *
  * @details
@@ -44,7 +39,6 @@ output::LiliCout lout;
 int main(int argc, char* argv[]) {
   // == Pre-initialization =====================================================
   // MPI initialization
-  // @todo Move this into header only file using inline
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &lili::rank);
   MPI_Comm_size(MPI_COMM_WORLD, &lili::nproc);
@@ -122,7 +116,7 @@ int main(int argc, char* argv[]) {
       lili::task::ExecuteTask(task.get());
     }
 
-    // Print loop information
+    // Print loop information if needed
     if (i_loop % nl_time == 0) {
       lili::lout << "Iteration: " << i_loop << " / " << n_loop;
       // Print timing
@@ -135,6 +129,9 @@ int main(int argc, char* argv[]) {
                  << " us / loop)" << std::endl;
       loop_time = std::chrono::high_resolution_clock::now();
     }
+
+    // Call the MPI barrier
+    MPI_Barrier(MPI_COMM_WORLD);
   }
 
   // == Clean Up ===============================================================

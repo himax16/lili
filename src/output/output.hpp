@@ -9,6 +9,13 @@
 #include "config.h"
 
 /**
+ * @brief Rate at which the loop prints the iteration information
+ */
+#ifndef __LILI_LPRINT_RATE
+#define __LILI_LPRINT_RATE 10000
+#endif
+
+/**
  * @brief Namespace for output related functions
  */
 namespace lili::output {

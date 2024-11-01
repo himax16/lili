@@ -214,6 +214,7 @@ class TaskInitParticles : public Task {
   std::vector<particle::TrackParticles>& track_particles() {
     return *track_particles_ptr_;
   }
+  /// @endcond
 
  private:
   int n_kind_;  ///< Number of particle species

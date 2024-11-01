@@ -342,14 +342,6 @@ Particles LoadParticles(const char* file_name) {
   return particles;
 }
 
-/**
- * @brief Function to select particles based on its status
- * @param input Input particles
- * @param output Output particles
- * @param status Status to select
- * @param remove Whether to remove the selected particles from the input
- * particles
- */
 void SelectParticles(Particles& input, Particles& output, ParticleStatus status,
                      bool remove) {
   int npar = input.npar();
@@ -387,11 +379,6 @@ void SelectParticles(Particles& input, Particles& output, ParticleStatus status,
   }
 }
 
-/**
- * @brief Function to label particles that are out of bounds
- * @param particles Particles object
- * @param mesh Mesh object
- */
 void LabelBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size) {
   // Get the range of each dimension
   const double xmin = mesh_size.x0;
@@ -569,11 +556,6 @@ void LabelBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size) {
   }
 }
 
-/**
- * @brief Function to move particle positions assuming periodic boundaries
- * @param particles Particles object
- * @param mesh_size Mesh size
- */
 void PeriodicBoundaryParticles(Particles& particles, mesh::MeshSize mesh_size) {
   // Get the range of each dimension
   const double lx = mesh_size.lx;
