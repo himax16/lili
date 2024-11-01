@@ -41,8 +41,9 @@ void ParseTaskList(input::Input& input) {
   }
 
   // Add the particle initialization task
-  if (lili::rank == 0) {
-    init_task_list.push_back(std::make_unique<TaskInitParticles>(input));
-  }
+  init_task_list.push_back(std::make_unique<TaskInitParticles>(input));
+
+  // Add the field initialization task
+  // init_task_list.push_back(std::make_unique<TaskInitFields>(input));
 }
 }  // namespace lili::task

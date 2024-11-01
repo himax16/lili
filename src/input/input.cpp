@@ -265,12 +265,12 @@ void Input::Parse() {
                 pdist.at("param").get<std::vector<double>>();
           } else {
             // Set default param to the mesh positions
-            species.pos_dist_param.push_back(mesh_.x0);
-            species.pos_dist_param.push_back(mesh_.x0 + mesh_.lx);
-            species.pos_dist_param.push_back(mesh_.y0);
-            species.pos_dist_param.push_back(mesh_.y0 + mesh_.ly);
-            species.pos_dist_param.push_back(mesh_.z0);
-            species.pos_dist_param.push_back(mesh_.z0 + mesh_.lz);
+            species.pos_dist_param.push_back(0.);
+            species.pos_dist_param.push_back(mesh_.lx);
+            species.pos_dist_param.push_back(0.);
+            species.pos_dist_param.push_back(mesh_.ly);
+            species.pos_dist_param.push_back(0.);
+            species.pos_dist_param.push_back(mesh_.lz);
           }
         } else {
           std::cerr << "Unrecognized position distribution: " << pdist_str

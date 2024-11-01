@@ -70,6 +70,23 @@ int main(int argc, char* argv[]) {
     lili::lout << "Task: " << task->name() << " executed " << task->i_run()
                << " times" << std::endl;
   }
+
+  // Get the variable from the simulation variables
+  std::vector<lili::particle::Particles>& particles_t =
+      *std::get<std::unique_ptr<std::vector<lili::particle::Particles>>>(
+           lili::task::sim_vars[lili::task::SimVarType::ParticlesVector])
+           .get();
+
+  // Print the length
+  lili::lout << "Number of particles: " << particles_t.size() << std::endl;
+  // Iterate over the particles and print their x
+  for (auto& particles : particles_t) {
+    for (int i = 0; i < particles.npar(); ++i) {
+      lili::lout << "Particle " << particles.id(i) << " v: " << particles.v(i)
+                 << std::endl;
+    }
+  }
+
   MPI_Abort(MPI_COMM_WORLD, 0);
 
   lili::output_folder = lili::output_folder;
@@ -116,10 +133,6 @@ int main(int argc, char* argv[]) {
 
     // Distribute positions
     // particle::DistributeLocationUniform(particles[i_kind], 0, input.mesh());
-
-    // MPI Abort
-    MPI_Abort(MPI_COMM_WORLD, 0);
-    exit(0);
 
     // Distribute velocities
     lili::particle::GammaTable gamma_table = lili::particle::GTMaxwellian3D(

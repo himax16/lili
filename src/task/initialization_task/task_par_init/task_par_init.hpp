@@ -106,14 +106,18 @@ class GammaTable {
 
 // Gamma table initialization
 /**
- * @brief Construct a new GammaTable for monoenergetic particles
- * @param[in] delta_gamma Delta gamma value
+ * @brief Construct a new GammaTable for monoenergetic particles with \f$\gamma
+ * = 1 + \delta \gamma\f$
+ *
+ * @param[in] delta_gamma \f$\delta \gamma\f$ value
  * @return GammaTable Particle gamma table
  */
 GammaTable GTMonoenergetic(const double delta_gamma);
 
 /**
- * @brief Construct a new Gamma Table for particles with uniform energy
+ * @brief Construct a new Gamma Table for particles with uniform energy between
+ * \f$\gamma_{\min}\f$ and \f$\gamma_{\max}\f$
+ *
  * @param[in] gamma_min Minimum gamma value
  * @param[in] gamma_max Maximum gamma value
  * @return GammaTable Particle gamma table
@@ -123,16 +127,18 @@ GammaTable GTUniform(const double gamma_min, const double gamma_max);
 /**
  * @brief Construct a new Gamma Table for particles with 3D Maxwellian energy
  * distribution
+ *
+ * @param[in] theta Temperature parameter \f$\theta = \frac{k_B T}{m c^2}\f$
+ * @return GammaTable Particle gamma table
+ *
  * @details
  * Create a table of gamma values for particles with a Maxwellian energy
  * satisfying isotropic Maxwell-Juttner distribution:
  * @f[
  * f(\gamma) \sim \gamma (\gamma^2 - 1)^{\frac{d}{2} - 1}  e^{-\gamma/\theta}
  * @f]
- * where @f$ d @f$ is the number of spatial dimensions and @f$ \theta @f$ is the
+ * where \f$ d \f$ is the number of spatial dimensions and \f$ \theta \f$ is the
  * temperature parameter.
- * @param[in] theta Temperature parameter
- * @return GammaTable Particle gamma table
  */
 GammaTable GTMaxwellian3D(const double theta);
 
@@ -202,11 +208,52 @@ class TaskInitParticles : public Task {
       // Initialize particles
       particles[i_kind] = particle::Particles(input_particles_[i_kind]);
 
+      // Distribute particle IDs
       particle::DistributeID(particles[i_kind],
                              lili::rank * input_particles_[i_kind].n);
 
       // Distribute positions
+      input::PPosDist pos_dist = input_particles_[i_kind].pos_dist;
+      switch (pos_dist) {
+        case input::PPosDist::Stationary:
+          break;
+        case input::PPosDist::Uniform:
+          particle::DistributeLocationUniform(
+              particles[i_kind], 0, input_particles_[i_kind].pos_dist_param[0],
+              input_particles_[i_kind].pos_dist_param[1],
+              input_particles_[i_kind].pos_dist_param[2],
+              input_particles_[i_kind].pos_dist_param[3],
+              input_particles_[i_kind].pos_dist_param[4],
+              input_particles_[i_kind].pos_dist_param[5]);
+          break;
+        default:
+          break;
+      }
+
+      // Distribute velocities
+      input::PVelDist vel_dist = input_particles_[i_kind].vel_dist;
+
+      if (vel_dist == input::PVelDist::Maxwellian) {
+        particle::GammaTable gamma_table = particle::GTMaxwellian3D(
+            input_particles_[i_kind].vel_dist_param[0]);
+        particle::DistributeVelocityUniform(particles[i_kind], 0, gamma_table);
+      }
+
+      // Add bulk velocity
+      particle::AddBulkVelocity(particles[i_kind],
+                                input_particles_[i_kind].vel_offset[0],
+                                input_particles_[i_kind].vel_offset[1],
+                                input_particles_[i_kind].vel_offset[2]);
     }
+
+    // Assign the particles vector to the sim_vars
+    sim_vars[SimVarType::ParticlesVector] =
+        std::make_unique<std::vector<particle::Particles>>(particles);
+
+    // Assign the track particles vector to the sim_vars
+    sim_vars[SimVarType::TrackParticlesVector] =
+        std::make_unique<std::vector<particle::TrackParticles>>(
+            track_particles);
 
     // Increment the run counter
     IncrementRun();
