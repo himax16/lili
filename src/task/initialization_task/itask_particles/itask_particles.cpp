@@ -183,13 +183,17 @@ GammaTable GTMaxwellian3D(const double theta) {
 }  // namespace lili::particle
 
 namespace lili::task {
-void TaskInitParticles::Execute() {
+void TaskInitParticles::Initialize() {
   // Get the number of particle species
   n_kind_ = input_particles_.size();
 
   // Initialize particles and tracked particles
   std::vector<particle::Particles> particles(n_kind_);
   std::vector<particle::TrackParticles> track_particles(n_kind_);
+
+  // Initialize the helper vectors
+  n_track_.resize(n_kind_);
+  dl_track_.resize(n_kind_);
 
   // Loop through all species
   for (int i_kind = 0; i_kind < n_kind_; ++i_kind) {
@@ -237,30 +241,33 @@ void TaskInitParticles::Execute() {
     int n_track =
         std::min(input_particles_[i_kind].n_track, particles[i_kind].npar());
 
-    if (n_track > 0) {
-      // Initialize the helper TrackParticles object
-      track_particles[i_kind] = particle::TrackParticles(
-          n_track, input_particles_[i_kind].dtrack_save);
+    // Save the tracking variables
+    n_track_[i_kind] = n_track;
+    dl_track_[i_kind] = input_particles_[i_kind].dl_track;
 
-      // Set the file prefix for the tracked particles
-      track_particles[i_kind].SetPrefix(
-          std::filesystem::path(lili::output_folder) /
-          ("tp_" + input_particles_[i_kind].name + "_" +
-           std::to_string(lili::rank)));
+    // Initialize the helper TrackParticles object
+    track_particles[i_kind] =
+        particle::TrackParticles(n_track, input_particles_[i_kind].dtrack_save);
 
-      // Set the number of loop iteration between tracking output
-      track_particles[i_kind].dl_track() = input_particles_[i_kind].dl_track;
+    // Set the file prefix for the tracked particles
+    track_particles[i_kind].SetPrefix(
+        std::filesystem::path(lili::output_folder) /
+        ("tp_" + input_particles_[i_kind].name + "_" +
+         std::to_string(lili::rank)));
 
-      // Set some particles to be tracked
-      for (int i = 0; i < n_track; ++i) {
-        particles[i_kind].status(i) = particle::ParticleStatus::Tracked;
-      }
+    // Set the number of loop iteration between tracking output
+    track_particles[i_kind].dl_track() = input_particles_[i_kind].dl_track;
+
+    // Set some particles to be tracked
+    for (int i = 0; i < n_track; ++i) {
+      particles[i_kind].status(i) = particle::ParticleStatus::Tracked;
     }
   }
 
   // Assign the particles vector to the sim_vars
   sim_vars[SimVarType::ParticlesVector] =
       std::make_unique<std::vector<particle::Particles>>(particles);
+
   // Store the reference in this object
   particles_ptr_ = std::get<std::unique_ptr<std::vector<particle::Particles>>>(
                        sim_vars[SimVarType::ParticlesVector])
@@ -275,7 +282,50 @@ void TaskInitParticles::Execute() {
           sim_vars[SimVarType::TrackParticlesVector])
           .get();
 
-  // Increment the run counter
-  IncrementRun();
+  // Call the base class Initialize
+  Task::Initialize();
+}
+
+void TaskInitParticles::Execute() {
+  // Save TrackParticles data if needed
+  // Get the fields from the simulation variables
+  mesh::Fields* fields_ptr =
+      std::get<std::unique_ptr<mesh::Fields>>(sim_vars[SimVarType::EMFields])
+          .get();
+
+  // Loop through all species
+  for (int i = 0; i < n_kind_; ++i) {
+    if (n_track_[i] > 0) {
+      if (Task::i_run() % dl_track_[i] == 0) {
+        // Check if fields are not nullptr
+        if (fields_ptr) {
+          track_particles_ptr_->at(i).SaveTrackedParticles(
+              particles_ptr_->at(i), *fields_ptr);
+        } else {
+          track_particles_ptr_->at(i).SaveTrackedParticles(
+              particles_ptr_->at(i));
+        }
+      }
+    }
+  }
+
+  // Call the base class Execute
+  Task::Execute();
+}
+
+void TaskInitParticles::CleanUp() {
+  // Call Execute to save the last tracked particles
+  Execute();
+
+  // Save the buffer to the HDF5 file if needed
+  for (int i = 0; i < n_kind_; ++i) {
+    if (n_track_[i] > 0) {
+      lili::lout << track_particles_ptr_->at(i).i_track() << std::endl;
+      track_particles_ptr_->at(i).DumpTrackedParticles();
+    }
+  }
+
+  // Call the base class CleanUp
+  Task::CleanUp();
 }
 }  // namespace lili::task

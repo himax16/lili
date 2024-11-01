@@ -68,11 +68,25 @@ class Task {
   std::string name() const { return name_; }
 
   /**
+   * @brief Check if the task has been initialized
+   *
+   * @return bool Flag to check if the task has been initialized
+   */
+  bool is_initialized() const { return is_init_; }
+
+  /**
    * @brief Get the number of times the task has been run
    *
    * @return int Number of times the task has been run
    */
   int i_run() const { return i_run_; }
+
+  /**
+   * @brief Check if the task has been cleaned up
+   *
+   * @return bool Flag to check if the task has been cleaned up
+   */
+  bool is_cleaned() const { return is_cleaned_; }
   /// @endcond
 
   // Setters
@@ -133,15 +147,15 @@ class TaskCreateOutput : public Task {
   /**
    * @brief Create simulation output folder
    */
-  void Execute() override {
+  void Initialize() override {
     std::string output_folder = lili::output_folder;
     if (!std::filesystem::is_directory(output_folder)) {
       std::filesystem::create_directory(output_folder);
     }
     std::cout << "Output folder : " << output_folder << std::endl;
 
-    // Increment the run counter
-    IncrementRun();
+    // Call the base class Initialize
+    Task::Initialize();
   }
 };
 
@@ -149,7 +163,7 @@ class TaskCreateOutput : public Task {
 /**
  * @brief Simulation initialization task list
  */
-extern std::vector<std::unique_ptr<Task>> init_task_list;
+extern std::vector<std::unique_ptr<Task>> default_task_list;
 
 /**
  * @brief Simulation loop task list

@@ -6,7 +6,7 @@
 #include "itask_fields.hpp"
 
 namespace lili::task {
-void TaskInitFields::Execute() {
+void TaskInitFields::Initialize() {
   // Initialize Fields object
   lili::mesh::Fields fields(mesh_size_);
 
@@ -20,7 +20,7 @@ void TaskInitFields::Execute() {
   sim_vars[SimVarType::EMFields] =
       std::make_unique<lili::mesh::Fields>(std::move(fields));
 
-  // Increment the run counter
-  IncrementRun();
+  // Call the base class Initialize
+  Task::Initialize();
 }
 }  // namespace lili::task

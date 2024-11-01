@@ -36,9 +36,9 @@ class TaskInitFields : public Task {
   }
 
   /**
-   * @brief Initialize particles
+   * @brief Initialize Fields object
    */
-  void Execute() override;
+  void Initialize() override;
 
  private:
   mesh::MeshSize mesh_size_;  ///< Fields data mesh size

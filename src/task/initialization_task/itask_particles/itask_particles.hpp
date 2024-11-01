@@ -194,9 +194,19 @@ class TaskInitParticles : public Task {
   }
 
   /**
-   * @brief Initialize particles
+   * @brief Initialize Particles array and TrackParticles array
+   */
+  void Initialize() override;
+
+  /**
+   * @brief Save TrackParticles data if needed
    */
   void Execute() override;
+
+  /**
+   * @brief Clean up TrackParticles data if needed
+   */
+  void CleanUp() override;
 
   // Getters
   /// @cond GETTERS
@@ -217,5 +227,13 @@ class TaskInitParticles : public Task {
    * @brief Pointer to the simulation TrackParticles vector
    */
   std::vector<particle::TrackParticles>* track_particles_ptr_;
+  /**
+   * @brief Helper vector to store Track Particles n_track values
+   */
+  std::vector<int> n_track_;
+  /**
+   * @brief Helper vector to store Track Particles dtrack_save values
+   */
+  std::vector<int> dl_track_;
 };
 }  // namespace lili::task

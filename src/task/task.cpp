@@ -11,7 +11,7 @@
 
 namespace lili::task {
 // Initialize global variables
-std::vector<std::unique_ptr<Task>> init_task_list;
+std::vector<std::unique_ptr<Task>> default_task_list;
 std::vector<std::unique_ptr<Task>> loop_task_list;
 std::map<SimVarType,
          std::variant<std::unique_ptr<mesh::Fields>,
@@ -22,6 +22,15 @@ std::map<SimVarType,
 void InitializeTask(Task* task) {
   // Try to cast the task to the derived class
   switch (task->type()) {
+    case TaskType::CreateOutput:
+      dynamic_cast<TaskCreateOutput*>(task)->Initialize();
+      break;
+    case TaskType::InitParticles:
+      dynamic_cast<TaskInitParticles*>(task)->Initialize();
+      break;
+    case TaskType::InitFields:
+      dynamic_cast<TaskInitFields*>(task)->Initialize();
+      break;
     case TaskType::MoveParticlesFull:
       dynamic_cast<TaskMoveParticlesFull*>(task)->Initialize();
       break;
@@ -37,14 +46,8 @@ void ExecuteTask(Task* task) {
     case TaskType::Base:
       task->Execute();
       break;
-    case TaskType::CreateOutput:
-      dynamic_cast<TaskCreateOutput*>(task)->Execute();
-      break;
     case TaskType::InitParticles:
       dynamic_cast<TaskInitParticles*>(task)->Execute();
-      break;
-    case TaskType::InitFields:
-      dynamic_cast<TaskInitFields*>(task)->Execute();
       break;
     case TaskType::MoveParticlesFull:
       dynamic_cast<TaskMoveParticlesFull*>(task)->Execute();
@@ -57,6 +60,9 @@ void ExecuteTask(Task* task) {
 void CleanUpTask(Task* task) {
   // Try to cast the task to the derived class
   switch (task->type()) {
+    case TaskType::InitParticles:
+      dynamic_cast<TaskInitParticles*>(task)->CleanUp();
+      break;
     default:
       task->CleanUp();
       break;
@@ -67,14 +73,14 @@ void ParseTaskList(input::Input& input) {
   // Initialization tasks
   // Add the create output folder task
   if (lili::rank == 0) {
-    init_task_list.push_back(std::make_unique<TaskCreateOutput>());
+    default_task_list.push_back(std::make_unique<TaskCreateOutput>());
   }
 
   // Add the particle initialization task
-  init_task_list.push_back(std::make_unique<TaskInitParticles>(input));
+  default_task_list.push_back(std::make_unique<TaskInitParticles>(input));
 
   // Add the field initialization task
-  init_task_list.push_back(std::make_unique<TaskInitFields>(input));
+  default_task_list.push_back(std::make_unique<TaskInitFields>(input));
 
   // Loop tasks
   for (auto& task : input.loop().tasks) {
@@ -98,11 +104,11 @@ void ParseTaskList(input::Input& input) {
   }
   // Print the task list
   lili::lout << "=========== Task information ===========" << std::endl;
-  lili::lout << "Initialization tasks: " << std::endl;
-  for (auto& task : init_task_list) {
+  lili::lout << "Default tasks : " << std::endl;
+  for (auto& task : default_task_list) {
     lili::lout << "  Name        : " << task->name() << std::endl;
   }
-  lili::lout << "Loop tasks: " << std::endl;
+  lili::lout << "Loop tasks    : " << std::endl;
   for (auto& task : loop_task_list) {
     lili::lout << "  Name        : " << task->name() << std::endl;
   }

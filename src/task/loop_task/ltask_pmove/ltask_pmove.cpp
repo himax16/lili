@@ -122,6 +122,9 @@ void TaskMoveParticlesFull::Initialize() {
   fields_ptr_ =
       std::get<std::unique_ptr<mesh::Fields>>(sim_vars[SimVarType::EMFields])
           .get();
+
+  // Call the base class Initialize
+  Task::Initialize();
 }
 void TaskMoveParticlesFull::Execute() {
   // Loop through all species
@@ -133,7 +136,7 @@ void TaskMoveParticlesFull::Execute() {
     particle::PeriodicBoundaryParticles(particles, fields_ptr_->size);
   }
 
-  // Increment the run counter
-  IncrementRun();
+  // Call the base class Execute
+  Task::Execute();
 }
 }  // namespace lili::task
