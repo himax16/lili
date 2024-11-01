@@ -5,7 +5,7 @@
 
 #include "task.hpp"
 
-#include "task_par_init.hpp"
+#include "task_init_particles.hpp"
 
 namespace lili::task {
 // Initialize global variables
@@ -42,6 +42,8 @@ void ParseTaskList(input::Input& input) {
 
   // Add the particle initialization task
   init_task_list.push_back(std::make_unique<TaskInitParticles>(input));
+
+  // Add the field initialization task
 
   // Add the field initialization task
   // init_task_list.push_back(std::make_unique<TaskInitFields>(input));

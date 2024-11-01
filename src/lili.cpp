@@ -15,7 +15,6 @@
 #include "output.hpp"
 #include "parameter.hpp"
 #include "particle.hpp"
-#include "particle_initialization.hpp"
 #include "particle_mover.hpp"
 #include "task.hpp"
 #include "track_particle.hpp"
@@ -115,50 +114,6 @@ int main(int argc, char* argv[]) {
       break;
   }
 
-  // Get the particle information
-  int n_kind = input.particles().size();
-  std::vector<int> n_particles;
-  for (lili::input::InputParticles particle : input.particles()) {
-    n_particles.push_back(particle.n);
-    particle.Print();
-  }
-
-  // Initialize particles
-  std::vector<lili::particle::Particles> particles(n_kind);
-  std::vector<lili::particle::TrackParticles> track_particles(n_kind);
-  std::vector<int> dl_tracks(n_kind);
-  for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
-    particles[i_kind] = lili::particle::Particles(input.particles()[i_kind]);
-    lili::particle::DistributeID(particles[i_kind],
-                                 lili::rank * input.particles()[i_kind].n);
-
-    // Distribute positions
-    // particle::DistributeLocationUniform(particles[i_kind], 0, input.mesh());
-
-    // Distribute velocities
-    lili::particle::GammaTable gamma_table = lili::particle::GTMaxwellian3D(
-        input.particles()[i_kind].vel_dist_param[0]);
-    lili::particle::DistributeVelocityUniform(particles[i_kind], 0,
-                                              gamma_table);
-    // particle::AddBulkVelocity(particles[i_kind], 0.4, 0.0, 0.0);
-
-    // Add tracking
-    int n_track = input.particles()[i_kind].n_track;
-    dl_tracks[i_kind] = input.particles()[i_kind].dl_track;
-    n_track = std::min(n_track, particles[i_kind].npar());
-    track_particles[i_kind] = lili::particle::TrackParticles(
-        n_track, input.particles()[i_kind].dtrack_save);
-    track_particles[i_kind].SetPrefix(
-        std::filesystem::path(lili::output_folder) /
-        ("tp_" + input.particles()[i_kind].name));
-
-    // Assign some particle to be tracked
-    for (int i_track = 0; i_track < n_track; ++i_track) {
-      particles[i_kind].status(i_track) =
-          lili::particle::ParticleStatus::Tracked;
-    }
-  }
-
   // Initialize particle mover
   lili::particle ::ParticleMover mover;
   mover.InitializeMover(input.integrator());
@@ -180,20 +135,20 @@ int main(int argc, char* argv[]) {
   MPI_Barrier(MPI_COMM_WORLD);
 
   for (int i_loop = 0; i_loop < n_loop; ++i_loop) {
-    // Loop through all particles
-    for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
-      // Save tracked particles if needed
-      if (track_particles[i_kind].n_track() > 0) {
-        if (i_loop % dl_tracks[i_kind] == 0)
-          track_particles[i_kind].SaveTrackedParticles(particles[i_kind],
-                                                       fields);
-      }
+    // // Loop through all particles
+    // for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
+    //   // Save tracked particles if needed
+    //   if (track_particles[i_kind].n_track() > 0) {
+    //     if (i_loop % dl_tracks[i_kind] == 0)
+    //       track_particles[i_kind].SaveTrackedParticles(particles[i_kind],
+    //                                                    fields);
+    //   }
 
-      // Move particles
-      mover.Move(particles[i_kind], fields);
-      lili::particle::PeriodicBoundaryParticles(particles[i_kind],
-                                                input.mesh());
-    }
+    //   // Move particles
+    //   mover.Move(particles[i_kind], fields);
+    //   lili::particle::PeriodicBoundaryParticles(particles[i_kind],
+    //                                             input.mesh());
+    // }
 
     // Print loop information
     if (i_loop % nl_time == 0) {
@@ -210,13 +165,13 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  // Save and dump tracked particles at the end
-  for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
-    if (track_particles[i_kind].n_track() > 0) {
-      track_particles[i_kind].SaveTrackedParticles(particles[i_kind], fields);
-      track_particles[i_kind].DumpTrackedParticles();
-    }
-  }
+  // // Save and dump tracked particles at the end
+  // for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
+  //   if (track_particles[i_kind].n_track() > 0) {
+  //     track_particles[i_kind].SaveTrackedParticles(particles[i_kind],
+  //     fields); track_particles[i_kind].DumpTrackedParticles();
+  //   }
+  // }
 
   // Print elapsed time
   std ::cout << "Elapsed time: "

@@ -16,6 +16,6 @@ target_link_libraries(task PUBLIC particle)
 target_link_libraries(task PUBLIC track_particle)
 
 # Link other task libraries
-target_link_libraries(task PUBLIC task_par_init)
+target_link_libraries(task PUBLIC task_init_particles)
 
 # Link external libraries

@@ -1,5 +1,5 @@
 /**
- * @file task_par_init.cpp
+ * @file task_init_particles.cpp
  * @brief Source file for particle initialization routines
  * @details
  * This file contains the implementation of the particle initialization
@@ -8,7 +8,7 @@
  * - Add compiler independent random number generator
  */
 
-#include "task_par_init.hpp"
+#include "task_init_particles.hpp"
 
 #include <cmath>
 #include <random>
@@ -181,3 +181,97 @@ GammaTable GTMaxwellian3D(const double theta) {
   return GammaTable(cdf, gamma);
 }
 }  // namespace lili::particle
+
+namespace lili::task {
+void TaskInitParticles::Execute() {
+  // Get the number of particle species
+  n_kind_ = input_particles_.size();
+
+  // Print particle information if available
+  for (auto& species : input_particles_) {
+    species.Print();
+  }
+
+  // Initialize particles and tracked particles
+  std::vector<particle::Particles> particles(n_kind_);
+  std::vector<particle::TrackParticles> track_particles(n_kind_);
+
+  // Loop through all species
+  for (int i_kind = 0; i_kind < n_kind_; ++i_kind) {
+    // Initialize particles
+    particles[i_kind] = particle::Particles(input_particles_[i_kind]);
+
+    // Distribute particle IDs
+    particle::DistributeID(particles[i_kind],
+                           lili::rank * input_particles_[i_kind].n);
+
+    // Distribute positions
+    input::PPosDist pos_dist = input_particles_[i_kind].pos_dist;
+    switch (pos_dist) {
+      case input::PPosDist::Stationary:
+        break;
+      case input::PPosDist::Uniform:
+        particle::DistributeLocationUniform(
+            particles[i_kind], 0, input_particles_[i_kind].pos_dist_param[0],
+            input_particles_[i_kind].pos_dist_param[1],
+            input_particles_[i_kind].pos_dist_param[2],
+            input_particles_[i_kind].pos_dist_param[3],
+            input_particles_[i_kind].pos_dist_param[4],
+            input_particles_[i_kind].pos_dist_param[5]);
+        break;
+      default:
+        break;
+    }
+
+    // Distribute velocities
+    input::PVelDist vel_dist = input_particles_[i_kind].vel_dist;
+
+    if (vel_dist == input::PVelDist::Maxwellian) {
+      particle::GammaTable gamma_table =
+          particle::GTMaxwellian3D(input_particles_[i_kind].vel_dist_param[0]);
+      particle::DistributeVelocityUniform(particles[i_kind], 0, gamma_table);
+    }
+
+    // Add bulk velocity
+    particle::AddBulkVelocity(particles[i_kind],
+                              input_particles_[i_kind].vel_offset[0],
+                              input_particles_[i_kind].vel_offset[1],
+                              input_particles_[i_kind].vel_offset[2]);
+
+    // Add tracked particles if needed
+    int n_track =
+        std::min(input_particles_[i_kind].n_track, particles[i_kind].npar());
+
+    if (n_track > 0) {
+      // Initialize the helper TrackParticles object
+      track_particles[i_kind] = particle::TrackParticles(
+          n_track, input_particles_[i_kind].dtrack_save);
+
+      // Set the file prefix for the tracked particles
+      track_particles[i_kind].SetPrefix(
+          std::filesystem::path(lili::output_folder) /
+          ("tp_" + input_particles_[i_kind].name + "_" +
+           std::to_string(lili::rank)));
+
+      // Set the number of loop iteration between tracking output
+      track_particles[i_kind].dl_track() = input_particles_[i_kind].dl_track;
+
+      // Set some particles to be tracked
+      for (int i = 0; i < n_track; ++i) {
+        particles[i_kind].status(i) = particle::ParticleStatus::Tracked;
+      }
+    }
+  }
+
+  // Assign the particles vector to the sim_vars
+  sim_vars[SimVarType::ParticlesVector] =
+      std::make_unique<std::vector<particle::Particles>>(particles);
+
+  // Assign the track particles vector to the sim_vars
+  sim_vars[SimVarType::TrackParticlesVector] =
+      std::make_unique<std::vector<particle::TrackParticles>>(track_particles);
+
+  // Increment the run counter
+  IncrementRun();
+}
+}  // namespace lili::task
