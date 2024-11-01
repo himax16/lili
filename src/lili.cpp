@@ -70,10 +70,9 @@ int main(int argc, char* argv[]) {
     lili::lout << "Task: " << task->name() << " executed " << task->i_run()
                << " times" << std::endl;
   }
-  std::cout << "Rank " << lili::rank
-            << " init: " << lili::task::init_task_list.size() << std::endl;
+  MPI_Abort(MPI_COMM_WORLD, 0);
 
-  std::string output_folder = lili::output_folder;
+  lili::output_folder = lili::output_folder;
   MPI_Barrier(MPI_COMM_WORLD);
 
   // Initialize fields
@@ -101,18 +100,9 @@ int main(int argc, char* argv[]) {
   // Get the particle information
   int n_kind = input.particles().size();
   std::vector<int> n_particles;
-  for (lili::input::InputParticle particle : input.particles()) {
+  for (lili::input::InputParticles particle : input.particles()) {
     n_particles.push_back(particle.n);
-  }
-
-  // Print particle information if available
-  lili::lout << "==== Particle information ====" << std::endl;
-  for (lili::input::InputParticle particle : input.particles()) {
-    lili::lout << "* " << particle.name << std::endl;
-    lili::lout << "  n   = " << particle.n << std::endl;
-    lili::lout << "  m   = " << particle.m << std::endl;
-    lili::lout << "  q   = " << particle.q << std::endl;
-    lili::lout << "  tau = " << particle.tau << std::endl;
+    particle.Print();
   }
 
   // Initialize particles
@@ -127,9 +117,13 @@ int main(int argc, char* argv[]) {
     // Distribute positions
     // particle::DistributeLocationUniform(particles[i_kind], 0, input.mesh());
 
+    // MPI Abort
+    MPI_Abort(MPI_COMM_WORLD, 0);
+    exit(0);
+
     // Distribute velocities
-    lili::particle::GammaTable gamma_table =
-        lili::particle::GTMaxwellian3D(input.particles()[i_kind].tau);
+    lili::particle::GammaTable gamma_table = lili::particle::GTMaxwellian3D(
+        input.particles()[i_kind].vel_dist_param[0]);
     lili::particle::DistributeVelocityUniform(particles[i_kind], 0,
                                               gamma_table);
     // particle::AddBulkVelocity(particles[i_kind], 0.4, 0.0, 0.0);
@@ -140,8 +134,9 @@ int main(int argc, char* argv[]) {
     n_track = std::min(n_track, particles[i_kind].npar());
     track_particles[i_kind] = lili::particle::TrackParticles(
         n_track, input.particles()[i_kind].dtrack_save);
-    track_particles[i_kind].SetPrefix(std::filesystem::path(output_folder) /
-                                      ("tp_" + input.particles()[i_kind].name));
+    track_particles[i_kind].SetPrefix(
+        std::filesystem::path(lili::output_folder) /
+        ("tp_" + input.particles()[i_kind].name));
 
     // Assign some particle to be tracked
     for (int i_track = 0; i_track < n_track; ++i_track) {

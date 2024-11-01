@@ -7,6 +7,7 @@
 #include <string>
 
 #include "json.hpp"
+#include "parameter.hpp"
 
 // Simplify namespace
 using json = nlohmann::json;
@@ -25,6 +26,51 @@ std::string InputTypeToString(InputType input_type) {
     default:
       return "None";
   }
+}
+
+void InputParticles::Print() {
+  lili::lout << "==============================" << std::endl;
+  lili::lout << "Name          : " << name << std::endl;
+  lili::lout << "n             : " << n << std::endl;
+  lili::lout << "q             : " << q << std::endl;
+  lili::lout << "m             : " << m << std::endl;
+  lili::lout << "Pos. dist.    : ";
+  switch (pos_dist) {
+    case PPosDist::Stationary:
+      lili::lout << "Stationary" << std::endl;
+      break;
+    case PPosDist::Uniform:
+      lili::lout << "Uniform" << std::endl;
+      break;
+    default:
+      lili::lout << "Unknown" << std::endl;
+      break;
+  }
+  lili::lout << "  param       : ";
+  for (auto& p : pos_dist_param) {
+    lili::lout << p << " ";
+  }
+  lili::lout << std::endl;
+  lili::lout << "Vel. dist.    : ";
+  switch (vel_dist) {
+    case PVelDist::Maxwellian:
+      lili::lout << "Maxwellian" << std::endl;
+      break;
+    default:
+      lili::lout << "Unknown" << std::endl;
+      break;
+  }
+  lili::lout << "  param       : ";
+  for (auto& p : vel_dist_param) {
+    lili::lout << p << " ";
+  }
+  lili::lout << std::endl;
+  lili::lout << "  offset      : ";
+  for (auto& p : vel_offset) {
+    lili::lout << p << " ";
+  }
+  lili::lout << std::endl;
+  lili::lout << "==============================" << std::endl;
 }
 
 Input::Input() {
@@ -182,24 +228,92 @@ void Input::Parse() {
 
   // Parse particles
   if (j.contains("particles")) {
-    // Iterate over all particles
+    // Iterate over all species
     for (auto& [key, val] : j.at("particles").items()) {
-      InputParticle particle;
-      particle.name = key;
+      InputParticles species;
+      species.name = key;
 
       // Parse particle variables
-      particle.n = val.at("n").get<int>();
-      particle.m = val.at("m").get<double>();
-      particle.q = val.at("q").get<double>();
-      particle.tau = val.value("tau", 0.0);
+      species.n = val.at("n").get<int>();
+      species.q = val.at("q").get<double>();
+      species.m = val.at("m").get<double>();
 
       // Parse tracking variables
-      particle.n_track = val.value("n_track", 0);
-      particle.dl_track = val.value("dl_track", 1);
-      particle.dtrack_save = val.value("dtrack_save", 0);
+      if (val.contains("track")) {
+        species.n_track = val.value("n_track", 0);
+        species.dl_track = val.value("dl_track", 1);
+        species.dtrack_save = val.value("dtrack_save", 0);
+      } else {
+        species.n_track = 0;
+        species.dl_track = 1;
+        species.dtrack_save = 0;
+      }
 
-      // Add particle to the list
-      particles_.push_back(particle);
+      // Parse particle position distribution
+      if (val.contains("position_distribution")) {
+        auto& pdist = val.at("position_distribution");
+        std::string pdist_str = pdist.value("type", "stationary");
+        if (strcmp(pdist_str.c_str(), "stationary") == 0) {
+          species.pos_dist = PPosDist::Stationary;
+        } else if (strcmp(pdist_str.c_str(), "uniform") == 0) {
+          species.pos_dist = PPosDist::Uniform;
+
+          // Set position distribution parameters
+          if (pdist.contains("param")) {
+            // Read the value as a vector
+            species.pos_dist_param =
+                pdist.at("param").get<std::vector<double>>();
+          } else {
+            // Set default param to the mesh positions
+            species.pos_dist_param.push_back(mesh_.x0);
+            species.pos_dist_param.push_back(mesh_.x0 + mesh_.lx);
+            species.pos_dist_param.push_back(mesh_.y0);
+            species.pos_dist_param.push_back(mesh_.y0 + mesh_.ly);
+            species.pos_dist_param.push_back(mesh_.z0);
+            species.pos_dist_param.push_back(mesh_.z0 + mesh_.lz);
+          }
+        } else {
+          std::cerr << "Unrecognized position distribution: " << pdist_str
+                    << std::endl;
+          std::cerr << "Available position distribution: [stationary | uniform]"
+                    << std::endl;
+          lili::output::LiliExit(2);
+        }
+      }
+
+      // Parse particle velocity distribution
+      if (val.contains("velocity_distribution")) {
+        auto& vdist = val.at("velocity_distribution");
+        std::string vdist_str = vdist.value("type", "uniform");
+        if (strcmp(vdist_str.c_str(), "maxwellian") == 0) {
+          species.vel_dist = PVelDist::Maxwellian;
+        } else {
+          std::cerr << "Unrecognized velocity distribution: " << vdist_str
+                    << std::endl;
+          std::cerr << "Available velocity distribution: [ maxwellian ]"
+                    << std::endl;
+          lili::output::LiliExit(2);
+        }
+
+        // Set velocity distribution parameters
+        if (vdist.contains("param")) {
+          // Read the value as a vector
+          species.vel_dist_param = vdist.at("param").get<std::vector<double>>();
+        } else {
+          std::cerr << "No velocity distribution parameters for " << key
+                    << std::endl;
+          lili::output::LiliExit(2);
+        }
+
+        // Set velocity offset
+        if (vdist.contains("offset")) {
+          // Read the value as a vector
+          species.vel_offset = vdist.at("offset").get<std::vector<double>>();
+        }
+      }
+
+      // Add species to the list
+      particles_.push_back(species);
     }
   }
 

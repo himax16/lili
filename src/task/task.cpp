@@ -5,9 +5,8 @@
 
 #include "task.hpp"
 
-namespace lili {
-// Initialize the
-}
+#include "task_par_init.hpp"
+
 namespace lili::task {
 // Initialize global variables
 std::vector<std::unique_ptr<Task>> init_task_list;
@@ -27,18 +26,23 @@ void ExecuteTask(Task* task) {
     case TaskType::CreateOutput:
       dynamic_cast<TaskCreateOutput*>(task)->Execute();
       break;
+    case TaskType::InitParticles:
+      dynamic_cast<TaskInitParticles*>(task)->Execute();
+      break;
     default:
       break;
   }
 }
 
 void ParseTaskList(input::Input& input) {
-  // Use input
-  input = input;
-
   // Add the create output folder task
   if (lili::rank == 0) {
     init_task_list.push_back(std::make_unique<TaskCreateOutput>());
+  }
+
+  // Add the particle initialization task
+  if (lili::rank == 0) {
+    init_task_list.push_back(std::make_unique<TaskInitParticles>(input));
   }
 }
 }  // namespace lili::task

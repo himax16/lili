@@ -8,10 +8,10 @@
  * - Add compiler independent random number generator
  */
 
+#include "task_par_init.hpp"
+
 #include <cmath>
 #include <random>
-
-#include "particle_initialization.hpp"
 
 namespace lili::particle {
 void DistributeID(Particles& particles, const int offset) {

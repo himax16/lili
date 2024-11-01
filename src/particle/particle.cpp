@@ -84,7 +84,7 @@ Particles::Particles(int npar, int npar_max)
   }
 }
 
-Particles::Particles(input::InputParticle input_particle)
+Particles::Particles(input::InputParticles input_particle)
     : npar_(input_particle.n),
       npar_max_(input_particle.n < __LILIP_DEFAULT_BSIZE ? __LILIP_DEFAULT_BSIZE
                                                          : input_particle.n),

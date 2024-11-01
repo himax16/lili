@@ -20,12 +20,27 @@ namespace lili::input {
 /**
  * @brief Enumeration for input type
  */
-typedef enum {
+enum class InputType {
   None,         ///< No input type
   Initial,      ///< Initial input
   Restart,      ///< Restart input
   TestParticle  ///< Test particle input
-} InputType;
+};
+
+/**
+ * @brief Enumeration for particle position distribution function
+ */
+enum class PPosDist {
+  Stationary,  ///< Stationary distribution
+  Uniform      ///< Uniform distribution
+};
+
+/**
+ * @brief Enumeration for particle velocity distribution function
+ */
+enum class PVelDist {
+  Maxwellian  ///< Maxwellian distribution
+};
 
 /**
  * @brief Function to convert InputType to string
@@ -38,18 +53,54 @@ typedef enum {
 std::string InputTypeToString(InputType input_type);
 
 /**
- * @brief Struct to store Particle input information
+ * @brief Simple class to store Particle input information
  */
-typedef struct {
+class InputParticles {
+ public:
+  // Constructor
+  /**
+   * @brief Default constructor for the InputParticles class
+   */
+  InputParticles() {
+    n = 0;
+    n_track = 0;
+    dl_track = 0;
+    dtrack_save = 0;
+    q = 0.;
+    m = 0.;
+    name = "";
+
+    pos_dist = PPosDist::Stationary;
+    pos_dist_param = {};
+
+    vel_dist = PVelDist::Maxwellian;
+    vel_dist_param = {};
+    vel_offset = {0., 0., 0.};
+  }
+
+  /**
+   * @brief Print the input particle information
+   */
+  void Print();
+
+  std::string name;  ///< Particle name
+
   int n;            ///< Total number of particles
+  double q;         ///< Particle charge \f$q_s\f$
+  double m;         ///< Particle mass \f$m_s\f$
+
   int n_track;      ///< Total number of particles to track
   int dl_track;     ///< Number of time steps between tracking output
   int dtrack_save;  ///< Number of tracking outputs between saving
-  double q;         ///< Particle unit charge \f$q_0\f$
-  double m;         ///< Particle unit mass \f$m_0\f$
-  double tau;       ///< Particle temperature \f$\tau = \frac{k_B T}{m_0 c^2}\f$
-  std::string name;  ///< Particle name
-} InputParticle;
+
+  PPosDist pos_dist;  ///< Particle position distribution
+  std::vector<double>
+      pos_dist_param;  ///< Particle position distribution parameters
+  PVelDist vel_dist;   ///< Particle velocity distribution
+  std::vector<double>
+      vel_dist_param;  ///< Particle velocity distribution parameters
+  std::vector<double> vel_offset;  ///< Particle velocity offset
+};
 
 /**
  * @brief Struct to store Integrator input information
@@ -136,7 +187,7 @@ class Input {
   std::string restart_file() const { return restart_file_; }
   InputType input_type() const { return input_type_; }
   lili::mesh::MeshSize mesh() const { return mesh_; }
-  std::vector<InputParticle> particles() const { return particles_; }
+  std::vector<InputParticles> particles() const { return particles_; }
   InputIntegrator integrator() const { return integrator_; }
   /// @endcond
 
@@ -147,7 +198,7 @@ class Input {
   std::string& restart_file() { return restart_file_; }
   InputType& input_type() { return input_type_; }
   lili::mesh::MeshSize& mesh() { return mesh_; }
-  std::vector<InputParticle>& particles() { return particles_; }
+  std::vector<InputParticles>& particles() { return particles_; }
   InputIntegrator& integrator() { return integrator_; }
   /// @endcond
 
@@ -184,7 +235,7 @@ class Input {
   InputType input_type_;
 
   lili::mesh::MeshSize mesh_;
-  std::vector<InputParticle> particles_;
+  std::vector<InputParticles> particles_;
   InputIntegrator integrator_;
 };
 

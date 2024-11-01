@@ -5,6 +5,7 @@ add_library(input STATIC input.cpp input.hpp)
 target_include_directories(input PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Link internal libraries
+target_link_libraries(input PUBLIC parameter)
 target_link_libraries(input PUBLIC mesh)
 target_link_libraries(input PUBLIC output)
 

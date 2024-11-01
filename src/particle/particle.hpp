@@ -124,7 +124,7 @@ class Particles {
   Particles();
   Particles(int npar);
   Particles(int npar, int npar_max);
-  Particles(input::InputParticle input_particle);
+  Particles(input::InputParticles input_particle);
 
   // Copy constructor
   Particles(const Particles& other);

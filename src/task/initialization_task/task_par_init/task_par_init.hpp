@@ -170,23 +170,50 @@ class TaskInitParticles : public Task {
   // Constructor
   TaskInitParticles() : Task(TaskType::InitParticles) {
     set_name("InitParticles");
+
+    // Initialize the input particles
+    input_particles_ = {};
   }
   TaskInitParticles(input::Input input) : Task(TaskType::InitParticles) {
     set_name("InitParticles");
 
-    n_kind_ = input.particles().size();
+    // Copy the input.particles()
+    input_particles_ = input.particles();
   }
 
   /**
    * @brief Initialize particles
    */
   void Execute() override {
+    // Get the number of particle species
+    n_kind_ = input_particles_.size();
+
+    // Print particle information if available
+    for (auto& species : input_particles_) {
+      species.Print();
+    }
+
+    // Initialize particles and tracked particles
+    std::vector<particle::Particles> particles(n_kind_);
+    std::vector<particle::TrackParticles> track_particles(n_kind_);
+
+    // Loop through all species
+    for (int i_kind = 0; i_kind < n_kind_; ++i_kind) {
+      // Initialize particles
+      particles[i_kind] = particle::Particles(input_particles_[i_kind]);
+
+      particle::DistributeID(particles[i_kind],
+                             lili::rank * input_particles_[i_kind].n);
+
+      // Distribute positions
+    }
+
     // Increment the run counter
     IncrementRun();
   }
 
  private:
-  int n_kind_;  ///< Number of particle kinds
-  std::vector<input::InputParticle> input_particles_;  ///< Input particles
+  int n_kind_;  ///< Number of particle species
+  std::vector<input::InputParticles> input_particles_;  ///< Input particles
 };
 }  // namespace lili::task

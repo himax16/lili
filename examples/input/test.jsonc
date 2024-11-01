@@ -20,15 +20,25 @@
       "n": 1000,
       "q": -1.0,
       "m": 1.0,
-      "tau": 0.19737,
       "track": {
         "n_track": 1000,
         "dl_track": 100,
         "dtrack_save": 1000
       },
-      "n_track": 1000,
-      "dl_track": 100,
-      "dtrack_save": 1000
+      "position_distribution": {
+        "type": "uniform"
+      },
+      "velocity_distribution": {
+        "type": "maxwellian",
+        "param": [
+          0.19737
+        ],
+        "offset": [
+          0.1,
+          0.2,
+          0.3
+        ]
+      }
     }
   },
   "integrator": {
