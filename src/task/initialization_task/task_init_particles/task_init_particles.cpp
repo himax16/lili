@@ -266,10 +266,19 @@ void TaskInitParticles::Execute() {
   // Assign the particles vector to the sim_vars
   sim_vars[SimVarType::ParticlesVector] =
       std::make_unique<std::vector<particle::Particles>>(particles);
+  // Store the reference in this object
+  particles_ptr_ = std::get<std::unique_ptr<std::vector<particle::Particles>>>(
+                       sim_vars[SimVarType::ParticlesVector])
+                       .get();
 
   // Assign the track particles vector to the sim_vars
   sim_vars[SimVarType::TrackParticlesVector] =
       std::make_unique<std::vector<particle::TrackParticles>>(track_particles);
+  // Store the reference in this object
+  track_particles_ptr_ =
+      std::get<std::unique_ptr<std::vector<particle::TrackParticles>>>(
+          sim_vars[SimVarType::TrackParticlesVector])
+          .get();
 
   // Increment the run counter
   IncrementRun();

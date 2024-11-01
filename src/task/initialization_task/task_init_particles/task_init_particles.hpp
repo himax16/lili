@@ -198,8 +198,22 @@ class TaskInitParticles : public Task {
    */
   void Execute() override;
 
+  // Getters
+  /// @cond GETTERS
+  std::vector<lili::particle::Particles>& particles() {
+    return *particles_ptr_;
+  }
+  std::vector<lili::particle::TrackParticles>& track_particles() {
+    return *track_particles_ptr_;
+  }
+
  private:
   int n_kind_;  ///< Number of particle species
   std::vector<input::InputParticles> input_particles_;  ///< Input particles
+  std::vector<lili::particle::Particles>*
+      particles_ptr_;  ///< Pointer to the simulation Particles vector
+  std::vector<lili::particle::TrackParticles>*
+      track_particles_ptr_;  ///< Pointer to the simulation TrackParticles
+                             ///< vector
 };
 }  // namespace lili::task
