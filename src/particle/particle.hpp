@@ -44,10 +44,6 @@ extern const char* __LILIP_DNAME_UINT32[];
  * @brief Default names for the double data
  */
 extern const char* __LILIP_DNAME_DOUBLE[];
-/**
- * @brief Default names for the status names
- */
-extern const char* __LILIP_SNAME[];
 
 /**
  * @brief Enumeration class for the particle status

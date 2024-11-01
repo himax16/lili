@@ -79,11 +79,12 @@ int main(int argc, char* argv[]) {
 
   // Print the length
   lili::lout << "Number of particles: " << particles_t.size() << std::endl;
-  // Iterate over the particles and print their x
+  // Iterate over the particles and print their status
   for (auto& particles : particles_t) {
     for (int i = 0; i < particles.npar(); ++i) {
-      lili::lout << "Particle " << particles.id(i) << " v: " << particles.v(i)
-                 << std::endl;
+      if (particles.status(i) == lili::particle::ParticleStatus::Tracked)
+        lili::lout << "Particle " << particles.id(i) << " status: "
+                   << "Tracked" << std::endl;
     }
   }
 
@@ -182,7 +183,7 @@ int main(int argc, char* argv[]) {
     // Loop through all particles
     for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
       // Save tracked particles if needed
-      if (track_particles[i_kind].ntrack() > 0) {
+      if (track_particles[i_kind].n_track() > 0) {
         if (i_loop % dl_tracks[i_kind] == 0)
           track_particles[i_kind].SaveTrackedParticles(particles[i_kind],
                                                        fields);
@@ -211,7 +212,7 @@ int main(int argc, char* argv[]) {
 
   // Save and dump tracked particles at the end
   for (int i_kind = 0; i_kind < n_kind; ++i_kind) {
-    if (track_particles[i_kind].ntrack() > 0) {
+    if (track_particles[i_kind].n_track() > 0) {
       track_particles[i_kind].SaveTrackedParticles(particles[i_kind], fields);
       track_particles[i_kind].DumpTrackedParticles();
     }

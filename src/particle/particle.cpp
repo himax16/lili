@@ -12,15 +12,6 @@
 namespace lili::particle {
 const char* __LILIP_DNAME_UINT32[] = {"id", "status"};
 const char* __LILIP_DNAME_DOUBLE[] = {"x", "y", "z", "u", "v", "w"};
-const char* __LILIP_SNAME[] = {
-    "Out",     "In",      "Tracked", "X0",      "X1",      "Y0",      "Y1",
-    "Z0",      "Z1",      "X0Y0",    "X0Y1",    "X1Y0",    "X1Y1",    "X0Z0",
-    "X0Z1",    "X1Z0",    "X1Z1",    "Y0Z0",    "Y0Z1",    "Y1Z0",    "Y1Z1",
-    "X0Y0Z0",  "X0Y0Z1",  "X0Y1Z0",  "X0Y1Z1",  "X1Y0Z0",  "X1Y0Z1",  "X1Y1Z0",
-    "X1Y1Z1",  "TX0",     "TX1",     "TY0",     "TY1",     "TZ0",     "TZ1",
-    "TX0Y0",   "TX0Y1",   "TX1Y0",   "TX1Y1",   "TX0Z0",   "TX0Z1",   "TX1Z0",
-    "TX1Z1",   "TY0Z0",   "TY0Z1",   "TY1Z0",   "TY1Z1",   "TX0Y0Z0", "TX0Y0Z1",
-    "TX0Y1Z0", "TX0Y1Z1", "TX1Y0Z0", "TX1Y0Z1", "TX1Y1Z0", "TX1Y1Z1"};
 
 // Constructor
 Particles::Particles()

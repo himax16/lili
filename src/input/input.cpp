@@ -34,6 +34,9 @@ void InputParticles::Print() {
   lili::lout << "n             : " << n << std::endl;
   lili::lout << "q             : " << q << std::endl;
   lili::lout << "m             : " << m << std::endl;
+  lili::lout << "n_track       : " << n_track << std::endl;
+  lili::lout << "dl_track      : " << dl_track << std::endl;
+  lili::lout << "dtrack_save   : " << dtrack_save << std::endl;
   lili::lout << "Pos. dist.    : ";
   switch (pos_dist) {
     case PPosDist::Stationary:
@@ -240,13 +243,14 @@ void Input::Parse() {
 
       // Parse tracking variables
       if (val.contains("track")) {
-        species.n_track = val.value("n_track", 0);
-        species.dl_track = val.value("dl_track", 1);
-        species.dtrack_save = val.value("dtrack_save", 0);
+        auto& vtrack = val.at("track");
+        species.n_track = vtrack.value("n_track", 0);
+        species.dl_track = vtrack.value("dl_track", 1);
+        species.dtrack_save = vtrack.value("dtrack_save", 1);
       } else {
         species.n_track = 0;
         species.dl_track = 1;
-        species.dtrack_save = 0;
+        species.dtrack_save = 1;
       }
 
       // Parse particle position distribution

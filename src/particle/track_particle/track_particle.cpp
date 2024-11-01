@@ -14,94 +14,79 @@
 #include "mesh.hpp"
 
 namespace lili::particle {
-/**
- * @brief Initialize the TrackParticles class
- */
 void TrackParticles::InitializeTrackParticles() {
   // Initialize the particles
-  track_particles = Particles(ntrack_);
+  track_particles = Particles(n_track_);
 
   // Allocate memory for the tracked particles
-  idtrack_ = new ulong[ntrack_ * ndump_]();
-  xtrack_ = new double[ntrack_ * ndump_]();
-  ytrack_ = new double[ntrack_ * ndump_]();
-  ztrack_ = new double[ntrack_ * ndump_]();
-  utrack_ = new double[ntrack_ * ndump_]();
-  vtrack_ = new double[ntrack_ * ndump_]();
-  wtrack_ = new double[ntrack_ * ndump_]();
-  extrack_ = new double[ntrack_ * ndump_]();
-  eytrack_ = new double[ntrack_ * ndump_]();
-  eztrack_ = new double[ntrack_ * ndump_]();
-  bxtrack_ = new double[ntrack_ * ndump_]();
-  bytrack_ = new double[ntrack_ * ndump_]();
-  bztrack_ = new double[ntrack_ * ndump_]();
+  idtrack_ = new ulong[n_track_ * dtrack_save_]();
+  xtrack_ = new double[n_track_ * dtrack_save_]();
+  ytrack_ = new double[n_track_ * dtrack_save_]();
+  ztrack_ = new double[n_track_ * dtrack_save_]();
+  utrack_ = new double[n_track_ * dtrack_save_]();
+  vtrack_ = new double[n_track_ * dtrack_save_]();
+  wtrack_ = new double[n_track_ * dtrack_save_]();
+  extrack_ = new double[n_track_ * dtrack_save_]();
+  eytrack_ = new double[n_track_ * dtrack_save_]();
+  eztrack_ = new double[n_track_ * dtrack_save_]();
+  bxtrack_ = new double[n_track_ * dtrack_save_]();
+  bytrack_ = new double[n_track_ * dtrack_save_]();
+  bztrack_ = new double[n_track_ * dtrack_save_]();
 }
 
-/**
- * @brief Save tracked particles with no fields information
- * @param[in] particles
- * Particles object
- */
 void TrackParticles::SaveTrackedParticles(Particles& particles) {
   // Copy tracked particles to the current cache
   SelectParticles(particles, track_particles, ParticleStatus::Tracked);
-  if (track_particles.npar() != ntrack_) {
-    std::cout << "Error: number of tracked particles is not correct"
+  if (track_particles.npar() != n_track_) {
+    std::cerr << "Error: number of tracked particles is not correct"
               << std::endl;
     exit(1);
   }
 
   // Move the data to the dump cache
-  for (int i_track = 0; i_track < ntrack_; ++i_track) {
-    idtrack_[itrack_ * ntrack_ + i_track] = track_particles.id(i_track);
-    xtrack_[itrack_ * ntrack_ + i_track] = track_particles.x(i_track);
-    ytrack_[itrack_ * ntrack_ + i_track] = track_particles.y(i_track);
-    ztrack_[itrack_ * ntrack_ + i_track] = track_particles.z(i_track);
-    utrack_[itrack_ * ntrack_ + i_track] = track_particles.u(i_track);
-    vtrack_[itrack_ * ntrack_ + i_track] = track_particles.v(i_track);
-    wtrack_[itrack_ * ntrack_ + i_track] = track_particles.w(i_track);
+  for (int i_track = 0; i_track < n_track_; ++i_track) {
+    idtrack_[i_track_ * n_track_ + i_track] = track_particles.id(i_track);
+    xtrack_[i_track_ * n_track_ + i_track] = track_particles.x(i_track);
+    ytrack_[i_track_ * n_track_ + i_track] = track_particles.y(i_track);
+    ztrack_[i_track_ * n_track_ + i_track] = track_particles.z(i_track);
+    utrack_[i_track_ * n_track_ + i_track] = track_particles.u(i_track);
+    vtrack_[i_track_ * n_track_ + i_track] = track_particles.v(i_track);
+    wtrack_[i_track_ * n_track_ + i_track] = track_particles.w(i_track);
   }
 
   // Increment the tracking index
-  ++itrack_;
+  ++i_track_;
 
-  // Dump the tracked particles if the tracking index reaches the dump number
-  if (itrack_ >= ndump_) {
+  // Save the tracked particles if the tracking index reaches the save number
+  if (i_track_ >= dtrack_save_) {
     DumpTrackedParticles();
   }
 }
 
-/**
- * @brief Save tracked particles with fields information
- * @param[in] particles
- * Particles object
- * @param[in] fields
- * Fields object
- */
 void TrackParticles::SaveTrackedParticles(Particles& particles,
                                           mesh::Fields& fields) {
   // Copy tracked particles to the current cache
   SelectParticles(particles, track_particles, ParticleStatus::Tracked);
-  if (track_particles.npar() != ntrack_) {
+  if (track_particles.npar() != n_track_) {
     std::cout << "Error: number of tracked particles is not correct"
               << std::endl;
     exit(1);
   }
 
   // Move the data to the dump cache
-  for (int i_track = 0; i_track < ntrack_; ++i_track) {
-    idtrack_[itrack_ * ntrack_ + i_track] = track_particles.id(i_track);
+  for (int i_track = 0; i_track < n_track_; ++i_track) {
+    idtrack_[i_track_ * n_track_ + i_track] = track_particles.id(i_track);
 
     double xloc = track_particles.x(i_track);
     double yloc = track_particles.y(i_track);
     double zloc = track_particles.z(i_track);
 
-    xtrack_[itrack_ * ntrack_ + i_track] = xloc;
-    ytrack_[itrack_ * ntrack_ + i_track] = yloc;
-    ztrack_[itrack_ * ntrack_ + i_track] = zloc;
-    utrack_[itrack_ * ntrack_ + i_track] = track_particles.u(i_track);
-    vtrack_[itrack_ * ntrack_ + i_track] = track_particles.v(i_track);
-    wtrack_[itrack_ * ntrack_ + i_track] = track_particles.w(i_track);
+    xtrack_[i_track_ * n_track_ + i_track] = xloc;
+    ytrack_[i_track_ * n_track_ + i_track] = yloc;
+    ztrack_[i_track_ * n_track_ + i_track] = zloc;
+    utrack_[i_track_ * n_track_ + i_track] = track_particles.u(i_track);
+    vtrack_[i_track_ * n_track_ + i_track] = track_particles.v(i_track);
+    wtrack_[i_track_ * n_track_ + i_track] = track_particles.w(i_track);
 
     // Move the particle location to the mesh coordinate
     xloc = (xloc - fields.size.x0) / fields.size.lx * fields.size.nx;
@@ -109,49 +94,45 @@ void TrackParticles::SaveTrackedParticles(Particles& particles,
     zloc = (zloc - fields.size.z0) / fields.size.lz * fields.size.nz;
 
     // Store the fields
-    extrack_[itrack_ * ntrack_ + i_track] =
+    extrack_[i_track_ * n_track_ + i_track] =
         fields.ex.Interpolation(xloc, yloc, zloc);
-    eytrack_[itrack_ * ntrack_ + i_track] =
+    eytrack_[i_track_ * n_track_ + i_track] =
         fields.ey.Interpolation(xloc, yloc, zloc);
-    eztrack_[itrack_ * ntrack_ + i_track] =
+    eztrack_[i_track_ * n_track_ + i_track] =
         fields.ez.Interpolation(xloc, yloc, zloc);
-    bxtrack_[itrack_ * ntrack_ + i_track] =
+    bxtrack_[i_track_ * n_track_ + i_track] =
         fields.bx.Interpolation(xloc, yloc, zloc);
-    bytrack_[itrack_ * ntrack_ + i_track] =
+    bytrack_[i_track_ * n_track_ + i_track] =
         fields.by.Interpolation(xloc, yloc, zloc);
-    bztrack_[itrack_ * ntrack_ + i_track] =
+    bztrack_[i_track_ * n_track_ + i_track] =
         fields.bz.Interpolation(xloc, yloc, zloc);
   }
 
   // Increment the tracking index
-  ++itrack_;
+  ++i_track_;
 
-  // Dump the tracked particles if the tracking index reaches the dump number
-  if (itrack_ >= ndump_) {
+  // Save the tracked particles if the tracking index reaches the save number
+  if (i_track_ >= dtrack_save_) {
     DumpTrackedParticles();
   }
 }
 
-/**
- * @brief Dump tracked particles
- */
 void TrackParticles::DumpTrackedParticles() {
-  // Dump the tracked particles
   // Set filename and create file
   std::stringstream ss;
-  ss << std::setw(5) << std::setfill('0') << idump_;
+  ss << std::setw(5) << std::setfill('0') << i_dump_;
   std::string filename = prefix_ + "_" + ss.str() + ".h5";
   std::cout << "Dumping tracked particles to " << filename << std::endl;
   hid_t file_id =
       H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
   // Create dataspace to store particles
-  if (itrack_ != ndump_) {
-    std::cout << "Different number TP dump: " << itrack_ << " " << ndump_
+  if (i_track_ != dtrack_save_) {
+    std::cout << "Different number TP dump: " << i_track_ << " " << dtrack_save_
               << std::endl;
   }
-  hsize_t dims[2] = {static_cast<hsize_t>(itrack_),
-                     static_cast<hsize_t>(ntrack_)};
+  hsize_t dims[2] = {static_cast<hsize_t>(i_track_),
+                     static_cast<hsize_t>(n_track_)};
   hid_t dataspace_id = H5Screate_simple(2, dims, NULL);
 
   // Write the particle IDs
@@ -232,7 +213,7 @@ void TrackParticles::DumpTrackedParticles() {
   H5Fclose(file_id);
 
   // Add the dump index and clear the tracking index
-  ++idump_;
-  itrack_ = 0;
+  ++i_dump_;
+  i_track_ = 0;
 }
 }  // namespace lili::particle

@@ -244,6 +244,30 @@ class TaskInitParticles : public Task {
                                 input_particles_[i_kind].vel_offset[0],
                                 input_particles_[i_kind].vel_offset[1],
                                 input_particles_[i_kind].vel_offset[2]);
+
+      // Add tracked particles if needed
+      int n_track =
+          std::min(input_particles_[i_kind].n_track, particles[i_kind].npar());
+
+      if (n_track > 0) {
+        // Initialize the helper TrackParticles object
+        track_particles[i_kind] = particle::TrackParticles(
+            n_track, input_particles_[i_kind].dtrack_save);
+
+        // Set the file prefix for the tracked particles
+        track_particles[i_kind].SetPrefix(
+            std::filesystem::path(lili::output_folder) /
+            ("tp_" + input_particles_[i_kind].name + "_" +
+             std::to_string(lili::rank)));
+
+        // Set the number of loop iteration between tracking output
+        track_particles[i_kind].dl_track() = input_particles_[i_kind].dl_track;
+
+        // Set some particles to be tracked
+        for (int i = 0; i < n_track; ++i) {
+          particles[i_kind].status(i) = particle::ParticleStatus::Tracked;
+        }
+      }
     }
 
     // Assign the particles vector to the sim_vars
