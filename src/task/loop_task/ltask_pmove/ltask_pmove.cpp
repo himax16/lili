@@ -2,9 +2,11 @@
  * @file ltask_pmove.cpp
  * @brief Source file for the ParticleMover class
  */
+#include "ltask_pmove.hpp"
+
 #include <cmath>
 
-#include "ltask_pmove.hpp"
+#include "parameter.hpp"
 
 namespace lili::particle {
 /**
@@ -110,3 +112,25 @@ void ParticleMover::MoveBoris2D(Particles& particles,
   }
 }
 }  // namespace lili::particle
+
+namespace lili::task {
+void TaskMoveParticlesFull::Initialize() {
+  // Get the particles and fields from the simulation variables
+  particles_ptr_ = std::get<std::unique_ptr<std::vector<particle::Particles>>>(
+                       sim_vars[SimVarType::ParticlesVector])
+                       .get();
+  fields_ptr_ =
+      std::get<std::unique_ptr<mesh::Fields>>(sim_vars[SimVarType::EMFields])
+          .get();
+}
+void TaskMoveParticlesFull::Execute() {
+  // Loop through all species
+  for (auto& particles : *particles_ptr_) {
+    // Move particles
+    (mover_.Move)(particles, *fields_ptr_);
+  }
+
+  // Increment the run counter
+  IncrementRun();
+}
+}  // namespace lili::task

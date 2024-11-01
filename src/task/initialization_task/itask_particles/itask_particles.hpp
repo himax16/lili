@@ -186,7 +186,7 @@ class TaskInitParticles : public Task {
     // Initialize the input particles
     input_particles_ = {};
   }
-  TaskInitParticles(input::Input input) : Task(TaskType::InitParticles) {
+  TaskInitParticles(const input::Input input) : Task(TaskType::InitParticles) {
     set_name("InitParticles");
 
     // Copy the input.particles()
@@ -200,20 +200,22 @@ class TaskInitParticles : public Task {
 
   // Getters
   /// @cond GETTERS
-  std::vector<lili::particle::Particles>& particles() {
-    return *particles_ptr_;
-  }
-  std::vector<lili::particle::TrackParticles>& track_particles() {
+  std::vector<particle::Particles>& particles() { return *particles_ptr_; }
+  std::vector<particle::TrackParticles>& track_particles() {
     return *track_particles_ptr_;
   }
 
  private:
   int n_kind_;  ///< Number of particle species
   std::vector<input::InputParticles> input_particles_;  ///< Input particles
-  std::vector<lili::particle::Particles>*
-      particles_ptr_;  ///< Pointer to the simulation Particles vector
-  std::vector<lili::particle::TrackParticles>*
-      track_particles_ptr_;  ///< Pointer to the simulation TrackParticles
-                             ///< vector
+
+  /**
+   * @brief Pointer to the simulation Particles vector
+   */
+  std::vector<particle::Particles>* particles_ptr_;
+  /**
+   * @brief Pointer to the simulation TrackParticles vector
+   */
+  std::vector<particle::TrackParticles>* track_particles_ptr_;
 };
 }  // namespace lili::task

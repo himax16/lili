@@ -130,12 +130,6 @@ int main(int argc, char* argv[]) {
   lili::output_folder = lili::output_folder;
   MPI_Barrier(MPI_COMM_WORLD);
 
-  // Initialize particle mover
-  lili::particle ::ParticleMover mover;
-  mover.InitializeMover(input.loop());
-  lili::lout << "Particle mover type: " << mover.type() << std::endl;
-  lili::lout << "Particle mover dt  : " << mover.dt() << std::endl;
-
   // == Main loop
   // =============================================================
   const int n_loop = input.loop().n_loop;

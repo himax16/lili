@@ -10,7 +10,7 @@
 #include "parameter.hpp"
 
 // Simplify namespace
-using json = nlohmann::json;
+using json = nlohmann::ordered_json;
 
 namespace lili::input {
 std::string InputTypeToString(InputType input_type) {
@@ -328,6 +328,19 @@ void Input::Parse() {
 
     // Parse number of time steps
     loop_.n_loop = j.at("loop").value("n_loop", 1);
+
+    // Parse the task list
+    if (j.at("loop").contains("tasks")) {
+      auto& j_tasks = j.at("loop").at("tasks");
+
+      // Iterate over all tasks and print them
+      for (auto& [key, val] : j_tasks.items()) {
+        lili::lout << "Task: " << key << std::endl;
+
+        lili::lout << "  Type: " << val.at("type").get<std::string>()
+                   << std::endl;
+      }
+    }
   }
 }
 

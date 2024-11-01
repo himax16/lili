@@ -25,10 +25,11 @@ namespace lili::task {
  * @brief Enumeration for task type
  */
 enum class TaskType {
-  Base,           ///< Base task
-  CreateOutput,   ///< Task to create output folder
-  InitParticles,  ///< Task to initialize particles
-  InitFields,     ///< Task to initialize fields
+  Base,               ///< Base task
+  CreateOutput,       ///< Task to create output folder
+  InitParticles,      ///< Task to initialize particles
+  InitFields,         ///< Task to initialize fields
+  MoveParticlesFull,  ///< Task to move particles a full step
 };
 
 /**
@@ -90,6 +91,11 @@ class Task {
   int IncrementRun() { return i_run_++; }
 
   /**
+   * @brief Default task initialization function
+   */
+  virtual void Initialize() { is_init_ = true; }
+
+  /**
    * @brief Default task execution function
    */
   virtual void Execute() {
@@ -100,15 +106,14 @@ class Task {
   /**
    * @brief Default task for cleaning up
    */
-  virtual void CleanUp() {
-    // Increment the run counter
-    IncrementRun();
-  }
+  virtual void CleanUp() { is_cleaned_ = true; }
 
  private:
   TaskType type_;     ///< Type of the task
-  int i_run_ = 0;     ///< Number of times the task has been run
   std::string name_;  ///< Name of the task
+  bool is_init_ = false;  ///< Flag to check if the task has been initialized
+  int i_run_ = 0;     ///< Number of times the task has been run
+  bool is_cleaned_ = false;  ///< Flag to check if the task has been cleaned up
 };
 
 /**
@@ -164,11 +169,25 @@ extern std::map<
     sim_vars;
 
 /**
+ * @brief Helper function to initialize the task object based on its type
+ *
+ * @param task Task object
+ */
+void InitializeTask(Task* task);
+
+/**
  * @brief Helper function to execute the task object based on its type
  *
  * @param task Task object
  */
 void ExecuteTask(Task* task);
+
+/**
+ * @brief Helper function to clean up the task object based on its type
+ *
+ * @param task Task object
+ */
+void CleanUpTask(Task* task);
 
 /**
  * @brief Function to parse the task list from the input file

@@ -49,5 +49,7 @@ void ParseTaskList(input::Input& input) {
 
   // Add the field initialization task
   init_task_list.push_back(std::make_unique<TaskInitFields>(input));
+
+  // Loop through the task list in the input
 }
 }  // namespace lili::task

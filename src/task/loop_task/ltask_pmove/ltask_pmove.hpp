@@ -88,9 +88,26 @@ namespace lili::task {
 class TaskMoveParticlesFull : public Task {
  public:
   // Constructor
-  TaskMoveParticlesFull() : Task(TaskType::MoveParticlesFull) {
+  TaskMoveParticlesFull() : Task(TaskType::MoveParticlesFull), mover_() {
     set_name("MoveParticlesFull");
   }
+
+  TaskMoveParticlesFull(const input::Input& input)
+      : Task(TaskType::MoveParticlesFull), mover_() {
+    set_name("MoveParticlesFull");
+
+    mover_.InitializeMover(input.loop());
+  }
+
+  /**
+   * @brief Initialize internal variables
+   */
+  void Initialize() override;
+
+  /**
+   * @brief Move particles a full time step
+   */
+  void Execute() override;
 
  private:
   particle::ParticleMover mover_;  ///< Particle mover object
@@ -101,6 +118,6 @@ class TaskMoveParticlesFull : public Task {
   /**
    * @brief Pointer to the simulation Fields vector
    */
-  std::vector<mesh::Fields>* fields_ptr_;
+  mesh::Fields* fields_ptr_;
 };
 }  // namespace lili::task
