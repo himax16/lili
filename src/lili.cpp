@@ -11,11 +11,11 @@
 #include "fields.hpp"
 #include "hdf5.h"
 #include "input.hpp"
+#include "ltask_pmove.hpp"
 #include "mesh.hpp"
 #include "output.hpp"
 #include "parameter.hpp"
 #include "particle.hpp"
-#include "particle_mover.hpp"
 #include "task.hpp"
 #include "track_particle.hpp"
 
@@ -84,6 +84,38 @@ int main(int argc, char* argv[]) {
            lili::task::sim_vars[lili::task::SimVarType::EMFields])
            .get();
 
+  // // Compare the particles and track particles to what is in the task
+  // //
+  // // @todo Remove this after testing
+  // for (auto& task : lili::task::init_task_list) {
+  //   if (task->type() == lili::task::TaskType::InitParticles) {
+  //     // Cast task to TaskInitParticles
+  //     lili::task::TaskInitParticles& init_particles_task =
+  //         dynamic_cast<lili::task::TaskInitParticles&>(*task);
+  //     // Compare the particle pointers
+  //     if (&particles != &init_particles_task.particles()) {
+  //       lili::lout << "Particles pointer mismatch" << std::endl;
+  //       lili::lout << "  Task particles pointer: "
+  //                  << &init_particles_task.particles() << std::endl;
+  //       lili::lout << "  Global particles pointer: " << &particles <<
+  //       std::endl;
+  //     } else {
+  //       lili::lout << "Particles pointer match" << std::endl;
+  //     }
+  //     // Compare the track particles pointers
+  //     if (&track_particles != &init_particles_task.track_particles()) {
+  //       lili::lout << "Track particles pointer mismatch" << std::endl;
+  //       lili::lout << "  Task track particles pointer: "
+  //                  << &init_particles_task.track_particles() << std::endl;
+  //       lili::lout << "  Global track particles pointer: " <<
+  //       &track_particles
+  //                  << std::endl;
+  //     } else {
+  //       lili::lout << "Track particles pointer match" << std::endl;
+  //     }
+  //   }
+  // }
+
   // Temporarily use variables
   particles = particles;
   track_particles = track_particles;
@@ -104,7 +136,8 @@ int main(int argc, char* argv[]) {
   lili::lout << "Particle mover type: " << mover.type() << std::endl;
   lili::lout << "Particle mover dt  : " << mover.dt() << std::endl;
 
-  // == Main loop =============================================================
+  // == Main loop
+  // =============================================================
   const int n_loop = input.loop().n_loop;
   const int nl_time = n_loop < 10000 ? n_loop : 10000;
 

@@ -6,7 +6,7 @@ target_include_directories(task PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Add subdirectories
 add_subdirectory(initialization_task)
-# add_subdirectory(loop_task)
+add_subdirectory(loop_task)
 
 # Link internal libraries
 target_link_libraries(task PUBLIC parameter)
