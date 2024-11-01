@@ -20,6 +20,11 @@
 #include "track_particle.hpp"
 
 /**
+ * @brief Rate at which the loop prints the iteration information
+ */
+#define __LILI_LPRINT_RATE 10000
+
+/**
  * @brief Base namespace for LILI program
  *
  * @details
@@ -27,6 +32,7 @@
  * variables and functions.
  */
 namespace lili {
+// Initialize global variables
 int rank, nproc;
 std::string output_folder = "output";
 output::LiliCout lout;
@@ -52,17 +58,19 @@ int main(int argc, char* argv[]) {
   // Get start time
   auto start = std::chrono::high_resolution_clock::now();
 
-  // == Read input =============================================================
-
+  // == Initialization =========================================================
   // Parse inputs
   lili::input::Input input =
       lili::input::ParseArguments(argc, argv, lili::lout);
+
   // Print the input and input mesh information
   input.Print(lili::lout);
 
   MPI_Barrier(MPI_COMM_WORLD);
 
-  // == Initialization =========================================================
+  // Set the number of loop iterations
+  const int n_loop = input.loop().n_loop;
+  const int nl_time = n_loop < __LILI_LPRINT_RATE ? n_loop : __LILI_LPRINT_RATE;
 
   // Parse the tasks from input
   lili::task::ParseTaskList(input);
@@ -88,32 +96,10 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  // Get the variable from the simulation variables
-  std::vector<lili::particle::Particles>& particles =
-      *std::get<std::unique_ptr<std::vector<lili::particle::Particles>>>(
-           lili::task::sim_vars[lili::task::SimVarType::ParticlesVector])
-           .get();
-  std::vector<lili::particle::TrackParticles>& track_particles =
-      *std::get<std::unique_ptr<std::vector<lili::particle::TrackParticles>>>(
-           lili::task::sim_vars[lili::task::SimVarType::TrackParticlesVector])
-           .get();
-  lili::mesh::Fields& fields =
-      *std::get<std::unique_ptr<lili::mesh::Fields>>(
-           lili::task::sim_vars[lili::task::SimVarType::EMFields])
-           .get();
-
-  // Temporarily use variables
-  particles = particles;
-  track_particles = track_particles;
-
-  // Print Field information
-  lili::mesh::PrintMeshSize(fields.size, lili::lout);
   MPI_Barrier(MPI_COMM_WORLD);
 
   // == Main loop =============================================================
-
-  const int n_loop = input.loop().n_loop;
-  const int nl_time = n_loop < 10000 ? n_loop : 10000;
+  lili::lout << "################# Loop #################" << std::endl;
 
   auto loop_time = std::chrono::high_resolution_clock::now();
 
@@ -125,7 +111,6 @@ int main(int argc, char* argv[]) {
              << " ms" << std::endl;
   MPI_Barrier(MPI_COMM_WORLD);
 
-  lili::lout << "################# Loop #################" << std::endl;
   for (int i_loop = 0; i_loop < n_loop; ++i_loop) {
     // Loop through all default tasks
     for (auto& task : lili::task::default_task_list) {
@@ -153,7 +138,6 @@ int main(int argc, char* argv[]) {
   }
 
   // == Clean Up ===============================================================
-
   lili::lout << "############### Clean Up ###############" << std::endl;
 
   // Clean up the default tasks

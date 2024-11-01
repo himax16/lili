@@ -17,13 +17,13 @@
   },
   "particles": {
     "electrons": {
-      "n": 100,
+      "n": 1000,
       "q": -1.0,
       "m": 1.0,
       "track": {
-        "n_track": 100,
+        "n_track": 1000,
         "dl_track": 100,
-        "dtrack_save": 1000
+        "dtrack_save": 100
       },
       "position_distribution": {
         "type": "uniform"
@@ -43,7 +43,7 @@
   },
   "loop": {
     "dt": 0.45,
-    "n_loop": 1000000,
+    "n_loop": 100000,
     "tasks": {
       "move_particles": {
         "type": "full"

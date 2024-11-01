@@ -320,7 +320,6 @@ void TaskInitParticles::CleanUp() {
   // Save the buffer to the HDF5 file if needed
   for (int i = 0; i < n_kind_; ++i) {
     if (n_track_[i] > 0) {
-      lili::lout << track_particles_ptr_->at(i).i_track() << std::endl;
       track_particles_ptr_->at(i).DumpTrackedParticles();
     }
   }
