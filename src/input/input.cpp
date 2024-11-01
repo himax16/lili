@@ -97,7 +97,7 @@ Input::Input(const Input& input) {
 
   mesh_ = input.mesh_;
   particles_ = input.particles_;
-  integrator_ = input.integrator_;
+  loop_ = input.loop_;
 }
 
 void swap(Input& first, Input& second) {
@@ -111,7 +111,7 @@ void swap(Input& first, Input& second) {
 
   swap(first.mesh_, second.mesh_);
   swap(first.particles_, second.particles_);
-  swap(first.integrator_, second.integrator_);
+  swap(first.loop_, second.loop_);
 }
 
 void Input::Parse() {
@@ -321,13 +321,13 @@ void Input::Parse() {
     }
   }
 
-  // Parse integrator
-  if (j.contains("integrator")) {
+  // Parse loop variables
+  if (j.contains("loop")) {
     // Parse time step
-    integrator_.dt = j.at("integrator").value("dt", 1.0);
+    loop_.dt = j.at("loop").value("dt", 1.0);
 
     // Parse number of time steps
-    integrator_.n_loop = j.at("integrator").value("n_loop", 1);
+    loop_.n_loop = j.at("loop").value("n_loop", 1);
   }
 }
 

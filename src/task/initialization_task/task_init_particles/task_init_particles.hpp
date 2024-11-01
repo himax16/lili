@@ -11,10 +11,16 @@
 #include "task.hpp"
 
 #ifndef __LILIP_DEFAULT_GTSIZE
+/**
+ * @brief Default gamma table size
+ */
 #define __LILIP_DEFAULT_GTSIZE 10000
 #endif
 
 #ifndef __LILIP_DEFAULT_GTMULT
+/**
+ * @brief Default multiplier for the maximum delta gamma
+ */
 #define __LILIP_DEFAULT_GTMULT 20
 #endif
 

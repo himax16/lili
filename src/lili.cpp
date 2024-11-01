@@ -71,57 +71,41 @@ int main(int argc, char* argv[]) {
   }
 
   // Get the variable from the simulation variables
-  std::vector<lili::particle::Particles>& particles_t =
+  std::vector<lili::particle::Particles>& particles =
       *std::get<std::unique_ptr<std::vector<lili::particle::Particles>>>(
            lili::task::sim_vars[lili::task::SimVarType::ParticlesVector])
            .get();
+  std::vector<lili::particle::TrackParticles>& track_particles =
+      *std::get<std::unique_ptr<std::vector<lili::particle::TrackParticles>>>(
+           lili::task::sim_vars[lili::task::SimVarType::TrackParticlesVector])
+           .get();
+  lili::mesh::Fields& fields =
+      *std::get<std::unique_ptr<lili::mesh::Fields>>(
+           lili::task::sim_vars[lili::task::SimVarType::EMFields])
+           .get();
 
-  // Print the length
-  lili::lout << "Number of particles: " << particles_t.size() << std::endl;
-  // Iterate over the particles and print their status
-  for (auto& particles : particles_t) {
-    for (int i = 0; i < particles.npar(); ++i) {
-      if (particles.status(i) == lili::particle::ParticleStatus::Tracked)
-        lili::lout << "Particle " << particles.id(i) << " status: "
-                   << "Tracked" << std::endl;
-    }
-  }
+  // Temporarily use variables
+  particles = particles;
+  track_particles = track_particles;
+
+  // Print Field information
+  lili::lout << "Field information:" << std::endl;
+  lili::lout << "  Mesh size: " << std::endl;
+  lili::mesh::PrintMeshSize(fields.size, lili::lout);
 
   MPI_Abort(MPI_COMM_WORLD, 0);
 
   lili::output_folder = lili::output_folder;
   MPI_Barrier(MPI_COMM_WORLD);
 
-  // Initialize fields
-  lili::mesh::Fields fields(input.mesh());
-  switch (input.input_type()) {
-    case lili::input::InputType::Initial:
-      break;
-
-    case lili::input::InputType::Restart:
-      lili::lout << "Loading fields data from: " << input.restart_file()
-                 << std::endl;
-      lili::mesh::LoadFieldTo(fields, input.restart_file().c_str(), false);
-      break;
-
-    case lili::input::InputType::TestParticle:
-      lili::lout << "Loading fields data from: " << input.restart_file()
-                 << std::endl;
-      lili::mesh::LoadFieldTo(fields, input.restart_file().c_str(), false);
-      break;
-
-    default:
-      break;
-  }
-
   // Initialize particle mover
   lili::particle ::ParticleMover mover;
-  mover.InitializeMover(input.integrator());
+  mover.InitializeMover(input.loop());
   lili::lout << "Particle mover type: " << mover.type() << std::endl;
   lili::lout << "Particle mover dt  : " << mover.dt() << std::endl;
 
   // == Main loop =============================================================
-  const int n_loop = input.integrator().n_loop;
+  const int n_loop = input.loop().n_loop;
   const int nl_time = n_loop < 10000 ? n_loop : 10000;
 
   auto loop_time = std::chrono::high_resolution_clock::now();

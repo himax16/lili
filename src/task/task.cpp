@@ -5,6 +5,7 @@
 
 #include "task.hpp"
 
+#include "task_init_fields.hpp"
 #include "task_init_particles.hpp"
 
 namespace lili::task {
@@ -29,6 +30,9 @@ void ExecuteTask(Task* task) {
     case TaskType::InitParticles:
       dynamic_cast<TaskInitParticles*>(task)->Execute();
       break;
+    case TaskType::InitFields:
+      dynamic_cast<TaskInitFields*>(task)->Execute();
+      break;
     default:
       break;
   }
@@ -44,8 +48,6 @@ void ParseTaskList(input::Input& input) {
   init_task_list.push_back(std::make_unique<TaskInitParticles>(input));
 
   // Add the field initialization task
-
-  // Add the field initialization task
-  // init_task_list.push_back(std::make_unique<TaskInitFields>(input));
+  init_task_list.push_back(std::make_unique<TaskInitFields>(input));
 }
 }  // namespace lili::task

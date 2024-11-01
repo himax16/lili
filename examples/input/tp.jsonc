@@ -36,7 +36,7 @@
       "dtrack_save": 1000
     }
   },
-  "integrator": {
+  "loop": {
     "dt": 0.45,
     "n_loop": 200000
   }

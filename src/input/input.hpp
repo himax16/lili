@@ -103,12 +103,12 @@ class InputParticles {
 };
 
 /**
- * @brief Struct to store Integrator input information
+ * @brief Struct to store Loop input information
  */
 typedef struct {
-  int n_loop;  ///< Number of integrator time steps \f$N_{\mathrm{loop}}\f$
-  double dt;   ///< Integrator time step \f$\mathrm{d}t\f$
-} InputIntegrator;
+  int n_loop;  ///< Number of loop time steps \f$N_{\mathrm{loop}}\f$
+  double dt;   ///< Loop time step \f$\mathrm{d}t\f$
+} InputLoop;
 
 /**
  * @brief Class to store input information
@@ -188,7 +188,7 @@ class Input {
   InputType input_type() const { return input_type_; }
   lili::mesh::MeshSize mesh() const { return mesh_; }
   std::vector<InputParticles> particles() const { return particles_; }
-  InputIntegrator integrator() const { return integrator_; }
+  InputLoop loop() const { return loop_; }
   /// @endcond
 
   // Setters
@@ -199,7 +199,7 @@ class Input {
   InputType& input_type() { return input_type_; }
   lili::mesh::MeshSize& mesh() { return mesh_; }
   std::vector<InputParticles>& particles() { return particles_; }
-  InputIntegrator& integrator() { return integrator_; }
+  InputLoop& loop() { return loop_; }
   /// @endcond
 
   /**
@@ -236,7 +236,7 @@ class Input {
 
   lili::mesh::MeshSize mesh_;
   std::vector<InputParticles> particles_;
-  InputIntegrator integrator_;
+  InputLoop loop_;
 };
 
 // Function declaration

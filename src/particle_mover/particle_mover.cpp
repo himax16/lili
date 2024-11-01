@@ -12,7 +12,7 @@ namespace lili::particle {
  * @param[in] input
  * Input object
  */
-void ParticleMover::InitializeMover(const input::InputIntegrator& input) {
+void ParticleMover::InitializeMover(const input::InputLoop& input) {
   // Set the particle mover type
   type_ = ParticleMoverType::Boris2D;
 

@@ -28,6 +28,7 @@ enum class TaskType {
   Base,           ///< Base task
   CreateOutput,   ///< Task to create output folder
   InitParticles,  ///< Task to initialize particles
+  InitFields,     ///< Task to initialize fields
 };
 
 /**
