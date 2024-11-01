@@ -1,5 +1,5 @@
 /**
- * @file task_init_particles.hpp
+ * @file itask_particles.hpp
  * @brief Header file for particle initialization routines
  */
 #pragma once

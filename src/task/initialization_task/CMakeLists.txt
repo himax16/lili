@@ -1,3 +1,3 @@
 # Add subdirectories
-add_subdirectory(task_init_particles)
-add_subdirectory(task_init_fields)
+add_subdirectory(itask_particles)
+add_subdirectory(itask_fields)

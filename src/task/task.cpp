@@ -5,8 +5,8 @@
 
 #include "task.hpp"
 
-#include "task_init_fields.hpp"
-#include "task_init_particles.hpp"
+#include "itask_fields.hpp"
+#include "itask_particles.hpp"
 
 namespace lili::task {
 // Initialize global variables

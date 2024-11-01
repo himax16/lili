@@ -1,5 +1,5 @@
 /**
- * @file task_init_particles.cpp
+ * @file itask_particles.cpp
  * @brief Source file for particle initialization routines
  * @details
  * This file contains the implementation of the particle initialization
@@ -8,10 +8,10 @@
  * - Add compiler independent random number generator
  */
 
-#include "task_init_particles.hpp"
-
 #include <cmath>
 #include <random>
+
+#include "itask_particles.hpp"
 
 namespace lili::particle {
 void DistributeID(Particles& particles, const int offset) {

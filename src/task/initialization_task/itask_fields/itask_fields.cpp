@@ -1,10 +1,9 @@
 /**
- * @file task_init_fields.cpp
+ * @file itask_fields.cpp
  * @brief Source file for field initialization routines
  */
-#include "task_init_fields.hpp"
-
 #include "fields.hpp"
+#include "itask_fields.hpp"
 
 namespace lili::task {
 void TaskInitFields::Execute() {
