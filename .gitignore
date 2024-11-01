@@ -46,6 +46,16 @@ docs/api/
 !example/*.h5
 
 # Spack environment files
-.spack-env/*
+.spack-env
 spack.lock
 loads
+
+# Public release hidden files
+tests/unit_tests
+tests/regression_tests
+src/task/loop_task/ltask_cfl
+src/task/loop_task/ltask_pic
+src/task/loop_task/ltask_ffv
+src/task/loop_task/ltask_ffd
+src/task/loop_task/ltask_fboundary
+src/task/loop_task/ltask_fout

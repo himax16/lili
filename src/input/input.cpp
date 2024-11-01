@@ -335,11 +335,7 @@ void Input::Parse() {
 
       // Iterate over all tasks and print them
       for (auto& [key, val] : j_tasks.items()) {
-        lili::lout << "Task: " << key << std::endl;
-
-        lili::lout << "  Type: " << val.at("type").get<std::string>()
-                   << std::endl;
-      }
+            }
     }
   }
 }

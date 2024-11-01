@@ -103,12 +103,42 @@ class InputParticles {
 };
 
 /**
- * @brief Struct to store Loop input information
+ * @brief Simple class to store loop tasks information
  */
-typedef struct {
+class InputLoopTask {
+ public:
+  // Constructor
+  /**
+   * @brief Default constructor for the InputLoopTask class
+   */
+  InputLoopTask() {
+    name = "";
+    type = "";
+  }
+
+  std::string name;  ///< Task name
+  std::string type;  ///< Task type
+};
+
+/**
+ * @brief Simple class to store loop input information
+ */
+class InputLoop {
+ public:
+  // Constructor
+  /**
+   * @brief Default constructor for the InputLoop class
+   */
+  InputLoop() {
+    n_loop = 0;
+    dt = 0.;
+    tasks = {};
+  }
+
   int n_loop;  ///< Number of loop time steps \f$N_{\mathrm{loop}}\f$
   double dt;   ///< Loop time step \f$\mathrm{d}t\f$
-} InputLoop;
+  std::vector<InputLoopTask> tasks;  ///< List of loop tasks
+};
 
 /**
  * @brief Class to store input information
