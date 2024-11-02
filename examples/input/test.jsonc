@@ -41,7 +41,7 @@
       }
     },
     "protons": {
-      "n": 1000,
+      "n": 10000,
       "q": 1.0,
       "m": 1600.0,
       "track": {
@@ -71,9 +71,6 @@
     "tasks": {
       "move_particles": {
         "type": "full"
-      },
-      "boundary_particles": {
-        "type": "periodic"
       }
     }
   }

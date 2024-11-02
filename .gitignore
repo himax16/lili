@@ -1,6 +1,9 @@
 # Temporary files
 *~
 
+# External libraries
+lib/json.hpp
+
 # Build directories
 build/
 docs/api/
@@ -45,7 +48,7 @@ docs/api/
 *.h5
 !example/*.h5
 
-# Output folder that can be generated
+# Default output folder that can be generated
 output
 
 # Spack environment files

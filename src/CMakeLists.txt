@@ -30,9 +30,3 @@ target_link_libraries(lili PUBLIC task)
 target_link_libraries(lili PUBLIC MPI::MPI_C)
 target_link_libraries(lili PUBLIC hdf5::hdf5)
 target_link_libraries(lili PUBLIC stdc++fs)
-
-# HIMA: Kalau pakai Boost
-# target_include_directories(
-#   main
-#   PUBLIC ${PROJECT_BINARY_DIR} ${Boost_INCLUDE_DIRS}
-# )
