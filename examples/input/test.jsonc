@@ -1,0 +1,77 @@
+/* LILI Test Input File
+ * Hima, 2022
+ */
+{
+  "input_type": "initial",
+  "problem_name": "test",
+  "mesh": {
+    "dimension": 2,
+    "x": {
+      "l": 2400,
+      "n": 2400
+    },
+    "y": {
+      "l": 960,
+      "n": 480
+    }
+  },
+  "particles": {
+    "electrons": {
+      "n": 1000,
+      "q": -1.0,
+      "m": 1.0,
+      "track": {
+        "n_track": 1000,
+        "dl_track": 100,
+        "dtrack_save": 100
+      },
+      "position_distribution": {
+        "type": "uniform"
+      },
+      "velocity_distribution": {
+        "type": "maxwellian",
+        "param": [
+          0.19737
+        ],
+        "offset": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "protons": {
+      "n": 10000,
+      "q": 1.0,
+      "m": 1600.0,
+      "track": {
+        "n_track": 1000,
+        "dl_track": 100,
+        "dtrack_save": 100
+      },
+      "position_distribution": {
+        "type": "uniform"
+      },
+      "velocity_distribution": {
+        "type": "maxwellian",
+        "param": [
+          0.19737
+        ],
+        "offset": [
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  "loop": {
+    "dt": 0.45,
+    "n_loop": 100000,
+    "tasks": {
+      "move_particles": {
+        "type": "full"
+      }
+    }
+  }
+}

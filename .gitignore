@@ -1,3 +1,15 @@
+# Temporary files
+*~
+
+# External libraries
+lib
+!lib/CMakeLists.txt
+!lib/.clang-format
+
+# Build directories
+build/
+docs/api/
+
 # Prerequisites
 *.d
 
@@ -30,3 +42,29 @@
 *.exe
 *.out
 *.app
+
+# Python files
+*.pyc
+
+# Data files except in example
+*.h5
+!example/*.h5
+
+# Default output folder that can be generated
+output
+
+# Spack environment files
+.spack-env
+spack.lock
+loads
+
+# Public release hidden files
+tests/unit_tests
+tests/regression_tests
+src/comm
+src/task/loop_task/ltask_cfl
+src/task/loop_task/ltask_pic
+src/task/loop_task/ltask_ffv
+src/task/loop_task/ltask_ffd
+src/task/loop_task/ltask_fboundary
+src/task/loop_task/ltask_fout

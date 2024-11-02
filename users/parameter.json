@@ -1,0 +1,16 @@
+{
+  "mesh" : {
+    "dim": {
+      "value": 2,
+      "description": "Dimension of the simulation mesh"
+    },
+    "nmx": {
+      "value": 2,
+      "description": "Number of mesh division in x coordinate"
+    },
+    "nmy": {
+      "value": 2,
+      "description": "Dimension of the simulation mesh"
+    }
+  }
+}
