@@ -315,6 +315,7 @@ void SaveParticles(Particles& particles, const char* file_name);
  * @brief Function to load particle data from HDF5 file
  *
  * @param file_name Name of the file to load from
+ *
  * @return Particles Particles object
  */
 Particles LoadParticles(const char* file_name);

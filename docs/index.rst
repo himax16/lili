@@ -22,9 +22,6 @@ The code is designed to be trivially vectorized and can be easily transformed in
 
   This code is still in its early stages of development and will be updated frequently.
 
-Do I want to put the table of content here?
-
-Test linking: :func:`lili::input::Input::input_file`
 
 Contents:
 =========

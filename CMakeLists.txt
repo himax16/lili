@@ -60,9 +60,9 @@ add_subdirectory(src)
 target_link_libraries(lili PRIVATE ZLIB::ZLIB)
 
 # Documentation
-# if(BUILD_DOCS)
-#   add_subdirectory(docs)
-# endif()
+if(BUILD_DOCS)
+  add_subdirectory(docs)
+endif()
 
 # Testing
 # if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)

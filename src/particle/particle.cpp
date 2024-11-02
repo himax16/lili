@@ -300,11 +300,6 @@ void SaveParticles(Particles& particles, const char* file_name) {
   H5Fclose(file_id);
 }
 
-/**
- * @brief Function to load particle data
- * @param particles Particles object
- * @param file_name Name of the file to load from
- */
 Particles LoadParticles(const char* file_name) {
   // Open file
   hid_t file_id = H5Fopen(file_name, H5F_ACC_RDONLY, H5P_DEFAULT);
