@@ -53,6 +53,7 @@ loads
 # Public release hidden files
 tests/unit_tests
 tests/regression_tests
+src/comm
 src/task/loop_task/ltask_cfl
 src/task/loop_task/ltask_pic
 src/task/loop_task/ltask_ffv

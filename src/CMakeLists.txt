@@ -2,6 +2,7 @@
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
 # Add library directories
+# add_subdirectory(comm)
 add_subdirectory(input)
 add_subdirectory(output)
 add_subdirectory(mesh)
