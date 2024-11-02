@@ -30,6 +30,7 @@ Contents:
    :maxdepth: 2
 
    quickstart
+   FAQ <faq>
 
 .. toctree::
   :maxdepth: 4
@@ -43,7 +44,7 @@ Contents:
   :caption: Code documentation
 
   documentation
-  LILI API <sphinx/api/lili>
+  LILI API <sphinx/api/lili_api>
 
 Indices and tables
 ==================
