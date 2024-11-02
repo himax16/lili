@@ -46,4 +46,8 @@ The compiled binary will be located at ``build/lili``.
 Running
 -------
 
-To run LILI, use the following command:
+To run LILI with MPI, use the following command:
+
+.. code-block:: bash
+
+  mpirun -n <number of processes> build/lili -i <input file>

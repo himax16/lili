@@ -14,9 +14,7 @@ Position distribution
 Currently there are two types of particle distribution implemented:
 
 **Stationary distribution**
-
   The particles are left at their initial position at :math:`(0,0,0)`.
 
 **Uniform distribution**
-
   The particles are distributed uniformly in the domain.
