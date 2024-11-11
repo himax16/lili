@@ -28,8 +28,7 @@ jobs:
 
     - name: Tailscale ping
       run: |
-        tailscale ping -c 1 ${{ secrets.LILI_RUNNER_ADD }} 2>/dev/null | \
-          grep -q "pong"
+        tailscale ping -c 1 ${{ secrets.LILI_RUNNER_ADD }}
 
     - name: Verify connection
       run: |
