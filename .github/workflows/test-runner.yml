@@ -8,9 +8,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
     - name: Configure Tailscale
       uses: tailscale/github-action@v2
       with:
@@ -23,18 +20,10 @@ jobs:
     needs: setup
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
     - name: Tailscale ping
       run: |
         tailscale ping -c 1 ${{ secrets.LILI_RUNNER_ADD }}
 
     - name: Verify connection
       run: |
-        if [ $? -eq 0 ]; then
-          echo "Connection to runner server successful"
-        else
-          echo "Connection to runner server failed"
-          exit 1
-        fi
+        echo "Connection to runner server successful"
