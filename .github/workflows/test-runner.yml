@@ -4,8 +4,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup:
+  test-connection:
     runs-on: ubuntu-latest
+    name: Test Connection to Runner Server
 
     steps:
     - name: Configure Tailscale
@@ -14,6 +15,7 @@ jobs:
         oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
         oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
         tags: tag:ci
+        args: --accept-routes --accept-dns
 
     - name: Tailscale status
       run: |
