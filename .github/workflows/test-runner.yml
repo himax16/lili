@@ -15,11 +15,10 @@ jobs:
         oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
         tags: tag:ci
 
-  test-connection:
-    runs-on: ubuntu-latest
-    needs: setup
+    - name: Tailscale status
+      run: |
+        tailscale status
 
-    steps:
     - name: Tailscale ping
       run: |
         tailscale ping -c 1 ${{ secrets.LILI_RUNNER_ADD }}
