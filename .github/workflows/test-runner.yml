@@ -6,7 +6,7 @@ on:
 jobs:
   test-connection:
     runs-on: ubuntu-latest
-    name: Test Connection to Runner Server
+    name: Tailscale Connection to Runner
 
     steps:
     - name: Configure Tailscale
@@ -17,13 +17,10 @@ jobs:
         tags: tag:ci
         args: --accept-routes --accept-dns
 
-    - name: Tailscale status
-      run: |
-        tailscale status
-
     - name: Tailscale ping
       run: |
-        tailscale ping -c 1 ${{ secrets.LILI_RUNNER_ADD }}
+        tailscale ping -c 1 ${{ secrets.LILI_RUNNER_ADD }} | \
+          grep -q "pong"
 
     - name: Verify connection
       run: |
