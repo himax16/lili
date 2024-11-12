@@ -116,7 +116,7 @@ void Input::Parse() {
   // Open input file
   std::ifstream ifs(input_file_.c_str());
   if (!ifs.is_open()) {
-    std::cerr << "Cannot open input file: " << input_file_ << std::endl;
+    lili::lerr << "Cannot open input file: " << input_file_ << std::endl;
     lili::output::LiliExit(2);
   }
 
@@ -128,7 +128,7 @@ void Input::Parse() {
                     /* allow exceptions */ true,
                     /* ignore comments */ true);
   } catch (json::parse_error& e) {
-    std::cerr << "Parse error: " << e.what() << std::endl;
+    lili::lerr << "Parse error: " << e.what() << std::endl;
     lili::output::LiliExit(2);
   }
 
@@ -137,7 +137,7 @@ void Input::Parse() {
 
   // Check the type of input file
   if (!j.contains("input_type")) {
-    std::cerr << "No input type in " << input_file_ << std::endl;
+    lili::lerr << "No input type in " << input_file_ << std::endl;
     lili::output::LiliExit(2);
   } else {
     std::string input_type_str = j.at("input_type").get<std::string>();
@@ -148,16 +148,17 @@ void Input::Parse() {
     } else if (strcmp(input_type_str.c_str(), "test_particle") == 0) {
       input_type_ = InputType::TestParticle;
     } else {
-      std::cerr << "Unrecognized input type in " << input_type_str << std::endl;
-      std::cerr << "Available input type: [initial | restart]" << std::endl;
+      lili::lerr << "Unrecognized input type in " << input_type_str
+                 << std::endl;
+      lili::lerr << "Available input type: [initial | restart]" << std::endl;
       lili::output::LiliExit(2);
     }
   }
 
   // Parse problem name
   if (!j.contains("problem_name")) {
-    std::cerr << "No problem name in " << input_file_ << std::endl;
-    std::cerr << "Using default problem name: LILI" << std::endl;
+    lili::lerr << "No problem name in " << input_file_ << std::endl;
+    lili::lerr << "Using default problem name: LILI" << std::endl;
   } else {
     problem_name_ = j.at("problem_name").get<std::string>();
   }
@@ -166,7 +167,7 @@ void Input::Parse() {
   if (input_type_ == InputType::Restart ||
       input_type_ == InputType::TestParticle) {
     if (!j.contains("restart_file")) {
-      std::cerr << "No restart file in " << input_file_ << std::endl;
+      lili::lerr << "No restart file in " << input_file_ << std::endl;
       lili::output::LiliExit(2);
     } else {
       restart_file_ = j.at("restart_file").get<std::string>();
@@ -180,7 +181,7 @@ void Input::Parse() {
     // Parse mesh dimension
     mesh_.dim = j_mesh.at("dimension").get<int>();
     if (mesh_.dim < 1 || mesh_.dim > 3) {
-      std::cerr << "Invalid mesh dimension in " << input_file_ << std::endl;
+      lili::lerr << "Invalid mesh dimension in " << input_file_ << std::endl;
       lili::output::LiliExit(2);
     }
 
@@ -275,10 +276,11 @@ void Input::Parse() {
             species.pos_dist_param.push_back(mesh_.lz);
           }
         } else {
-          std::cerr << "Unrecognized position distribution: " << pdist_str
-                    << std::endl;
-          std::cerr << "Available position distribution: [stationary | uniform]"
-                    << std::endl;
+          lili::lerr << "Unrecognized position distribution: " << pdist_str
+                     << std::endl;
+          lili::lerr
+              << "Available position distribution: [stationary | uniform]"
+              << std::endl;
           lili::output::LiliExit(2);
         }
       }
@@ -290,10 +292,10 @@ void Input::Parse() {
         if (strcmp(vdist_str.c_str(), "maxwellian") == 0) {
           species.vel_dist = PVelDist::Maxwellian;
         } else {
-          std::cerr << "Unrecognized velocity distribution: " << vdist_str
-                    << std::endl;
-          std::cerr << "Available velocity distribution: [ maxwellian ]"
-                    << std::endl;
+          lili::lerr << "Unrecognized velocity distribution: " << vdist_str
+                     << std::endl;
+          lili::lerr << "Available velocity distribution: [ maxwellian ]"
+                     << std::endl;
           lili::output::LiliExit(2);
         }
 
@@ -302,8 +304,8 @@ void Input::Parse() {
           // Read the value as a vector
           species.vel_dist_param = vdist.at("param").get<std::vector<double>>();
         } else {
-          std::cerr << "No velocity distribution parameters for " << key
-                    << std::endl;
+          lili::lerr << "No velocity distribution parameters for " << key
+                     << std::endl;
           lili::output::LiliExit(2);
         }
 
@@ -367,7 +369,7 @@ Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout) {
           } else if (strcmp(argv[i_arg], "--input") == 0) {
             if (has_input) {
               // Throw error for multiple input file
-              std::cerr << "There are multiple input file" << std::endl;
+              lili::lerr << "There are multiple input file" << std::endl;
               lili::output::LiliExit(1);
             }
             // Parse input file
@@ -379,14 +381,14 @@ Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout) {
             ++i_arg;
           } else {
             // Throw error for unrecognized option
-            std::cerr << "Unrecognized option: " << argv[i_arg] << std::endl;
+            lili::lerr << "Unrecognized option: " << argv[i_arg] << std::endl;
             lili::output::LiliExit(1);
           }
           break;
         case 'i':
           if (has_input) {
             // Throw error for multiple input file
-            std::cerr << "There are multiple input file" << std::endl;
+            lili::lerr << "There are multiple input file" << std::endl;
             lili::output::LiliExit(1);
           }
           // Parse input file
@@ -406,7 +408,7 @@ Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout) {
           break;
         default:
           // Throw error for unrecognized option
-          std::cerr << "Unrecognized option: " << argv[i_arg] << std::endl;
+          lili::lerr << "Unrecognized option: " << argv[i_arg] << std::endl;
           lili::output::LiliExit(1);
       }
     } else if (!has_input) {
@@ -416,7 +418,7 @@ Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout) {
       has_input = true;
     } else {
       // Throw error for multiple input file
-      std::cerr << "There are multiple input file" << std::endl;
+      lili::lerr << "There are multiple input file" << std::endl;
       lili::output::LiliExit(1);
     }
   }
@@ -424,9 +426,9 @@ Input ParseArguments(int argc, char** argv, lili::output::LiliCout& lout) {
   // Check if there is input file
   if (!has_input) {
     // Throw error for no input file
-    std::cerr << "No input file" << std::endl;
+    lili::lerr << "No input file" << std::endl;
     // Print help
-    lili::output::PrintHelp();
+    lili::output::PrintHelp(lout);
     lili::output::LiliExit(1);
   }
 

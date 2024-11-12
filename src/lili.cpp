@@ -31,6 +31,7 @@ namespace lili {
 int rank, nproc;
 std::string output_folder = "output";
 output::LiliCout lout;
+output::LiliCerr lerr;
 }  // namespace lili
 
 /**
@@ -44,10 +45,10 @@ int main(int argc, char* argv[]) {
   MPI_Comm_size(MPI_COMM_WORLD, &lili::nproc);
 
   // Setup the output stream
-  if (lili::rank != 0) lili::lout.enabled = false;
-
-  lili::lout << "############ Initialization ############" << std::endl;
-  lili::lout << "MPI size      : " << lili::nproc << std::endl;
+  if (lili::rank != 0) {
+    lili::lout.enabled = false;
+    lili::lerr.enabled = false;
+  }
 
   // Get start time
   auto start = std::chrono::high_resolution_clock::now();
@@ -56,6 +57,12 @@ int main(int argc, char* argv[]) {
   // Parse inputs
   lili::input::Input input =
       lili::input::ParseArguments(argc, argv, lili::lout);
+
+  // Print MPI information
+  lili::lout << "############ Initialization ############" << std::endl;
+  if (lili::nproc > 1) {
+    lili::lout << "MPI rank      : " << lili::rank << std::endl;
+  }
 
   // Print the input and input mesh information
   input.Print(lili::lout);

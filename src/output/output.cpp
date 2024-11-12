@@ -39,5 +39,18 @@ void PrintHelp(LiliCout& out) {
   out << "  -v, --version  Output version information" << std::endl;
 }
 
-void LiliExit(int status) { MPI_Abort(MPI_COMM_WORLD, status); }
+void LiliExit(int status) {
+  // Check if MPI is initialized
+  int mpi_initialized;
+
+  MPI_Initialized(&mpi_initialized);
+
+  if (mpi_initialized) {
+    // Finalize MPI
+    MPI_Abort(MPI_COMM_WORLD, status);
+  } else {
+    // Exit the program
+    exit(status);
+  }
+}
 }  // namespace lili::output

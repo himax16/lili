@@ -57,6 +57,44 @@ class LiliCout {
   bool enabled;
 };
 
+/**
+ * @brief Custom `std::cerr` class to enable/disable printing error output
+ */
+class LiliCerr {
+ public:
+  LiliCerr() : enabled(true) {}
+  LiliCerr(bool enabled) : enabled(enabled) {}
+
+  /**
+   * @brief Extraction operator for LiliCerr class similar to `std::cout`
+   *
+   * @tparam T Type of the input
+   * @param t Input to be printed
+   * @return LiliCerr& Reference to the LiliCerr object
+   */
+  template <typename T>
+  LiliCerr& operator<<(const T& t) {
+    if (enabled) std::cerr << t;
+    return *this;
+  }
+
+  /**
+   * @brief Extraction operator for LiliCerr class similar to `std::cout`
+   *
+   * @param f Function pointer to `std::ostream&`
+   * @return LiliCerr& Reference to the LiliCerr object
+   */
+  LiliCerr& operator<<(std::ostream& (*f)(std::ostream&)) {
+    if (enabled) std::cout << f;
+    return *this;
+  }
+
+  /**
+   * @brief Flag to enable/disable printing output
+   */
+  bool enabled;
+};
+
 // Function declaration
 /**
  * @brief Print current `LILI` version with the current git SHA1 and status.

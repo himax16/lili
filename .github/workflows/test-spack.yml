@@ -30,7 +30,7 @@ jobs:
       run: spack -e . install --no-check-signature
 
     - name: Compile LILI
-      shell: spack-bash
+      shell: spack-bash {0}
       run: |
         spack env activate .
         cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
