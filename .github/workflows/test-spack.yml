@@ -27,6 +27,12 @@ jobs:
         cp .github/spack.yaml ./spack.yaml
         cat ./spack.yaml
 
+    - name: Setup Spack mirror
+      run: spack -e . mirror set --oci-username ${{ github.actor }} --oci-password "${{ secrets.GITHUB_TOKEN }}" local-buildcache
+
+    - name: Concretize Spack environment
+      run: spack -e . concretize
+
     - name: Install Spack packages
       run: spack -e . install --no-check-signature
 
@@ -39,7 +45,5 @@ jobs:
         mpirun -n 2 build/lili --version
 
     - name: Push packages and update index
-      run: |
-        spack -e . mirror set --push --oci-username ${{ github.actor }} --oci-password ${{ secrets.GITHUB_TOKEN }} local-buildcache
-        spack -e . buildcache push --base-image ubuntu:22.04 --update-index local-buildcache
+      run: spack -e . buildcache push --base-image ubuntu:22.04 --update-index local-buildcache
       if: ${{ !cancelled() }}
