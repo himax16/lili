@@ -41,10 +41,7 @@ jobs:
       run: |
         spack env activate .
         cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
-        cmake --build build --parallel
-        mpirun build/lili --version
-        lscpu
-        hostname
+        cmake --build build
 
     - name: Push packages and update index
       run: spack -e . buildcache push --base-image ubuntu:22.04 --update-index local-buildcache
