@@ -45,4 +45,4 @@ jobs:
 
     - name: Push packages and update index
       run: spack -e . buildcache push --base-image ubuntu:22.04 --update-index local-buildcache
-      if: ${{ !cancelled() }}
+      if: ${{ !cancelled() && !env.ACT }}
