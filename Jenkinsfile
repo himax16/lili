@@ -1,5 +1,8 @@
 pipeline {
   agent any
+  environment {
+    DISCORD_WEBHOOK = credentials('discord_hima_server')
+  }
   stages {
     stage('Setup Spack') {
       steps {
@@ -25,9 +28,10 @@ pipeline {
       }
     }
 
-    stage('') {
+    stage('Clean Up') {
       steps {
         echo 'Done!'
+        discordSend customUsername: 'Jenkins - Hima', enableArtifactsList: true, showChangeset: true, webhookURL: "$DISCORD_WEBHOOK"
       }
     }
 
