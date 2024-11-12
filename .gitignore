@@ -66,3 +66,7 @@ src/task/loop_task/ltask_ffv
 src/task/loop_task/ltask_ffd
 src/task/loop_task/ltask_fboundary
 src/task/loop_task/ltask_fout
+
+# Local runner files
+.env
+.secrets

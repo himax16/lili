@@ -1,0 +1,14 @@
+name: Trigger Jenkins Job
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger-jenkins:
+    name: Trigger Jenkins Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Jenkins Job
+        run: |
+          echo "Triggering Jenkins Job"
+          curl -X POST http://${{ secrets.JENKINS_ADD}}/generic-webhook-trigger/invoke?token=${{ secrets.JENKINS_TOKEN }}
