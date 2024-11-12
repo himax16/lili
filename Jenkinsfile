@@ -31,7 +31,7 @@ pipeline {
     stage('Clean Up') {
       steps {
         echo 'Done!'
-        discordSend enableArtifactsList: true, showChangeset: true, webhookURL: "$DISCORD_WEBHOOK", link: env.BUILD_URL, result: currentBuild.currentResult, title: env.JOB_NAME, message: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} finished with status ${currentBuild.currentResult}"
+        discordSend enableArtifactsList: true, showChangeset: true, webhookURL: "$DISCORD_WEBHOOK", link: env.BUILD_URL, result: currentBuild.currentResult, title: env.JOB_NAME
       }
     }
 
