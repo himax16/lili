@@ -5,6 +5,7 @@ on:
 
 jobs:
   build:
+    name: Build and Test LILI with Spack
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -35,7 +36,7 @@ jobs:
         spack env activate .
         cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
         cmake --build build --parallel
-        mpirun -n 4 build/lili --version
+        mpirun -n 2 build/lili --version
 
     - name: Push packages and update index
       run: |
