@@ -1,0 +1,25 @@
+# This is a Spack Environment file for LILI for GitHub CI
+#
+# It describes a set of packages to be installed, along with
+# configuration settings.
+spack:
+  # Explicit view
+  view: /opt/view
+
+  # Add package specs to the `specs` list
+  specs:
+  - cmake
+  - openmpi
+  # For the HDF5 library
+  - zlib-ng
+  - hdf5+cxx+fortran
+
+  # Configure packages:
+  packages:
+    all:
+      require: 'target=x86_64_v3'
+
+  mirrors:
+    local-buildcache:
+      url: oci://ghcr.io/himax16/lili-spack-buildcache
+      signed: false
