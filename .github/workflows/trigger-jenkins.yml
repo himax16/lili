@@ -11,4 +11,4 @@ jobs:
       - name: Trigger Jenkins Job
         run: |
           echo "Triggering Jenkins Job"
-          curl -X POST http://${{ secrets.JENKINS_ADD }}/generic-webhook-trigger/invoke?token=${{ secrets.JENKINS_TOKEN }}
+          curl -X POST http://${{ secrets.JENKINS_ADDRESS }}/generic-webhook-trigger/invoke?token=${{ secrets.JENKINS_TOKEN }}
