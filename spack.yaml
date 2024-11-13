@@ -3,7 +3,6 @@
 # It describes a set of packages to be installed, along with
 # configuration settings.
 spack:
-  # add package specs to the `specs` list
   specs:
   - cmake
   - openmpi
@@ -15,10 +14,10 @@ spack:
   # - py-sphinx
   - py-breathe
   - py-exhale
+  # Hack to use py-furo, will need to wait until py-exhale is updated to v0.37
   - py-sphinx-rtd-theme
   - py-furo
   - py-sphinx-copybutton
-  # Hack to use py-furo, will need to wait until py-exhale is updated to v0.37
   # - py-myst-parser
   view: true
   concretizer:
